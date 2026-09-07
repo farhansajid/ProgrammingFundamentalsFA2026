@@ -10,6 +10,7 @@ COMSATS University Islamabad, Sahiwal Campus
 - Lecture Presentation PDFs/ contains the ready-to-present PDFs.
 - Java_Examples/ retains the original 64 demonstrations and exercise solutions.
 - JUnit_Project/ contains the original and new discoverable tests.
+- LatexSource/ contains the latex source code of the presentation slides
 
 The decks contain more material than should necessarily be presented in one sitting. Use the added worked example instead of an earlier overlapping example, or assign it as follow-up practice to retain a 90-minute lecture. Course_Plan.md preserves syllabus mapping and gives current slide counts.
 
