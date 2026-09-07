@@ -1,0 +1,407 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{08}
+\input{course-theme.tex}
+\title{Selection with if and else}
+\subtitle{CSC103 Programming Fundamentals / Lecture 08}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Classify an integer as negative, zero or positive. Draw a decision outline, then write an if-else chain.
+\end{column}\begin{column}{0.35\textwidth}\small
+Check the negative case first.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Implement one-way and two-way selection
+\item Build an ordered multi-branch decision
+\item Test boundaries and nested conditions
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+The if statement\par Two-way selection\par Multiple selections\par Nesting and compound statements
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The if statement}
+\begin{itemize}
+\item An if condition must be Boolean.
+\item The body executes only when the condition is true.
+\item Braces clearly group all statements in the branch.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (balance < 0) {
+  System.out.println("Overdrawn");
+}
+\end{lstlisting}
+\end{block}
+\note{Ask whether the program stops when the condition is false. It continues after the if block.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Two-way selection}
+\begin{itemize}
+\item An if-else chooses exactly one branch.
+\item Statements after the structure execute after either branch completes normally.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (marks >= 50) {
+  System.out.println("Pass");
+} else {
+  System.out.println("Fail");
+}
+\end{lstlisting}
+\end{block}
+\note{Trace 49, 50 and 51. Avoid implying these local examples redefine the syllabus assessment policy.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Multiple selections}
+\begin{itemize}
+\item An else-if chain selects the first matching branch.
+\item Order overlapping thresholds from most restrictive to least restrictive.
+\item Independent if statements can execute several bodies.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (score >= 80) {
+  band = "High";
+} else if (score >= 50) {
+  band = "Middle";
+} else { band = "Low"; }
+\end{lstlisting}
+\end{block}
+\note{These are illustrative score bands, not official grades. Show how putting \textgreater{}=50 first makes \textgreater{}=80 unreachable in the chain.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Nesting and compound statements}
+\begin{itemize}
+\item A nested if expresses a decision inside another decision.
+\item An else attaches to the nearest unmatched if.
+\item Braces prevent misleading indentation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (registered) {
+  if (paid) {
+    System.out.println("Admit");
+  }
+}
+\end{lstlisting}
+\end{block}
+\note{Compare this nesting to registered \&\& paid. Both can express the same admission condition when no separate branch behaviour is needed.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Branch order determines the selected result}
+\begin{itemize}
+\item An else-if chain stops testing after its first matching condition.
+\item Overlapping ranges need an order that gives the most specific case priority.
+\item A final else covers every case not selected earlier.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+If >=50 comes before >=80, a score of 90
+selects the >=50 branch immediately.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. An else-if chain stops testing after its first matching condition. Overlapping ranges need an order that gives the most specific case priority. A final else covers every case not selected earlier.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Independent tests and exclusive alternatives}
+\begin{itemize}
+\item Separate if statements can execute more than one body.
+\item An if-else chain expresses mutually exclusive outcomes.
+\item For sign classification, exactly one of negative, zero and positive is appropriate.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (n < 0) ...
+else if (n == 0) ...
+else ...
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Separate if statements can execute more than one body. An if-else chain expresses mutually exclusive outcomes. For sign classification, exactly one of negative, zero and positive is appropriate.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A decision selects one path}
+\begin{center}\begin{tikzpicture}
+\node[decision] (a) at (0,0) {mark \textgreater{}= 50?};
+\node[alt] (b) at (-3.6,-1.65) {Print Pass};
+\node[hot] (c) at (3.6,-1.65) {Print Fail};
+\node[box] (d) at (0,-3.25) {Continue};
+\draw[arr] (a.west) -| node[lab,pos=.25]{true} (b.north);\draw[arr] (a.east) -| node[lab,pos=.25]{false} (c.north);\draw[arr] (b.south) |- (d.west);\draw[arr] (c.south) |- (d.east);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Exactly one branch executes; both normal paths rejoin after the selection.\end{block}
+\note{Trace each labelled connection. Exactly one branch executes; both normal paths rejoin after the selection.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input n & \color{white}\bfseries n \textless{} 0 & \color{white}\bfseries n == 0 if reached & \color{white}\bfseries Chosen result\\
+-1 & true & Not evaluated & Negative\\
+0 & false & true & Zero\\
+1 & false & false & Positive\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int score = 80;
+String band;
+if (score >= 80) { band = "High"; }
+else if (score >= 50) { band = "Middle"; }
+else { band = "Low"; }
+System.out.println(band);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture08.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+High\par The first condition is true.\par The remaining branches are skipped.
+\end{column}\begin{column}{0.35\textwidth}\small
+Multiple selections
+
+Nesting and compound statements
+\end{column}\end{columns}
+\note{Expected output and interpretation: High
+The first condition is true.
+The remaining branches are skipped.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Classify an integer as negative, zero or positive. Draw a decision outline, then write an if-else chain.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: if (n \textless{} 0) ... else if (n == 0) ... else ...
+Test -1, 0 and 1. Exactly one label must appear.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Check the negative case first.
+\item If the number is not negative, test equality to zero.
+\item Every remaining integer is positive.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution08 {
+  public static void main(String[] args) throws Exception {
+    int n = 0;
+    if (n < 0) {
+      System.out.println("Negative");
+    } else if (n == 0) {
+      System.out.println("Zero");
+    } else {
+      System.out.println("Positive");
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution08.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Execution point & \color{white}\bfseries Condition or action & \color{white}\bfseries Result\\
+First test & 0 \textless{} 0 & false\\
+Second test & 0 == 0 & true\\
+Selected body & Print Zero & Zero\\
+Remaining branch & Skip else & No extra output\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Check the negative case first. If the number is not negative, test equality to zero. Every remaining integer is positive.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Zero
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Every remaining integer is positive.
+\end{column}\end{columns}
+\note{Expected result: Zero\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+if (marks \textgreater{}= 50);\par \{ System.out.println("Pass"); \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The semicolon creates an empty if body. Remove it so that the block belongs to the if.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Write a shipping-charge decision for three weight ranges. State your rules and test each boundary.
+\end{column}\begin{column}{0.35\textwidth}\small
+if (n \textless{} 0) ... else if (n == 0) ... else ...\par Test -1, 0 and 1. Exactly one label must appear.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: if (n \textless{} 0) ... else if (n == 0) ... else ...
+Test -1, 0 and 1. Exactly one label must appear.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+How many branches can an else-if chain select? Why test 49, 50 and 51?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: At most one. Those cases exercise both sides of the 50 boundary and equality itself.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+At most one. Those cases exercise both sides of the 50 boundary and equality itself.
+\end{column}\begin{column}{0.35\textwidth}\small
+The semicolon creates an empty if body. Remove it so that the block belongs to the if.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Mark & \color{white}\bfseries Condition & \color{white}\bfseries Printed result\\
+49 & false & Fail\\
+50 & true & Pass\\
+51 & true & Pass\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a grade band selection: 80 or above is High, 50 through 79 is Pass, and below 50 is Fail. Explain the order of tests.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a grade band selection: 80 or above is High, 50 through 79 is Pass, and below 50 is Fail. Explain the order of tests.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+if (mark >= 80) {
+  System.out.println("High");
+} else if (mark >= 50) {
+  System.out.println("Pass");
+} else {
+  System.out.println("Fail");
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The narrower, higher threshold must be tested first.
+\item After mark \textgreater{}= 80 is false, mark \textgreater{}= 50 means 50 through 79.
+\item The example assumes a valid mark; range validation is a separate step.
+\end{itemize}\note{Answer: The narrower, higher threshold must be tested first. After mark \textgreater{}= 80 is false, mark \textgreater{}= 50 means 50 through 79. The example assumes a valid mark; range validation is a separate step.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Overtime payroll}
+\begin{itemize}
+\item The first 40 hours use the regular rate. Only excess hours use the 1.5 multiplier.
+\item At exactly 40 hours, overtime hours are zero.
+\item This is the fictional business rule supplied by the exercise, not an employment{-}law rule.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}7.pptx, slides 24, 25. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Overtime payroll}
+\begin{block}{Task}Compute pay for 45 hours at 20 units per hour using the source overtime rule.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}7.pptx, slides 24, 25. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture08 {
+  public static void main(String[] args) throws Exception {
+    double hours = 45, rate = 20;
+    double pay;
+    if (hours > 40) {
+      pay = 40 * rate + (hours - 40) * rate * 1.5;
+    } else {
+      pay = hours * rate;
+    }
+    System.out.printf(java.util.Locale.US, "Pay: %.2f%n", pay);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}7.pptx, slides 24, 25. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture08.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Hours & \color{white}\bfseries Regular + overtime pay & \color{white}\bfseries Total\\
+39 & 780 + 0 & 780\\
+40 & 800 + 0 & 800\\
+45 & 800 + 150 & 950\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Pay: 950.00\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}7.pptx, slides 24, 25. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}What is wrong with multiplying all 45 hours by 1.5 times the rate?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}It applies the overtime premium to regular hours. That incorrect formula gives 1350 instead of 950.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}7.pptx, slides 24, 25. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: It applies the overtime premium to regular hours. That incorrect formula gives 1350 instead of 950.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item one-way and two-way selection
+\item an ordered multi-branch decision
+\item boundaries and nested conditions
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Check the negative case first.
+\item If the number is not negative, test equality to zero.
+\item Every remaining integer is positive.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a shipping-charge decision for three weight ranges. State your rules and test each boundary.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7 (as listed)
+
+Next lecture: Short-circuiting and switch
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+\end{document}

@@ -1,0 +1,397 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{03}
+\input{course-theme.tex}
+\title{Java syntax and program style}
+\subtitle{CSC103 Programming Fundamentals / Lecture 03}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Rewrite: int a=6;int b=4;System.out.println(2*(a+b)); Use names, spacing and a useful comment.
+\end{column}\begin{column}{0.35\textwidth}\small
+Rename a and b so that their roles are visible.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Distinguish tokens, identifiers and reserved words
+\item Explain syntax versus meaning
+\item Apply consistent names, indentation and comments
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1
+
+Tokens and special symbols\par Identifiers and reserved words\par Comments and documentation\par Syntax, semantics and style
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Tokens and special symbols}
+\begin{itemize}
+\item Tokens include keywords, identifiers, literals and operators.
+\item Braces delimit blocks. Parentheses group expressions and arguments. A semicolon ends many statements.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int score = 75;
+System.out.println(score);
+\end{lstlisting}
+\end{block}
+\note{Read each token aloud and ask students to identify its role. Whitespace often separates tokens but does not replace required punctuation.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Identifiers and reserved words}
+\begin{itemize}
+\item Choose meaningful names such as totalMarks.
+\item Names are case-sensitive and cannot be reserved words.
+\item Class names conventionally use PascalCase and variables use camelCase.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Valid: studentCount, marks2
+Invalid: 2marks, class
+Different: score and Score
+\end{lstlisting}
+\end{block}
+\note{Java supports Unicode identifiers. Use simple ASCII identifiers for this introductory course. A standalone underscore is not a valid identifier in this course baseline.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Comments and documentation}
+\begin{itemize}
+\item A line comment starts with //. A block comment uses /* ... */.
+\item Documentation comments use /** ... */ before declarations.
+\item Useful comments explain intent or constraints.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+// Convert whole hours to minutes.
+int totalMinutes = hours * 60;
+\end{lstlisting}
+\end{block}
+\note{Avoid comments that merely repeat an obvious statement. Explain the assumption behind a formula, especially when future readers could otherwise misinterpret it.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Syntax, semantics and style}
+\begin{itemize}
+\item Syntax defines legal structure. Semantics concerns what the program means.
+\item Indentation helps people see nesting. Descriptive names help people understand intent.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int length = 5;
+int width = 3;
+int area = length * width;
+\end{lstlisting}
+\end{block}
+\note{A syntactically valid expression length + width still has the wrong meaning for area. Style improves readability without guaranteeing correctness.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A statement can be legal and still be wrong}
+\begin{itemize}
+\item The compiler accepts an expression that satisfies Java grammar and type rules.
+\item Correctness also requires the expression to match the intended quantity.
+\item Names and units help a reader check this connection.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For sides 6 cm and 4 cm:
+Area = 6 * 4 = 24 cm^2
+Perimeter = 2 * (6 + 4) = 20 cm
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The compiler accepts an expression that satisfies Java grammar and type rules. Correctness also requires the expression to match the intended quantity. Names and units help a reader check this connection.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Documentation that explains decisions}
+\begin{itemize}
+\item A purpose comment states what the program calculates.
+\item A constraint comment explains the assumptions behind a calculation.
+\item Changing code and leaving an old comment creates misleading documentation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Useful: Side lengths are in centimetres.
+Weak: Add length and width.
+The expression already shows the addition.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A purpose comment states what the program calculates. A constraint comment explains the assumptions behind a calculation. Changing code and leaving an old comment creates misleading documentation.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Read an expression as a syntax tree}
+\begin{center}\begin{tikzpicture}
+\node[decision] (a) at (0,0) {*};
+\node[decision] (b) at (2,-1.25) {+};
+\node[alt] (c) at (-2,-1.25) {2};
+\node[box] (d) at (0.3,-2.65) {length};
+\node[box] (e) at (3.6,-2.65) {width};
+\draw[arr] (a)--(b);
+\draw[arr] (a)--(c);
+\draw[arr] (b)--(d);
+\draw[arr] (b)--(e);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}In 2 * (length + width), the grouped sum supplies one operand of multiplication.\end{block}
+\note{Trace each labelled connection. In 2 * (length + width), the grouped sum supplies one operand of multiplication.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Token & \color{white}\bfseries Category & \color{white}\bfseries Purpose\\
+int & Keyword & Declares an integer type\\
+perimeter & Identifier & Names the result\\
+2 & Literal & Supplies a fixed value\\
+* & Operator & Multiplies operands\\
+; & Separator & Ends the declaration statement\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+// A rectangle with sides in centimetres.
+int length = 5;
+int width = 3;
+int area = length * width;
+System.out.println(area);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture03.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+15\par All variable names describe their purpose.\par The comment identifies the unit of measurement.
+\end{column}\begin{column}{0.35\textwidth}\small
+Comments and documentation
+
+Syntax, semantics and style
+\end{column}\end{columns}
+\note{Expected output and interpretation: 15
+All variable names describe their purpose.
+The comment identifies the unit of measurement.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Rewrite: int a=6;int b=4;System.out.println(2*(a+b)); Use names, spacing and a useful comment.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: // Side lengths are in centimetres.
+int length = 6;
+int width = 4;
+System.out.println(2 * (length + width));
+Output: 20.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Rename a and b so that their roles are visible.
+\item Group length + width before doubling it.
+\item Use spacing, separate statements and a comment that identifies the measurement unit.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution03 {
+  public static void main(String[] args) throws Exception {
+    // Side lengths are in centimetres.
+    int length = 6;
+    int width = 4;
+    int perimeter = 2 * (length + width);
+    System.out.println(perimeter + " cm");
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution03.java. Inputs are fixed in the program.  \par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Expression & \color{white}\bfseries Meaning & \color{white}\bfseries Value\\
+length & First side & 6 cm\\
+width & Second side & 4 cm\\
+length + width & Adjacent sides & 10 cm\\
+2 * (length + width) & All four sides & 20 cm\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Rename a and b so that their roles are visible. Group length + width before doubling it. Use spacing, separate statements and a comment that identifies the measurement unit.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+20 cm
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Use spacing, separate statements and a comment that identifies the measurement unit.
+\end{column}\end{columns}
+\note{Expected result: 20 cm\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int class = 20;\par System.out.println(Class);
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+class is reserved. Replace both names with a consistent identifier, for example classSize.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Format your previous program. Add one purpose comment and explain why each variable name is meaningful.
+\end{column}\begin{column}{0.35\textwidth}\small
+// Side lengths are in centimetres.\par int length = 6;\par int width = 4;\par System.out.println(2 * (length + width));\par Output: 20.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: // Side lengths are in centimetres.
+int length = 6;
+int width = 4;
+System.out.println(2 * (length + width));
+Output: 20.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Is total marks a legal variable name? Does indentation change the meaning of braces?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No: a space separates tokens. No: braces define the block, while indentation communicates that structure to readers.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No: a space separates tokens. No: braces define the block, while indentation communicates that structure to readers.
+\end{column}\begin{column}{0.35\textwidth}\small
+class is reserved. Replace both names with a consistent identifier, for example classSize.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Expression & \color{white}\bfseries length=6, width=4 & \color{white}\bfseries Interpretation\\
+2 * (length + width) & 20 & Perimeter\\
+2 * length + width & 16 & Only length is doubled\\
+length * width & 24 & Area\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Rewrite an unclear perimeter expression using named variables, parentheses and a units label. Explain why area and perimeter need different units.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Rewrite an unclear perimeter expression using named variables, parentheses and a units label. Explain why area and perimeter need different units.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int length = 6;
+int width = 4;
+int perimeter = 2 * (length + width);
+System.out.println(perimeter + " cm");
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The parentheses make the sum one operand of multiplication.
+\item Perimeter is a length, measured here in cm; area uses square cm.
+\item The output is 20 cm.
+\end{itemize}\note{Answer: The parentheses make the sum one operand of multiplication. Perimeter is a length, measured here in cm; area uses square cm. The output is 20 cm.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Repairing the Welcome program}
+\begin{itemize}
+\item The course uses public static void main(String[] args) as its entry point. Main and main are different identifiers.
+\item A string literal needs matching double quotes; a character literal cannot hold a sentence.
+\item Balance class and method braces, then use indentation to expose their nesting.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}3.pptx, slides 20, 21, 24, 25. The intentionally faulty source activity is presented with a corrected, compilable full class.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Repairing the Welcome program}
+\begin{block}{Task}Repair the source activity containing public void Main and an incorrectly quoted greeting. Print the greeting once.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}3.pptx, slides 20, 21, 24, 25. The intentionally faulty source activity is presented with a corrected, compilable full class.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture03 {
+  public static void main(String[] args) throws Exception {
+    System.out.println("Welcome to Java!");
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}3.pptx, slides 20, 21, 24, 25. The intentionally faulty source activity is presented with a corrected, compilable full class. Complete file: ISB\_Java\_Examples/IsbLecture03.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Fault & \color{white}\bfseries Correction & \color{white}\bfseries Why\\
+Main & main & Names are case{-}sensitive\\
+Missing static & Add static to main & Conventional launch entry point\\
+Mismatched quotes & Use double quotes & The greeting is a String\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Welcome to Java!\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}3.pptx, slides 20, 21, 24, 25. The intentionally faulty source activity is presented with a corrected, compilable full class. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Extend the corrected program to print the greeting five times without using loops yet.\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Repeat the println statement five times. A later loop can express the repetition more compactly.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}3.pptx, slides 20, 21, 24, 25. The intentionally faulty source activity is presented with a corrected, compilable full class. Answer: Repeat the println statement five times. A later loop can express the repetition more compactly.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item tokens, identifiers and reserved words
+\item syntax versus meaning
+\item consistent names, indentation and comments
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Rename a and b so that their roles are visible.
+\item Group length + width before doubling it.
+\item Use spacing, separate statements and a comment that identifies the measurement unit.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Format your previous program. Add one purpose comment and explain why each variable name is meaningful.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Liang Ch 2
+
+Next lecture: Variables and console input
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+\end{document}

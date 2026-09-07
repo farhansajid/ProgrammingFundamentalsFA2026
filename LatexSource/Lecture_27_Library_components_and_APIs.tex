@@ -1,0 +1,400 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{27}
+\input{course-theme.tex}
+\title{Library components and APIs}
+\subtitle{CSC103 Programming Fundamentals / Lecture 27}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Sort \{9,1,4\} without changing the original. Search the sorted result for 4 and explain the index.
+\end{column}\begin{column}{0.35\textwidth}\small
+Copy the original array before sorting.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Read an API signature and contract
+\item Use library methods without guessing side effects
+\item Choose and verify a suitable component
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-3
+
+API contracts\par Imports and qualification\par Array utilities\par Searching with a precondition
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{API contracts}
+\begin{itemize}
+\item An API exposes operations that another program may call.
+\item Read parameter types, return type and documented failures.
+\item Check preconditions and side effects.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Arrays.sort(int[] a)
+Result type: void
+Effect: sorts the supplied array
+Caller-visible mutation: yes
+\end{lstlisting}
+\end{block}
+\note{Do not infer purity from a short method name. Documentation is part of using a component correctly.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Imports and qualification}
+\begin{itemize}
+\item An import lets a source file use a shorter type name.
+\item It does not copy library code into the source.
+\item java.lang types such as Math are available without an explicit import.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+import java.util.Arrays;
+
+Arrays.sort(values);
+\end{lstlisting}
+\end{block}
+\note{The fully qualified name java.util.Arrays also works. A wildcard package import does not import subpackages.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Array utilities}
+\begin{itemize}
+\item Arrays.sort rearranges elements into ascending order.
+\item Arrays.copyOf can create an independent primitive array.
+\item Arrays.toString provides readable element output.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int[] copy = java.util.Arrays.copyOf(a, a.length);
+java.util.Arrays.sort(copy);
+\end{lstlisting}
+\end{block}
+\note{Copy first when the original order must remain. System.out.println(a) does not produce a readable element list for a primitive array.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Searching with a precondition}
+\begin{itemize}
+\item Arrays.binarySearch requires appropriately sorted input.
+\item A nonnegative result is a matching index.
+\item A negative result encodes an insertion point and means absent.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Sorted input: {2,5,8}
+Search 5: index 1
+Search 7: negative result
+\end{lstlisting}
+\end{block}
+\note{For absent 7 the insertion point is 2 and the return is -3. Duplicate matches need not return the first matching index.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Preserving order is a design requirement}
+\begin{itemize}
+\item Sorting in place changes the supplied array.
+\item If the original sequence has meaning, copy the primitive elements before sorting.
+\item The sorted copy can then satisfy a search precondition without changing the original.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Original sequence: {9,1,4}
+Sorted copy: {1,4,9}
+Original sequence remains {9,1,4}.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Sorting in place changes the supplied array. If the original sequence has meaning, copy the primitive elements before sorting. The sorted copy can then satisfy a search precondition without changing the original.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A search result must be interpreted by its contract}
+\begin{itemize}
+\item binarySearch returns a matching index when the key exists.
+\item When absent, it returns -(insertion point)-1.
+\item Never use a negative result directly as an array index.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+In {1,4,9}, key 6 has insertion point 2.
+Returned value: -2 - 1 = -3.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. binarySearch returns a matching index when the key exists. When absent, it returns -(insertion point)-1. Never use a negative result directly as an array index.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Read an API contract before composing calls}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Input assumptions};
+\node[box] (n1) at (3.45,0) {Method signature};
+\node[box] (n2) at (6.9,0) {Returned value};
+\node[alt] (n3) at (10.350000000000001,0) {Edge cases};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}A library name is not a complete specification; mutation and failure behaviour matter too.\end{block}
+\note{Trace each labelled connection. A library name is not a complete specification; mutation and failure behaviour matter too.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Library call & \color{white}\bfseries Modifies input? & \color{white}\bfseries What it returns\\
+Arrays.sort(a) & Yes & void\\
+Arrays.copyOf(a,n) & No & A new array\\
+Arrays.toString(a) & No & Readable String\\
+Arrays.binarySearch(a,key) & No & Match index or encoded absence\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[] data = {8, 2, 5};
+int[] copy = java.util.Arrays.copyOf(data, data.length);
+java.util.Arrays.sort(copy);
+System.out.println(java.util.Arrays.toString(copy));
+System.out.println(java.util.Arrays.binarySearch(copy, 5));
+System.out.println(java.util.Arrays.toString(data));
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture27.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+[2, 5, 8]\par 1\par [8, 2, 5]\par Sorting the copy leaves the original order unchanged.
+\end{column}\begin{column}{0.35\textwidth}\small
+Array utilities
+
+Searching with a precondition
+\end{column}\end{columns}
+\note{Expected output and interpretation: [2, 5, 8]
+1
+[8, 2, 5]
+Sorting the copy leaves the original order unchanged.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Sort \{9,1,4\} without changing the original. Search the sorted result for 4 and explain the index.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Copy, sort the copy to \{1,4,9\}, then binarySearch for 4 returns 1. The original stays \{9,1,4\}.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Copy the original array before sorting.
+\item Sort the copy in ascending order.
+\item Search the sorted array and interpret the resulting index.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution27 {
+  public static void main(String[] args) throws Exception {
+    int[] original = {9, 1, 4};
+    int[] sorted = java.util.Arrays.copyOf(original, original.length);
+    java.util.Arrays.sort(sorted);
+    int index = java.util.Arrays.binarySearch(sorted, 4);
+    System.out.println(java.util.Arrays.toString(sorted));
+    System.out.println(index);
+    System.out.println(java.util.Arrays.toString(original));
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution27.java. Inputs are fixed in the program.  \par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Stage & \color{white}\bfseries Original & \color{white}\bfseries Copy or result\\
+Before copy & \{9,1,4\} & None\\
+After copy & \{9,1,4\} & \{9,1,4\}\\
+After sort & \{9,1,4\} & \{1,4,9\}\\
+Search for 4 & Unchanged & Index 1\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Copy the original array before sorting. Sort the copy in ascending order. Search the sorted array and interpret the resulting index.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+[1, 4, 9]\par 1\par [9, 1, 4]
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Search the sorted array and interpret the resulting index.
+\end{column}\end{columns}
+\note{Expected result: [1, 4, 9]
+1
+[9, 1, 4]\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int[] a = \{8,2,5\};\par int index = java.util.Arrays.binarySearch(a, 2);
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The input violates the sorting precondition. Sort first, while considering whether changing the original order is acceptable.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Read documentation for Arrays.equals and Arrays.copyOf. Explain their signatures and demonstrate each with a short program.
+\end{column}\begin{column}{0.35\textwidth}\small
+Copy, sort the copy to \{1,4,9\}, then binarySearch for 4 returns 1. The original stays \{9,1,4\}.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Copy, sort the copy to \{1,4,9\}, then binarySearch for 4 returns 1. The original stays \{9,1,4\}.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Does importing Arrays sort an array? Is a negative binarySearch result a valid index?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No, an import only affects name resolution. No, a negative result means the key was not found.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No, an import only affects name resolution. No, a negative result means the key was not found.
+\end{column}\begin{column}{0.35\textwidth}\small
+The input violates the sorting precondition. Sort first, while considering whether changing the original order is acceptable.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Arrays operation & \color{white}\bfseries Mutates input? & \color{white}\bfseries Important condition\\
+sort(a) & Yes & Ascending order afterward\\
+binarySearch(a,key) & No & Array must already be sorted\\
+copyOf(a,n) & No & Returns a separate array\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Sort \{9,1,5\}, then search for 5 using Arrays.binarySearch. Explain why searching the unsorted array is not a valid alternative.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Sort \{9,1,5\}, then search for 5 using Arrays.binarySearch. Explain why searching the unsorted array is not a valid alternative.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int[] values = {9, 1, 5};
+java.util.Arrays.sort(values);
+int index = java.util.Arrays.binarySearch(values, 5);
+System.out.println(index);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Sorting produces \{1,5,9\}.
+\item Searching for 5 returns index 1.
+\item binarySearch requires sorted input; an unsorted result cannot be relied upon.
+\end{itemize}\note{Answer: Sorting produces \{1,5,9\}. Searching for 5 returns index 1. binarySearch requires sorted input; an unsorted result cannot be relied upon.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Sorting library arrays}
+\begin{itemize}
+\item Arrays.sort changes the supplied array in place.
+\item Character sorting follows numeric UTF{-}16 code{-}unit values, not human alphabetical order.
+\item Search positions refer to the sorted arrangement, not the original arrangement.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 35, 42, 46, 47. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Sorting library arrays}
+\begin{block}{Task}Sort the numeric and character arrays supplied in the source example, then display them.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 35, 42, 46, 47. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture27 {
+  public static void main(String[] args) throws Exception {
+    double[] numbers = {6.0, 4.4, 1.9, 2.9, 3.4, 3.5};
+    char[] chars = {'a', 'A', '4', 'F', 'D', 'P'};
+    java.util.Arrays.sort(numbers);
+    java.util.Arrays.sort(chars);
+    System.out.println(java.util.Arrays.toString(numbers));
+    System.out.println(java.util.Arrays.toString(chars));
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 35, 42, 46, 47. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture27.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Element kind & \color{white}\bfseries Order used & \color{white}\bfseries Example\\
+double & Ascending numeric value & 1.9 before 6.0\\
+char & UTF{-}16 code{-}unit value & 4 before A\\
+Search after sort & Sorted index & 3.4 is at index 2\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize [1.9, 2.9, 3.4, 3.5, 4.4, 6.0]\par [4, A, D, F, P, a]\end{block}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 35, 42, 46, 47. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}How do you preserve the original order before sorting?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Copy the array first, for example with Arrays.copyOf, then sort the copy.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 35, 42, 46, 47. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Copy the array first, for example with Arrays.copyOf, then sort the copy.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item an API signature and contract
+\item library methods without guessing side effects
+\item and verify a suitable component
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Copy the original array before sorting.
+\item Sort the copy in ascending order.
+\item Search the sorted array and interpret the resulting index.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read documentation for Arrays.equals and Arrays.copyOf. Explain their signatures and demonstrate each with a short program.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Reference material
+
+Next lecture: Files and streams
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Reference material. CLO-3.}
+\end{frame}
+\end{document}

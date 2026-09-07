@@ -1,0 +1,458 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{29}
+\input{course-theme.tex}
+\title{Reading and writing text files}
+\subtitle{CSC103 Programming Fundamentals / Lecture 29}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a file of integer marks and reject the first malformed token. Print No data for an empty file, otherwise the average.
+\end{column}\begin{column}{0.35\textwidth}\small
+Create a dedicated UTF-8 fixture containing 60 and 80 for the demonstration.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Write text with PrintWriter
+\item Read data with Scanner
+\item Use try-with-resources and explicit encoding
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-3
+
+PrintWriter output\par Scanner file input\par Try-with-resources\par A file-processing contract
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{PrintWriter output}
+\begin{itemize}
+\item PrintWriter writes formatted text to a destination.
+\item println writes a line and printf supports a format string.
+\item Opening the demonstrated writer replaces existing file contents.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+try (java.io.PrintWriter out =
+    new java.io.PrintWriter("demo.txt", "UTF-8")) {
+  out.println(60);
+  out.println(80);
+}
+\end{lstlisting}
+\end{block}
+\note{Use a dedicated practice file. The constructor can fail when opening. PrintWriter can record later I/O failures internally, so checkError is useful when reliable writing matters.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Scanner file input}
+\begin{itemize}
+\item Scanner can parse a text file into tokens.
+\item hasNextInt checks whether the next token matches an integer.
+\item Reading must advance even when a token is invalid.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+try (java.util.Scanner in =
+    new java.util.Scanner(new java.io.File("demo.txt"), "UTF-8")) {
+  while (in.hasNextInt()) {
+    System.out.println(in.nextInt());
+  }
+}
+\end{lstlisting}
+\end{block}
+\note{This simple loop stops at the first non-integer token. For robust mixed-input handling, loop while hasNext and either consume a valid integer or consume and reject the bad token.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Try-with-resources}
+\begin{itemize}
+\item Declare resources in the try header.
+\item Java closes them when the block exits.
+\item Multiple resources close in reverse declaration order.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+try (Resource r = openResource()) {
+  // use r
+}
+// r closes on normal or exceptional exit
+\end{lstlisting}
+\end{block}
+\note{This is schematic syntax. A close failure can be suppressed when another exception is already propagating. Do not use this placeholder as runnable Java.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A file-processing contract}
+\begin{itemize}
+\item Define the encoding and record format.
+\item Choose what malformed input means: reject it or report and skip it.
+\item Treat empty files and missing files as separate cases.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Contract for this example:
+UTF-8 integer tokens
+Malformed token: reject the file
+Empty file: sum is zero
+\end{lstlisting}
+\end{block}
+\note{Explicit contracts make tests predictable. Avoid silently interpreting an incomplete read as a complete dataset.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A reader must consume or reject every token}
+\begin{itemize}
+\item A loop controlled by hasNext continues while a token exists.
+\item If the token is not an integer, the program must consume it or end with a failure.
+\item Doing neither leaves the same token waiting forever.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+while (in.hasNext()) {
+  if (!in.hasNextInt()) throw ...;
+  int mark = in.nextInt();
+}
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A loop controlled by hasNext continues while a token exists. If the token is not an integer, the program must consume it or end with a failure. Doing neither leaves the same token waiting forever.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The empty case differs from malformed data}
+\begin{itemize}
+\item An empty file has no marks and therefore no mean.
+\item A malformed token violates the declared integer format.
+\item Handling these as different outcomes gives a useful explanation to the caller.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Empty file: No data
+"60 80": average 70.0
+"60 bad": reject malformed token
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. An empty file has no marks and therefore no mean. A malformed token violates the declared integer format. Handling these as different outcomes gives a useful explanation to the caller.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Resources have a controlled lifetime}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Open resources};
+\node[box] (n1) at (3.45,0) {Read or write};
+\node[box] (n2) at (6.9,0) {Close resources};
+\node[alt] (n3) at (10.350000000000001,0) {Continue / propagate};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Try-with-resources attempts closure when the body exits normally or by exception.\end{block}
+\note{Trace each labelled connection. Try-with-resources attempts closure when the body exits normally or by exception.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries File contents & \color{white}\bfseries Interpretation & \color{white}\bfseries Required outcome\\
+60 80 & Two valid marks & Average 70.0\\
+Empty & Zero records & No data\\
+60 bad & Malformed token & Reject with token context\\
+60 101 & Out-of-range mark & Reject range violation\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+String path = "lecture29-demo.txt";
+try (java.io.PrintWriter out = new java.io.PrintWriter(path, "UTF-8")) {
+  out.println(60); out.println(80);
+}
+int sum = 0;
+try (java.util.Scanner in = new java.util.Scanner(new java.io.File(path), "UTF-8"))
+    {
+  while (in.hasNextInt()) sum += in.nextInt();
+}
+System.out.println(sum);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture29.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+140\par The writer closes before the reader opens.\par The dedicated demonstration file contains 60 and 80.
+\end{column}\begin{column}{0.35\textwidth}\small
+Try-with-resources
+
+A file-processing contract
+\end{column}\end{columns}
+\note{Expected output and interpretation: 140
+The writer closes before the reader opens.
+The dedicated demonstration file contains 60 and 80.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a file of integer marks and reject the first malformed token. Print No data for an empty file, otherwise the average.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Loop while in.hasNext(). If !in.hasNextInt(), throw an exception naming in.next(). Otherwise accumulate nextInt and count. Divide only when count\textgreater{}0. Close via try-with-resources.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Create a dedicated UTF-8 fixture containing 60 and 80 for the demonstration.
+\item Read tokens inside try-with-resources, rejecting malformed or out-of-range values.
+\item Compute a mean only when count is positive, and check for a recorded Scanner I/O failure.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/3)}
+\begin{lstlisting}
+public class Solution29 {
+  public static void main(String[] args) throws Exception {
+    String path = "expanded29-demo.txt";
+    try (java.io.PrintWriter out = new java.io.PrintWriter(path, "UTF-8")) {
+      out.println("60 80");
+    }
+    reportAverage(path);
+  }
+  static void reportAverage(String path) throws Exception {
+    long sum = 0;
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution29.java. Inputs are fixed in the program.  The file-writing demonstration uses expanded29-demo.txt in its working directory.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/3)}
+\begin{lstlisting}
+    int count = 0;
+    try (java.util.Scanner in = new java.util.Scanner(
+        new java.io.File(path), "UTF-8")) {
+      while (in.hasNext()) {
+        if (!in.hasNextInt()) {
+          throw new IllegalArgumentException("Bad token: " + in.next());
+        }
+        int mark = in.nextInt();
+        if (mark < 0 || mark > 100) {
+          throw new IllegalArgumentException("Mark outside 0..100");
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution29.java. Inputs are fixed in the program.  The file-writing demonstration uses expanded29-demo.txt in its working directory.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (3/3)}
+\begin{lstlisting}
+        }
+        sum += mark;
+        count++;
+      }
+      if (in.ioException() != null) throw in.ioException();
+    }
+    if (count == 0) System.out.println("No data");
+    else System.out.println((double) sum / count);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution29.java. Inputs are fixed in the program.  The file-writing demonstration uses expanded29-demo.txt in its working directory.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Next token & \color{white}\bfseries Action & \color{white}\bfseries Sum & \color{white}\bfseries Count\\
+60 & Parse and validate & 60 & 1\\
+80 & Parse and validate & 140 & 2\\
+End of file & Stop reading & 140 & 2\\
+Report & 140 / 2.0 & 70.0 mean & 2\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Create a dedicated UTF-8 fixture containing 60 and 80 for the demonstration. Read tokens inside try-with-resources, rejecting malformed or out-of-range values. Compute a mean only when count is positive, and check for a recorded Scanner I/O failure.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+70.0
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Compute a mean only when count is positive, and check for a recorded Scanner I/O failure.
+\end{column}\end{columns}
+\note{Expected result: 70.0\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+while (in.hasNext()) \{\par   if (in.hasNextInt()) sum += in.nextInt();\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+A non-integer token is never consumed, so the loop repeats forever. Consume and report it, or throw a clear exception.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Test an empty file, a malformed token and a mark outside 0..100.
+\end{column}\begin{column}{0.35\textwidth}\small
+Loop while in.hasNext(). If !in.hasNextInt(), throw an exception naming in.next(). Otherwise accumulate nextInt and count. Divide only when count\textgreater{}0. Close via try-with-resources.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Loop while in.hasNext(). If !in.hasNextInt(), throw an exception naming in.next(). Otherwise accumulate nextInt and count. Divide only when count\textgreater{}0. Close via try-with-resources.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Why close the writer before reading its output? What happens to existing data when this writer opens?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: Closing flushes buffered text and releases the resource. This constructor truncates existing file contents.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Closing flushes buffered text and releases the resource. This constructor truncates existing file contents.
+\end{column}\begin{column}{0.35\textwidth}\small
+A non-integer token is never consumed, so the loop repeats forever. Consume and report it, or throw a clear exception.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries File content & \color{white}\bfseries Required action & \color{white}\bfseries Reason\\
+60 80 & Report mean 70.0 & Two valid marks\\
+60 bad & Reject input & Do not silently skip malformed data\\
+Empty & Report No data & No defined mean\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a short try-with-resources fragment that scans all integer tokens from marks.txt. Reject a non-integer token instead of ending silently.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a short try-with-resources fragment that scans all integer tokens from marks.txt. Reject a non-integer token instead of ending silently.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+try (java.util.Scanner in = new java.util.Scanner(
+    new java.io.File("marks.txt"), "UTF-8")) {
+  while (in.hasNext()) {
+    if (!in.hasNextInt())
+      throw new IllegalArgumentException("Bad token: " + in.next());
+    System.out.println(in.nextInt());
+  }
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item hasNext() asks whether any token remains; hasNextInt() checks the expected type.
+\item The fragment must be inside a method that catches or declares the file-opening exception.
+\item For a robust complete reader, also check Scanner.ioException() after reading.
+\end{itemize}\note{Answer: hasNext() asks whether any token remains; hasNextInt() checks the expected type. The fragment must be inside a method that catches or declares the file-opening exception. For a robust complete reader, also check Scanner.ioException() after reading.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Reading structured student records}
+\begin{itemize}
+\item The source format has first name, middle initial, surname and score on each record.
+\item Treat the fourth field consistently as a score; the source reader labels it age despite score{-}writing examples.
+\item Read and validate each line independently so malformed records cannot silently shift the remaining fields.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Reading structured student records}
+\begin{block}{Task}Write John T Smith 90 and Eric K Jones 85, then read and print each name and score.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture29 {
+  public static void main(String[] args) throws Exception {
+    java.nio.file.Path file = java.nio.file.Files.createTempFile("isb-records-", ".txt");
+    try (java.io.PrintWriter out = new java.io.PrintWriter(file.toFile(), "UTF-8")) {
+      out.println("John T Smith 90");
+      out.println("Eric K Jones 85");
+      if (out.checkError()) throw new java.io.IOException("write failed");
+    }
+    try (java.util.Scanner in = new java.util.Scanner(file, "UTF-8")) {
+      while (in.hasNextLine()) {
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores. Complete file: ISB\_Java\_Examples/IsbLecture29.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+        String[] fields = in.nextLine().trim().split("\\s+");
+        if (fields.length != 4) throw new IllegalArgumentException("four fields required");
+        int score = Integer.parseInt(fields[3]);
+        System.out.println(fields[0] + " " + fields[2] + ": " + score);
+      }
+      if (in.ioException() != null) throw in.ioException();
+    }
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores. Complete file: ISB\_Java\_Examples/IsbLecture29.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Record & \color{white}\bfseries Parsed name & \color{white}\bfseries Score\\
+John T Smith 90 & John Smith & 90\\
+Eric K Jones 85 & Eric Jones & 85\\
+Missing fourth field & Rejected & No score\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize John Smith: 90\par Eric Jones: 85\end{block}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Which further check is required if scores must be in 0..100?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Reject score \textless{} 0 or score \textgreater{} 100 after parsing, before using the value.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Used UTF{-}8, try{-}with{-}resources and line{-}based field{-}count checks; retained the source names and scores. Answer: Reject score \textless{} 0 or score \textgreater{} 100 after parsing, before using the value.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item text with PrintWriter
+\item data with Scanner
+\item try-with-resources and explicit encoding
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Create a dedicated UTF-8 fixture containing 60 and 80 for the demonstration.
+\item Read tokens inside try-with-resources, rejecting malformed or out-of-range values.
+\item Compute a mean only when count is positive, and check for a recorded Scanner I/O failure.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write three marks to a practice file and read them back. Test an empty file, malformed text and a missing input path.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Liang Ch 12
+
+Next lecture: Test harnesses
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Liang Ch 12. CLO-3.}
+\end{frame}
+\end{document}

@@ -1,0 +1,395 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{14}
+\input{course-theme.tex}
+\title{Built-in and instance methods}
+\subtitle{CSC103 Programming Fundamentals / Lecture 14}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Given x=-8 and y=5, print the larger absolute value using Math methods. Test whether character 7 is a digit.
+\end{column}\begin{column}{0.35\textwidth}\small
+Calculate the absolute value of each input.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Distinguish static and instance method calls
+\item Explain the conventional main method
+\item Use Math and Character APIs
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Methods as named operations\par Static and instance calls\par The main entry point\par Math and Character
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Methods as named operations}
+\begin{itemize}
+\item A method has a name, parameters and a result type or void.
+\item Arguments supply actual input values at a call.
+\item An API describes what callers may rely on.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Math.max(12, 9)
+// name: max
+// arguments: 12 and 9
+// result: 12
+\end{lstlisting}
+\end{block}
+\note{Distinguish calling a method from defining it. The caller should not need the implementation to use a documented contract.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Static and instance calls}
+\begin{itemize}
+\item A static method belongs to a class.
+\item An instance method operates through an object reference.
+\item Use the form that the API declares.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Math.sqrt(81.0)   // static
+"Java".length()   // instance
+\end{lstlisting}
+\end{block}
+\note{A class can have both kinds of methods. Avoid calling a static method through an instance even where Java permits it.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The main entry point}
+\begin{itemize}
+\item The conventional main method is public and static, and returns void.
+\item String[] args receives command-line arguments.
+\item The JVM can call main without creating a class instance.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+public static void main(String[] args) {
+  System.out.println("Start");
+}
+\end{lstlisting}
+\end{block}
+\note{Explain each keyword at the needed introductory level. These decks deliberately use the conventional signature consistently.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Math and Character}
+\begin{itemize}
+\item Math provides operations such as abs, min, max, pow and sqrt.
+\item Character offers tests such as isDigit and isLetter.
+\item Check parameter types and exceptional cases in documentation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Math.pow(2, 3)         // 8.0
+Character.isDigit('7') // true
+Character.toUpperCase('a') // A
+\end{lstlisting}
+\end{block}
+\note{Math.sqrt of a negative double returns NaN. Character tests follow Unicode categories, which can include characters beyond ASCII.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Reading a method signature}
+\begin{itemize}
+\item The parameter list describes the kinds of inputs the method accepts.
+\item The result type describes the value that a caller receives.
+\item A static declaration permits a call through the class name.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Math.sqrt(double a) returns double.
+An int argument can widen to double.
+Math.sqrt(25) therefore gives 5.0.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The parameter list describes the kinds of inputs the method accepts. The result type describes the value that a caller receives. A static declaration permits a call through the class name.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Composing library calls}
+\begin{itemize}
+\item The result of one method call can supply an argument to another.
+\item Java evaluates the inner calls before the outer call receives their values.
+\item Intermediate variables can make a longer calculation easier to explain.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Math.max(Math.abs(-8), Math.abs(5))
+becomes Math.max(8,5), which returns 8.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The result of one method call can supply an argument to another. Java evaluates the inner calls before the outer call receives their values. Intermediate variables can make a longer calculation easier to explain.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Nested method calls pass results outward}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Math.abs(-6)};
+\node[box] (n1) at (3.45,0) {6};
+\node[box] (n2) at (6.9,0) {Math.max(6,4)};
+\node[alt] (n3) at (10.350000000000001,0) {6};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}An inner call finishes before its returned value is used by the outer call.\end{block}
+\note{Trace each labelled connection. An inner call finishes before its returned value is used by the outer call.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Kind & \color{white}\bfseries Input & \color{white}\bfseries Result\\
+Math.abs(-8) & Static & int -8 & int 8\\
+Math.sqrt(25) & Static & number 25 & double 5.0\\
+"Java".length() & Instance & String receiver & int 4\\
+Character.isDigit('7') & Static & char 7 & boolean true\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+double distance = Math.sqrt(3 * 3 + 4 * 4);
+char initial = Character.toUpperCase('f');
+System.out.println(distance);
+System.out.println(initial);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture14.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+5.0\par F\par Math.sqrt returns a double. Character.toUpperCase returns a char here.
+\end{column}\begin{column}{0.35\textwidth}\small
+The main entry point
+
+Math and Character
+\end{column}\end{columns}
+\note{Expected output and interpretation: 5.0
+F
+Math.sqrt returns a double. Character.toUpperCase returns a char here.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Given x=-8 and y=5, print the larger absolute value using Math methods. Test whether character 7 is a digit.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Math.max(Math.abs(x), Math.abs(y)) gives 8. Character.isDigit('7') gives true.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Calculate the absolute value of each input.
+\item Pass those results to Math.max.
+\item Use Character.isDigit to classify the supplied character.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution14 {
+  public static void main(String[] args) throws Exception {
+    int x = -8;
+    int y = 5;
+    int absoluteX = Math.abs(x);
+    int absoluteY = Math.abs(y);
+    int larger = Math.max(absoluteX, absoluteY);
+    System.out.println(larger);
+    System.out.println(Character.isDigit('7'));
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution14.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Arguments supplied & \color{white}\bfseries Returned value\\
+abs & -8 & 8\\
+abs & 5 & 5\\
+max & 8 and 5 & 8\\
+isDigit & '7' & true\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Calculate the absolute value of each input. Pass those results to Math.max. Use Character.isDigit to classify the supplied character.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+8\par true
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Use Character.isDigit to classify the supplied character.
+\end{column}\end{columns}
+\note{Expected result: 8
+true\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int length = String.length();
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+length is an instance method. Use a String object such as "Java".length().
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Use Math methods to calculate the hypotenuse for 6 and 8. Read the signatures of every method used.
+\end{column}\begin{column}{0.35\textwidth}\small
+Math.max(Math.abs(x), Math.abs(y)) gives 8. Character.isDigit('7') gives true.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Math.max(Math.abs(x), Math.abs(y)) gives 8. Character.isDigit('7') gives true.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What object is needed for Math.max? What does void mean?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No object is required for this static call. void means the method returns no value.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No object is required for this static call. void means the method returns no value.
+\end{column}\begin{column}{0.35\textwidth}\small
+length is an instance method. Use a String object such as "Java".length().
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Argument meaning & \color{white}\bfseries Result\\
+Math.abs(-6) & Magnitude of -6 & 6\\
+Math.max(6,4) & Larger operand & 6\\
+Math.sqrt(36) & Nonnegative square root & 6.0\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Compute the distance from (0,0) to (6,8) using Math.sqrt. Identify the return type and the arithmetic supplied to it.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Compute the distance from (0,0) to (6,8) using Math.sqrt. Identify the return type and the arithmetic supplied to it.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int x = 6;
+int y = 8;
+double distance = Math.sqrt(x * x + y * y);
+System.out.println(distance);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The expression supplies 36 + 64 = 100.
+\item Math.sqrt returns double, giving 10.0.
+\item These small inputs fit int; large coordinates need an overflow-aware calculation.
+\end{itemize}\note{Answer: The expression supplies 36 + 64 = 100. Math.sqrt returns double, giving 10.0. These small inputs fit int; large coordinates need an overflow-aware calculation.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Rounding methods are different contracts}
+\begin{itemize}
+\item ceil moves toward positive infinity; floor moves toward negative infinity.
+\item rint chooses the nearest integer with ties to even and returns double.
+\item round(double) returns long; for halfway cases it rounds toward positive infinity.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 7, 8. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Rounding methods are different contracts}
+\begin{block}{Task}Evaluate rounding at {-}2.3, 2.5 and 3.5 to expose differences hidden by positive non{-}tie examples.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 7, 8. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture14 {
+  public static void main(String[] args) throws Exception {
+    System.out.println(Math.ceil(-2.3));
+    System.out.println(Math.floor(-2.3));
+    System.out.println(Math.rint(2.5));
+    System.out.println(Math.rint(3.5));
+    System.out.println(Math.round(2.5));
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 7, 8. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture14.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Result & \color{white}\bfseries Interpretation\\
+ceil({-}2.3) & {-}2.0 & Toward positive infinity\\
+floor({-}2.3) & {-}3.0 & Toward negative infinity\\
+rint(2.5) / round(2.5) & 2.0 / 3 & Different tie rules\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize {-}2.0\par {-}3.0\par 2.0\par 4.0\par 3\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 7, 8. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Predict rint({-}2.5) and round({-}2.5).\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}rint returns {-}2.0 (even tie); round returns {-}2 (toward positive infinity at the halfway point).\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 7, 8. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: rint returns {-}2.0 (even tie); round returns {-}2 (toward positive infinity at the halfway point).}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item static and instance method calls
+\item the conventional main method
+\item Math and Character APIs
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Calculate the absolute value of each input.
+\item Pass those results to Math.max.
+\item Use Character.isDigit to classify the supplied character.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Use Math methods to calculate the hypotenuse for 6 and 8. Read the signatures of every method used.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 6
+
+Next lecture: User-defined methods
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+\end{document}

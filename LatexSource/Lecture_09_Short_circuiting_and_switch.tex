@@ -1,0 +1,408 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{09}
+\input{course-theme.tex}
+\title{Short-circuiting and switch}
+\subtitle{CSC103 Programming Fundamentals / Lecture 09}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a menu mapping 1 to Add, 2 to Remove and every other integer to Invalid. Test 1, 2 and 9.
+\end{column}\begin{column}{0.35\textwidth}\small
+Read one integer menu choice.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Use short-circuit guards safely
+\item Choose a conditional expression
+\item Implement a classic switch statement
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Short-circuit evaluation\par Conditional operator\par Classic switch selection\par Choice of selection structure
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Short-circuit evaluation}
+\begin{itemize}
+\item \&\& skips its right operand when the left operand is false.
+\item || skips its right operand when the left operand is true.
+\item A guard must precede the operation it protects.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+boolean safe = divisor != 0
+    && numerator / divisor > 2;
+\end{lstlisting}
+\end{block}
+\note{The division never runs when divisor is zero. Reversing the operands removes that protection. Boolean \& and | evaluate both operands.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Conditional operator}
+\begin{itemize}
+\item condition ? valueIfTrue : valueIfFalse produces a value.
+\item Use it for short alternatives with compatible types.
+\item Use if-else for longer branch behaviour.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int larger = a >= b ? a : b;
+\end{lstlisting}
+\end{block}
+\note{Only the selected alternative is evaluated. Numeric type promotion can influence the resulting type, so keep beginner alternatives consistent.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Classic switch selection}
+\begin{itemize}
+\item switch selects a branch from a selector value.
+\item case labels are constant alternatives. default handles unmatched values.
+\item Classic colon cases continue into later cases unless control exits.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+switch (choice) {
+  case 1: label = "Open"; break;
+  case 2: label = "Save"; break;
+  default: label = "Unknown";
+}
+\end{lstlisting}
+\end{block}
+\note{Use the classic statement to align with the outline. Modern arrow cases exist but are optional enrichment. A classic int selector is sufficient here.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Choice of selection structure}
+\begin{itemize}
+\item if-else handles ranges and compound conditions.
+\item switch suits discrete alternatives such as menu choices.
+\item Document any intentional fall-through.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Range: temperature < 0
+Discrete choice: menu option 1, 2 or 3
+\end{lstlisting}
+\end{block}
+\note{Show that switch does not directly express a relational case such as case score \textgreater{} 50. String switch is possible, but null handling needs care.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A guard protects only later evaluation}
+\begin{itemize}
+\item Short-circuiting follows left-to-right evaluation.
+\item A safe condition first establishes the requirement for the next operation.
+\item With integer division, the divisor check must precede the division.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+d != 0 && 10 / d > 1
+For d=0, the right side never runs.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Short-circuiting follows left-to-right evaluation. A safe condition first establishes the requirement for the next operation. With integer division, the divisor check must precede the division.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Switch fall-through is an execution rule}
+\begin{itemize}
+\item A matching classic case determines where execution enters the switch.
+\item It does not automatically determine where execution leaves.
+\item break transfers control to the statement after the switch.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+case 1: print Add; break;
+case 2: print Remove; break;
+default: print Invalid;
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A matching classic case determines where execution enters the switch. It does not automatically determine where execution leaves. break transfers control to the statement after the switch.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A short-circuit guard controls evaluation}
+\begin{center}\begin{tikzpicture}
+\node[decision] (a) at (0,0) {d != 0?};
+\node[alt] (b) at (-3.6,-1.65) {Evaluate 10 / d \textgreater{} 1};
+\node[hot] (c) at (3.6,-1.65) {Result false};
+\node[box] (d) at (0,-3.25) {Use Boolean result};
+\draw[arr] (a.west) -| node[lab,pos=.25]{true} (b.north);\draw[arr] (a.east) -| node[lab,pos=.25]{false} (c.north);\draw[arr] (b.south) |- (d.west);\draw[arr] (c.south) |- (d.east);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}When d is zero, Java skips the division and the entire AND expression is false.\end{block}
+\note{Trace each labelled connection. When d is zero, Java skips the division and the entire AND expression is false.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Construct & \color{white}\bfseries Best suited to & \color{white}\bfseries Key behaviour\\
+if-else & Ranges and compound rules & First matching branch\\
+?: & Short value alternatives & Produces a selected value\\
+Classic switch & Discrete menu alternatives & Falls through without an exit\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int choice = 2;
+String label;
+switch (choice) {
+  case 1: label = "Open"; break;
+  case 2: label = "Save"; break;
+  default: label = "Unknown";
+}
+System.out.println(label);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture09.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Save\par Execution enters case 2.\par break exits the switch.
+\end{column}\begin{column}{0.35\textwidth}\small
+Classic switch selection
+
+Choice of selection structure
+\end{column}\end{columns}
+\note{Expected output and interpretation: Save
+Execution enters case 2.
+break exits the switch.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a menu mapping 1 to Add, 2 to Remove and every other integer to Invalid. Test 1, 2 and 9.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Use two case labels, each ending with break, plus a default branch. Outputs: Add, Remove, Invalid.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Read one integer menu choice.
+\item Use distinct case labels for 1 and 2, with a break in each.
+\item Use default to report every unmatched integer.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+Sample console input\par 2\par 
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution09 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    int choice = in.nextInt();
+    switch (choice) {
+      case 1:
+        System.out.println("Add");
+        break;
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution09.java. Standard input: 2
+  \par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+      case 2:
+        System.out.println("Remove");
+        break;
+      default:
+        System.out.println("Invalid");
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution09.java. Standard input: 2
+  \par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Choice & \color{white}\bfseries Matching case & \color{white}\bfseries Output & \color{white}\bfseries Exit\\
+1 & case 1 & Add & break\\
+2 & case 2 & Remove & break\\
+9 & default & Invalid & End of switch\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Read one integer menu choice. Use distinct case labels for 1 and 2, with a break in each. Use default to report every unmatched integer.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Remove
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Use default to report every unmatched integer.
+\end{column}\end{columns}
+\note{Expected result: Remove\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+boolean ok = 10 / d \textgreater{} 1 \&\& d != 0;
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Put d != 0 first. The current order divides before checking safety and throws when d is zero.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Create a four-option calculator using switch. Handle an invalid option and guard integer division by zero.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use two case labels, each ending with break, plus a default branch. Outputs: Add, Remove, Invalid.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Use two case labels, each ending with break, plus a default branch. Outputs: Add, Remove, Invalid.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What does false \&\& riskyCall() do? Why can a missing break change output?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: It skips riskyCall. A missing break in a classic switch can let execution continue into later case bodies.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+It skips riskyCall. A missing break in a classic switch can let execution continue into later case bodies.
+\end{column}\begin{column}{0.35\textwidth}\small
+Put d != 0 first. The current order divides before checking safety and throws when d is zero.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries d & \color{white}\bfseries Right operand evaluated? & \color{white}\bfseries Result\\
+0 & No & false\\
+2 & Yes: 5 \textgreater{} 1 & true\\
+10 & Yes: 1 \textgreater{} 1 & false\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Explain why reversing the operands in d != 0 \&\& 10 / d \textgreater{} 1 is unsafe. Write a guarded test and predict it for d=0, 2 and 10.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Explain why reversing the operands in d != 0 \&\& 10 / d \textgreater{} 1 is unsafe. Write a guarded test and predict it for d=0, 2 and 10.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+boolean accepted = d != 0 && 10 / d > 1;
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Java evaluates the left operand first.
+\item Putting the division first can throw ArithmeticException before the zero check.
+\item The three results are false, true and false.
+\end{itemize}\note{Answer: Java evaluates the left operand first. Putting the division first can throw ArithmeticException before the zero check. The three results are false, true and false.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Letter grades as a switch problem}
+\begin{itemize}
+\item A fixed mapping from one letter to one value fits discrete selection.
+\item Normalise case once, then reject letters outside the specified grade set.
+\item In classic switch syntax, break prevents unintended fall{-}through.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 4, 5; Lecture{-}8{-}9.pptx, slides 16, 17, 18, 20. Re{-}expressed the source if{-}else grade mapping as a classic switch to match this lecture. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Letter grades as a switch problem}
+\begin{block}{Task}Map A, B, C, D and F to 4, 3, 2, 1 and 0. Demonstrate lowercase b after case normalisation.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 4, 5; Lecture{-}8{-}9.pptx, slides 16, 17, 18, 20. Re{-}expressed the source if{-}else grade mapping as a classic switch to match this lecture. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture09 {
+  public static void main(String[] args) throws Exception {
+    char grade = Character.toUpperCase('b');
+    int points;
+    switch (grade) {
+      case 'A': points = 4; break;
+      case 'B': points = 3; break;
+      case 'C': points = 2; break;
+      case 'D': points = 1; break;
+      case 'F': points = 0; break;
+      default: points = -1;
+    }
+    System.out.println(points);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 4, 5; Lecture{-}8{-}9.pptx, slides 16, 17, 18, 20. Re{-}expressed the source if{-}else grade mapping as a classic switch to match this lecture. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture09.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Normalised & \color{white}\bfseries Result\\
+b & B & 3\\
+F & F & 0\\
+E & E & {-}1: invalid grade\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 3\end{block}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 4, 5; Lecture{-}8{-}9.pptx, slides 16, 17, 18, 20. Re{-}expressed the source if{-}else grade mapping as a classic switch to match this lecture. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}If input is a String rather than a char, what must be checked before charAt(0)?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Require exactly one character; empty input and multi{-}character grades should be rejected.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 4, 5; Lecture{-}8{-}9.pptx, slides 16, 17, 18, 20. Re{-}expressed the source if{-}else grade mapping as a classic switch to match this lecture. Source exercise deck credits Instructor Khurram Iqbal. Answer: Require exactly one character; empty input and multi{-}character grades should be rejected.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item short-circuit guards safely
+\item a conditional expression
+\item a classic switch statement
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Read one integer menu choice.
+\item Use distinct case labels for 1 and 2, with a break in each.
+\item Use default to report every unmatched integer.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a four-option calculator using switch. Handle an invalid option and guard integer division by zero.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7 (as listed)
+
+Next lecture: While loops
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+\end{document}

@@ -1,0 +1,402 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{17}
+\input{course-theme.tex}
+\title{Midterm concept review}
+\subtitle{CSC103 Programming Fundamentals / Lecture 17}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+In pairs, design a method that returns the larger of two numbers. Use it to find the largest of three values without arrays.
+\end{column}\begin{column}{0.35\textwidth}\small
+Define a two-argument maximum method.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Connect concepts from the first half of the course
+\item Trace expressions, branches and loops
+\item Explain the cause of a programming error
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1 and CLO-2
+
+Review scope\par Expressions and assignment\par Control-flow tracing\par Strings and methods
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Review scope}
+\begin{itemize}
+\item This review supports the midterm slot in the supplied outline.
+\item Topics: source execution, types, control flow, strings and methods.
+\item These questions are practice material, not an official examination.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Explain each result before running code.
+State assumptions about valid inputs.
+Use a trace when variables change.
+\end{lstlisting}
+\end{block}
+\note{Use before the scheduled examination. Do not treat this deck as a replacement for an official examination slot.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Expressions and assignment}
+\begin{itemize}
+\item An expression result depends on operand types.
+\item Assignment stores a value after the expression is evaluated.
+\item Parentheses change grouping but do not change operand types.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+double a = 9 / 2;
+double b = 9 / 2.0;
+// Explain both values.
+\end{lstlisting}
+\end{block}
+\note{Answers: a=4.0 and b=4.5. Ask students to distinguish a result type from the variable type that receives it.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Control-flow tracing}
+\begin{itemize}
+\item Record the condition result before entering each branch or loop.
+\item Count the final failed while condition check.
+\item Trace continue and break as control transfers.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int s = 0;
+for (int i=1; i<5; i++) {
+  if (i==2) continue;
+  s += i;
+}
+\end{lstlisting}
+\end{block}
+\note{s becomes 1,4,8. The value 2 is skipped. The loop stops at i=5.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Strings and methods}
+\begin{itemize}
+\item String content comparison uses equals.
+\item substring uses an exclusive end index.
+\item Primitive parameters receive copies of values.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+"CSC103".substring(0,3)
+"CS".equals("cs")
+// Explain the type of each result.
+\end{lstlisting}
+\end{block}
+\note{Answers: String "CSC" and boolean false. Ask students to show caller and parameter separately for pass-by-value.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{An integrated answer needs more than syntax}
+\begin{itemize}
+\item A method signature must match its intended inputs and result.
+\item The body must handle ties as well as strict comparisons.
+\item A short manually solved case should accompany the implementation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Maximum of 7, 7 and 3 is 7.
+A correct solution must preserve ties.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A method signature must match its intended inputs and result. The body must handle ties as well as strict comparisons. A short manually solved case should accompany the implementation.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Nested calls can be traced in stages}
+\begin{itemize}
+\item A returned result can become an argument to another call.
+\item Tracing the inner result first prevents confusion about execution order.
+\item This technique avoids duplicating the comparison logic.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+max(max(4,9),7)
+Inner result: max(4,9) = 9
+Outer result: max(9,7) = 9
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A returned result can become an argument to another call. Tracing the inner result first prevents confusion about execution order. This technique avoids duplicating the comparison logic.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Connect the first-half concepts}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Read a value};
+\node[box] (n1) at (3.45,0) {Choose a branch};
+\node[box] (n2) at (6.9,0) {Repeat a step};
+\node[alt] (n3) at (10.350000000000001,0) {Return a result};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Review by tracing how data moves through constructs, not by memorising syntax alone.\end{block}
+\note{Trace each labelled connection. Review by tracing how data moves through constructs, not by memorising syntax alone.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Practice expression & \color{white}\bfseries Result & \color{white}\bfseries Reason\\
+9 / 2 & 4 & Both operands are int\\
+9 / 2.0 & 4.5 & One operand is double\\
+"CSC103".substring(0,3) & CSC & End index is excluded\\
+"CS".equals("cs") & false & Case-sensitive content comparison\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int total = 0;
+for (int i = 1; i <= 4; i++) {
+  total += i * 2;
+}
+System.out.println(total / 4.0);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture17.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+5.0\par The accumulator values are 2, 6, 12 and 20.\par Division by 4.0 produces a double result.
+\end{column}\begin{column}{0.35\textwidth}\small
+Control-flow tracing
+
+Strings and methods
+\end{column}\end{columns}
+\note{Expected output and interpretation: 5.0
+The accumulator values are 2, 6, 12 and 20.
+Division by 4.0 produces a double result.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+In pairs, design a method that returns the larger of two numbers. Use it to find the largest of three values without arrays.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Define max(a,b), then compute max(max(a,b),c). Test ascending values, descending values and ties.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Define a two-argument maximum method.
+\item Use its returned result as one argument to a second call.
+\item Test an ordinary case and a tie case.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution17 {
+  public static void main(String[] args) throws Exception {
+    int result = max(max(4, 9), 7);
+    System.out.println(result);
+    System.out.println(max(max(7, 7), 3));
+  }
+  static int max(int a, int b) {
+    return a >= b ? a : b;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution17.java. Inputs are fixed in the program.  \par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Arguments & \color{white}\bfseries Result\\
+First inner call & 4 and 9 & 9\\
+First outer call & 9 and 7 & 9\\
+Tie inner call & 7 and 7 & 7\\
+Tie outer call & 7 and 3 & 7\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Define a two-argument maximum method. Use its returned result as one argument to a second call. Test an ordinary case and a tie case.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+9\par 7
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Test an ordinary case and a tie case.
+\end{column}\end{columns}
+\note{Expected result: 9
+7\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int n=4;\par while(n\textgreater{}0) \{\par   System.out.println(n);\par   n++;\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The update moves away from the intended stopping boundary. Use n--. With Java int overflow the original loop eventually behaves differently, but it is still an incorrect countdown.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Create a one-page revision sheet with one traced example for each topic you find difficult.
+\end{column}\begin{column}{0.35\textwidth}\small
+Define max(a,b), then compute max(max(a,b),c). Test ascending values, descending values and ties.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Define max(a,b), then compute max(max(a,b),c). Test ascending values, descending values and ties.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Explain one compile-time error, one runtime exception and one logic error from the first 16 lectures.
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: Examples: undeclared variable, parsing "x" as an int, and computing an average with unintended integer division.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Examples: undeclared variable, parsing "x" as an int, and computing an average with unintended integer division.
+\end{column}\begin{column}{0.35\textwidth}\small
+The update moves away from the intended stopping boundary. Use n--. With Java int overflow the original loop eventually behaves differently, but it is still an incorrect countdown.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Concept & \color{white}\bfseries Question to ask & \color{white}\bfseries Typical mistake\\
+Expression & Which arithmetic type? & Integer division\\
+Selection & Which condition matches first? & Incorrect branch order\\
+Method & Where is the return stored? & Ignoring the returned value\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Without arrays, write a method that returns the larger of two values, then use it to find the largest of -3, -8 and -5.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Without arrays, write a method that returns the larger of two values, then use it to find the largest of -3, -8 and -5.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static int max(int a, int b) {
+  return a >= b ? a : b;
+}
+// In main:
+System.out.println(max(max(-3, -8), -5));
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The inner call returns -3.
+\item The outer call compares -3 with -5 and returns -3.
+\item Initialising a largest value to zero would be wrong for this all-negative case.
+\end{itemize}\note{Answer: The inner call returns -3. The outer call compares -3 with -5 and returns -3. Initialising a largest value to zero would be wrong for this all-negative case.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A two{-}digit lottery decision}
+\begin{itemize}
+\item Check exact order before reversed order, because the more specific award takes priority.
+\item Quotient and remainder separate the tens and units digits.
+\item State the two{-}digit input domain; this worked case fixes the lottery number for tracing.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 10. Fixed the lottery at 47; assumes both values are integers in 10..99. This remains a formative midterm exercise. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: A two{-}digit lottery decision}
+\begin{block}{Task}Use lottery 47 and guess 74. Award 10000 for exact order, 3000 for reversed digits, 1000 for one matching digit, otherwise 0.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 10. Fixed the lottery at 47; assumes both values are integers in 10..99. This remains a formative midterm exercise. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture17 {
+  public static void main(String[] args) throws Exception {
+    int lottery = 47, guess = 74;
+    int a = lottery / 10, b = lottery % 10;
+    int c = guess / 10, d = guess % 10;
+    int award;
+    if (guess == lottery) award = 10000;
+    else if (a == d && b == c) award = 3000;
+    else if (a == c || a == d || b == c || b == d) award = 1000;
+    else award = 0;
+    System.out.println(award);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 10. Fixed the lottery at 47; assumes both values are integers in 10..99. This remains a formative midterm exercise. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture17.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Guess (lottery 47) & \color{white}\bfseries First matching rule & \color{white}\bfseries Award\\
+47 & Exact order & 10000\\
+74 & Reversed order & 3000\\
+45 / 12 & One match / none & 1000 / 0\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 3000\end{block}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 10. Fixed the lottery at 47; assumes both values are integers in 10..99. This remains a formative midterm exercise. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why would checking one{-}digit matching before exact matching produce a wrong award?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}An exact match also satisfies the broad one{-}digit condition, so it would stop at the smaller award.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 10. Fixed the lottery at 47; assumes both values are integers in 10..99. This remains a formative midterm exercise. Source exercise deck credits Instructor Khurram Iqbal. Answer: An exact match also satisfies the broad one{-}digit condition, so it would stop at the smaller award.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item concepts from the first half of the course
+\item expressions, branches and loops
+\item the cause of a programming error
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Define a two-argument maximum method.
+\item Use its returned result as one argument to a second call.
+\item Test an ordinary case and a tie case.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a one-page revision sheet with one traced example for each topic you find difficult.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Lectures 1--16
+
+Next lecture: Midterm practice workshop
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+\end{document}

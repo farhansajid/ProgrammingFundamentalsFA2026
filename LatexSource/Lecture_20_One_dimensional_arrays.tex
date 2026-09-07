@@ -1,0 +1,411 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{20}
+\input{course-theme.tex}
+\title{One-dimensional arrays}
+\subtitle{CSC103 Programming Fundamentals / Lecture 20}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Find the maximum in \{-4,-9,-2\}. State the policy for an empty array.
+\end{column}\begin{column}{0.35\textwidth}\small
+Require a nonempty array before accessing values[0].
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Create arrays with fixed or runtime sizes
+\item Traverse elements safely
+\item Compute an aggregate and explain bounds errors
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Array declaration and creation\par Indexes and length\par Array traversal\par Runtime size and aggregation
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Array declaration and creation}
+\begin{itemize}
+\item An array groups indexed elements of one component type.
+\item An array reference and the array object are different things.
+\item The array length stays fixed after construction.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int[] marks = {60, 75, 90};
+int[] counts = new int[4];
+\end{lstlisting}
+\end{block}
+\note{A new int array starts with zero-valued elements. A local array reference itself must still be assigned before use.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Indexes and length}
+\begin{itemize}
+\item Indexes start at zero and end at length-1.
+\item length is an array property, without parentheses.
+\item An invalid index raises ArrayIndexOutOfBoundsException.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+marks[0]       // 60
+marks.length   // 3
+marks[3]       // invalid
+\end{lstlisting}
+\end{block}
+\note{An empty array is valid and has no valid element index. Distinguish marks.length from a String length() call.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Array traversal}
+\begin{itemize}
+\item An indexed loop supports reading and updating elements.
+\item An enhanced for loop conveniently reads each value.
+\item Keep the condition i \textless{} array.length.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int total = 0;
+for (int value : marks) {
+  total += value;
+}
+\end{lstlisting}
+\end{block}
+\note{Assigning to the enhanced-for variable does not update primitive array elements. Use marks[i] for an element update.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Runtime size and aggregation}
+\begin{itemize}
+\item Read or compute a size before new int[size].
+\item Reject negative sizes and unreasonable requests.
+\item A mean or maximum needs an explicit empty-array policy.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int size = 5;
+int[] data = new int[size];
+// data has indexes 0..4
+\end{lstlisting}
+\end{block}
+\note{new int[-1] throws NegativeArraySizeException. An extremely large allocation may fail. For maximum, initialise from data[0] only after ensuring nonempty input.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The initial maximum must come from the domain}
+\begin{itemize}
+\item Zero is an incorrect default maximum when all values can be negative.
+\item For a nonempty array, the first element supplies a valid candidate.
+\item Each comparison then maintains the maximum of the processed prefix.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input: {-4,-9,-2}
+Start at -4. Compare -9, then -2.
+Final maximum: -2
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Zero is an incorrect default maximum when all values can be negative. For a nonempty array, the first element supplies a valid candidate. Each comparison then maintains the maximum of the processed prefix.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A traversal bound is part of correctness}
+\begin{itemize}
+\item For an array of length n, valid indexes satisfy 0 \textless{}= i \textless{} n.
+\item Starting at 1 is appropriate after using index 0 as the initial candidate.
+\item A length-zero input has no first element, so check it before initialisation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int maximum = values[0];
+for (int i=1; i<values.length; i++) ...
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. For an array of length n, valid indexes satisfy 0 \textless{}= i \textless{} n. Starting at 1 is appropriate after using index 0 as the initial candidate. A length-zero input has no first element, so check it before initialisation.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{An array stores indexed elements}
+\begin{center}\begin{tikzpicture}
+\node[box,text width=13mm,minimum height=11mm] (n0) at (0.0,0.0) {12};
+\node[font=\scriptsize,text=accent] at (0.0,.85) {index 0};
+\node[box,text width=13mm,minimum height=11mm] (n1) at (1.8,0.0) {7};
+\node[font=\scriptsize,text=accent] at (1.8,.85) {index 1};
+\node[box,text width=13mm,minimum height=11mm] (n2) at (3.6,0.0) {19};
+\node[font=\scriptsize,text=accent] at (3.6,.85) {index 2};
+\node[box,text width=13mm,minimum height=11mm] (n3) at (5.4,0.0) {4};
+\node[font=\scriptsize,text=accent] at (5.4,.85) {index 3};
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}A length-4 array has indexes 0 through 3. Index 4 is outside the array.\end{block}
+\note{Trace each labelled connection. A length-4 array has indexes 0 through 3. Index 4 is outside the array.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Index & \color{white}\bfseries 0 & \color{white}\bfseries 1 & \color{white}\bfseries 2\\
+Element & -4 & -9 & -2\\
+Valid for length 3? & Yes & Yes & Yes\\
+Candidate after processing & -4 & -4 & -2\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[] marks = {60, 75, 90};
+int total = 0;
+for (int i = 0; i < marks.length; i++) {
+  total += marks[i];
+}
+System.out.println((double) total / marks.length);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture20.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+75.0\par The running sums are 60, 135 and 225.\par The loop uses indexes 0, 1 and 2.
+\end{column}\begin{column}{0.35\textwidth}\small
+Array traversal
+
+Runtime size and aggregation
+\end{column}\end{columns}
+\note{Expected output and interpretation: 75.0
+The running sums are 60, 135 and 225.
+The loop uses indexes 0, 1 and 2.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Find the maximum in \{-4,-9,-2\}. State the policy for an empty array.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Initialise max from the first element, then compare remaining values. Result: -2. Reject empty input or return an explicitly designed optional result.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Require a nonempty array before accessing values[0].
+\item Initialise the maximum from the first element.
+\item Visit each remaining element and replace the candidate only when the new value is greater.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution20 {
+  public static void main(String[] args) throws Exception {
+    int[] values = {-4, -9, -2};
+    System.out.println(maximum(values));
+  }
+  static int maximum(int[] values) {
+    if (values == null || values.length == 0) {
+      throw new IllegalArgumentException("nonempty array required");
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution20.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+    }
+    int maximum = values[0];
+    for (int i = 1; i < values.length; i++) {
+      if (values[i] > maximum) maximum = values[i];
+    }
+    return maximum;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution20.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Step & \color{white}\bfseries Compared value & \color{white}\bfseries Previous maximum & \color{white}\bfseries New maximum\\
+Initialisation & values[0] = -4 & None & -4\\
+i = 1 & -9 & -4 & -4\\
+i = 2 & -2 & -4 & -2\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Require a nonempty array before accessing values[0]. Initialise the maximum from the first element. Visit each remaining element and replace the candidate only when the new value is greater.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+-2
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Visit each remaining element and replace the candidate only when the new value is greater.
+\end{column}\end{columns}
+\note{Expected result: -2\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+for(int i=0; i\textless{}=a.length; i++) \{\par   System.out.println(a[i]);\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Use i<a.length. The last valid index is length-1.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Read five temperatures into an array. Print the mean and number above the mean.
+\end{column}\begin{column}{0.35\textwidth}\small
+Initialise max from the first element, then compare remaining values. Result: -2. Reject empty input or return an explicitly designed optional result.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Initialise max from the first element, then compare remaining values. Result: -2. Reject empty input or return an explicitly designed optional result.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What values does new int[3] contain? Does changing the enhanced-for variable update the array?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: Three zeros. No, for a primitive component it only changes the loop variable.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Three zeros. No, for a primitive component it only changes the loop variable.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use i\textless{}a.length. The last valid index is length-1.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Index & \color{white}\bfseries Element & \color{white}\bfseries Running sum after visit\\
+0 & 12 & 12\\
+1 & 7 & 19\\
+2, then 3 & 19, then 4 & 38, then 42\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a loop to count the values above 10 in \{12,7,19,4\}. Give the count and identify the indexes that qualify.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a loop to count the values above 10 in \{12,7,19,4\}. Give the count and identify the indexes that qualify.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int[] values = {12, 7, 19, 4};
+int count = 0;
+for (int value : values) {
+  if (value > 10) count++;
+}
+System.out.println(count);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Values 12 and 19 qualify, at indexes 0 and 2.
+\item The output is 2.
+\item An enhanced for loop is sufficient because no element needs modification.
+\end{itemize}\note{Answer: Values 12 and 19 qualify, at indexes 0 and 2. The output is 2. An enhanced for loop is sufficient because no element needs modification.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Linear search and the first match}
+\begin{itemize}
+\item Compare the target with successive elements until the first match.
+\item Return its index, not the element value. Use {-}1 when no match exists.
+\item Linear search works without sorting; binary search has a sorted{-}input precondition.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 30, 31, 32; Logic Building, Dry Run Techniques, and Flagged While Loops.pptx, slides 13. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Linear search and the first match}
+\begin{block}{Task}Search \{5,8,12,3,9\} for 12 and for 7, using the source search contract.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 30, 31, 32; Logic Building, Dry Run Techniques, and Flagged While Loops.pptx, slides 13. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture20 {
+  public static void main(String[] args) throws Exception {
+    int[] values = {5, 8, 12, 3, 9};
+    System.out.println(linearSearch(values, 12));
+    System.out.println(linearSearch(values, 7));
+  }
+  static int linearSearch(int[] values, int key) {
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] == key) return i;
+    }
+    return -1;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 30, 31, 32; Logic Building, Dry Run Techniques, and Flagged While Loops.pptx, slides 13. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture20.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Index visited & \color{white}\bfseries Value & \color{white}\bfseries Searching for 12\\
+0 & 5 & Continue\\
+1 & 8 & Continue\\
+2 & 12 & Return 2\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 2\par {-}1\end{block}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 30, 31, 32; Logic Building, Dry Run Techniques, and Flagged While Loops.pptx, slides 13. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Predict searching \{12,5,12\} for 12 and searching an empty array.\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}The first returns 0; the empty array returns {-}1 without entering the loop.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 30, 31, 32; Logic Building, Dry Run Techniques, and Flagged While Loops.pptx, slides 13. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: The first returns 0; the empty array returns {-}1 without entering the loop.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item arrays with fixed or runtime sizes
+\item Traverse elements safely
+\item an aggregate and explain bounds errors
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Require a nonempty array before accessing values[0].
+\item Initialise the maximum from the first element.
+\item Visit each remaining element and replace the candidate only when the new value is greater.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read five temperatures into an array. Print the mean and number above the mean.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7
+
+Next lecture: Arrays and method arguments
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+\end{document}

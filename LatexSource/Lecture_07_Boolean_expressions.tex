@@ -1,0 +1,396 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{07}
+\input{course-theme.tex}
+\title{Boolean expressions}
+\subtitle{CSC103 Programming Fundamentals / Lecture 07}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A ticket discount applies to ages below 12 or at least 60. Write the condition and test ages 11, 12, 59 and 60.
+\end{column}\begin{column}{0.35\textwidth}\small
+Express each qualifying age group as its own comparison.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Construct relational and logical conditions
+\item Evaluate Boolean expressions
+\item Choose explicit grouping for compound rules
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Relational operators\par Logical combinations\par Intervals and precedence\par Negation and boundary cases
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Relational operators}
+\begin{itemize}
+\item \textless{}, \textless{}=, \textgreater{} and \textgreater{}= compare numeric values.
+\item == tests primitive equality and != tests inequality.
+\item A relational expression produces true or false.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int marks = 50;
+boolean passed = marks >= 50;
+boolean perfect = marks == 100;
+\end{lstlisting}
+\end{block}
+\note{For Strings, content comparison uses equals and is taught later. Do not treat assignment = as an equality test.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Logical combinations}
+\begin{itemize}
+\item \&\& requires both conditions to be true.
+\item || requires at least one condition to be true.
+\item ! reverses a Boolean value.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+boolean eligible = age >= 18 && registered;
+boolean weekend = day == 6 || day == 7;
+\end{lstlisting}
+\end{block}
+\note{Use four combinations of two Boolean inputs to construct AND and OR truth tables on the board.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Intervals and precedence}
+\begin{itemize}
+\item Write a range check as two comparisons joined with \&\&.
+\item Relational tests bind before \&\&, which binds before ||.
+\item Parentheses make mixed rules easier to inspect.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+boolean valid = marks >= 0 && marks <= 100;
+boolean accepted = (a || b) && c;
+\end{lstlisting}
+\end{block}
+\note{0 \textless{}= marks \textless{}= 100 is not valid Java. Explain how the first comparison becomes a boolean, which cannot participate in the second numeric comparison.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Negation and boundary cases}
+\begin{itemize}
+\item The opposite of x \textless{} limit is x \textgreater{}= limit.
+\item De Morgan: !(a \&\& b) equals !a || !b.
+\item Tests at the boundary reveal missing equality cases.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+!(age >= 18 && registered)
+
+Equivalent:
+age < 18 || !registered
+\end{lstlisting}
+\end{block}
+\note{Ask for values immediately below, at and above a threshold. Truth tables can verify transformations without relying on intuition.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Translating a sentence into a condition}
+\begin{itemize}
+\item "Below 12" uses \textless{} 12, while "at least 60" uses \textgreater{}= 60.
+\item The word "or" permits either qualifying group.
+\item Test the endpoints to confirm that the inequalities reflect the wording.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Discount rule:
+age < 12 || age >= 60
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. "Below 12" uses \textless{} 12, while "at least 60" uses \textgreater{}= 60. The word "or" permits either qualifying group. Test the endpoints to confirm that the inequalities reflect the wording.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A Boolean expression is a value}
+\begin{itemize}
+\item The result of a comparison can be stored, passed or combined.
+\item A condition must ultimately produce boolean in Java.
+\item A number such as 1 is not a replacement for true.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+boolean discounted = age < 12 || age >= 60;
+System.out.println(discounted);
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The result of a comparison can be stored, passed or combined. A condition must ultimately produce boolean in Java. A number such as 1 is not a replacement for true.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Build a compound condition from two facts}
+\begin{center}\begin{tikzpicture}
+\node[box] (a) at (0,0) {age \textgreater{}= 18};
+\node[box] (b) at (0,-1.6) {hasCard};
+\node[decision] (c) at (4,-0.8) {AND};
+\node[alt] (d) at (8,-0.8) {admitted};
+\draw[arr] (a.east)--++(.6,0)|-(c.west);\draw[arr] (b.east)--++(.6,0)|-(c.west);\draw[arr] (c)--(d);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Admission requires both facts to be true. One true input is insufficient.\end{block}
+\note{Trace each labelled connection. Admission requires both facts to be true. One true input is insufficient.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries A & \color{white}\bfseries B & \color{white}\bfseries A \&\& B & \color{white}\bfseries A || B\\
+false & false & false & false\\
+false & true & false & true\\
+true & false & false & true\\
+true & true & true & true\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int marks = 50;
+boolean valid = marks >= 0 && marks <= 100;
+boolean passed = valid && marks >= 50;
+System.out.println(valid);
+System.out.println(passed);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture07.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+true\par true\par 50 satisfies the range and includes the passing boundary.
+\end{column}\begin{column}{0.35\textwidth}\small
+Intervals and precedence
+
+Negation and boundary cases
+\end{column}\end{columns}
+\note{Expected output and interpretation: true
+true
+50 satisfies the range and includes the passing boundary.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A ticket discount applies to ages below 12 or at least 60. Write the condition and test ages 11, 12, 59 and 60.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: age \textless{} 12 || age \textgreater{}= 60
+Results: true, false, false, true.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Express each qualifying age group as its own comparison.
+\item Join the comparisons with ||.
+\item Evaluate ages immediately below and at each boundary.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution07 {
+  public static void main(String[] args) throws Exception {
+    int age = 11;
+    System.out.println(age < 12 || age >= 60);
+    age = 12;
+    System.out.println(age < 12 || age >= 60);
+    age = 59;
+    System.out.println(age < 12 || age >= 60);
+    age = 60;
+    System.out.println(age < 12 || age >= 60);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution07.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Age & \color{white}\bfseries age \textless{} 12 & \color{white}\bfseries age \textgreater{}= 60 & \color{white}\bfseries Discount\\
+11 & true & false & true\\
+12 & false & false & false\\
+59 & false & false & false\\
+60 & false & true & true\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Express each qualifying age group as its own comparison. Join the comparisons with ||. Evaluate ages immediately below and at each boundary.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+true\par false\par false\par true
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Evaluate ages immediately below and at each boundary.
+\end{column}\end{columns}
+\note{Expected result: true
+false
+false
+true\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+boolean inRange = 0 \textless{}= marks \textless{}= 100;
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Use marks >= 0 && marks <= 100. Each comparison must produce a Boolean operand for &&.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Write a library eligibility condition from two age and membership rules of your choice. Supply a truth table.
+\end{column}\begin{column}{0.35\textwidth}\small
+age \textless{} 12 || age \textgreater{}= 60\par Results: true, false, false, true.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: age \textless{} 12 || age \textgreater{}= 60
+Results: true, false, false, true.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Evaluate true || false \&\& false. What is the opposite of score \textgreater{}= 50?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: true, because \&\& binds first. The opposite is score \textless{} 50.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+true, because \&\& binds first. The opposite is score \textless{} 50.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use marks \textgreater{}= 0 \&\& marks \textless{}= 100. Each comparison must produce a Boolean operand for \&\&.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Age & \color{white}\bfseries Has card & \color{white}\bfseries age \textgreater{}= 18 \&\& hasCard\\
+17 & true & false\\
+18 & false & false\\
+18 & true & true\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Admission requires age at least 18 and a valid card. Write both an admitted condition and its logical negation. Test the age boundary.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Admission requires age at least 18 and a valid card. Write both an admitted condition and its logical negation. Test the age boundary.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+boolean admitted = age >= 18 && hasCard;
+boolean denied = age < 18 || !hasCard;
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Negating AND changes it to OR and negates each operand.
+\item At age 18, the card determines the result.
+\item At age 17, admission is false even with a valid card.
+\end{itemize}\note{Answer: Negating AND changes it to OR and negates each operand. At age 18, the card determines the result. At age 17, admission is false even with a valid card.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Divisibility with AND, OR and XOR}
+\begin{itemize}
+\item Remainder zero expresses divisibility by a nonzero integer.
+\item AND requires both properties; OR accepts either or both.
+\item Boolean XOR is true when exactly one property is true.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}8{-}9.pptx, slides 31, 32, 33, 34, 35. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Divisibility with AND, OR and XOR}
+\begin{block}{Task}For 6, evaluate divisibility by 2 and 3 using all three Boolean combinations.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}8{-}9.pptx, slides 31, 32, 33, 34, 35. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture07 {
+  public static void main(String[] args) throws Exception {
+    int number = 6;
+    boolean by2 = number % 2 == 0;
+    boolean by3 = number % 3 == 0;
+    System.out.println(by2 && by3);
+    System.out.println(by2 || by3);
+    System.out.println(by2 ^ by3);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}8{-}9.pptx, slides 31, 32, 33, 34, 35. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture07.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Number & \color{white}\bfseries AND / OR & \color{white}\bfseries XOR\\
+6 & true / true & false\\
+4 & false / true & true\\
+5 & false / false & false\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize true\par true\par false\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}8{-}9.pptx, slides 31, 32, 33, 34, 35. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why would independent if statements be appropriate when displaying all properties that hold?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}More than one property can hold. An if{-}else chain would suppress later matching properties.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}8{-}9.pptx, slides 31, 32, 33, 34, 35. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: More than one property can hold. An if{-}else chain would suppress later matching properties.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item relational and logical conditions
+\item Boolean expressions
+\item explicit grouping for compound rules
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Express each qualifying age group as its own comparison.
+\item Join the comparisons with ||.
+\item Evaluate ages immediately below and at each boundary.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a library eligibility condition from two age and membership rules of your choice. Supply a truth table.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7 (as listed)
+
+Next lecture: Selection with if and else
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7 (as listed). CLO-2.}
+\end{frame}
+\end{document}

@@ -1,0 +1,450 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{25}
+\input{course-theme.tex}
+\title{Cleanup and exception propagation}
+\subtitle{CSC103 Programming Fundamentals / Lecture 25}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace a try body that prints A and throws, a matching catch that prints B, and a finally block that prints C. What if the catch rethrows?
+\end{column}\begin{column}{0.35\textwidth}\small
+Place the failing operation inside an inner try.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Trace nested handlers and finally
+\item Rethrow or translate an exception
+\item Preserve the cause of a failure
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-3
+
+Propagation across calls\par The finally clause\par Rethrowing an exception\par Chained exceptions
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Propagation across calls}
+\begin{itemize}
+\item An unhandled exception leaves the current method.
+\item The runtime continues searching in active callers.
+\item Stack traces report the chain of calls involved in the failure.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+main calls loadCount
+loadCount calls parseInt
+parseInt throws NumberFormatException
+A matching caller catch handles it
+\end{lstlisting}
+\end{block}
+\note{A stack trace is read from the failure location through its callers. Find the first relevant application frame rather than assuming a library is defective.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The finally clause}
+\begin{itemize}
+\item finally normally runs when control leaves try-catch.
+\item It can run after a return or an exception.
+\item It is not guaranteed after forced process termination or a JVM crash.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+try {
+  System.out.println("work");
+} finally {
+  System.out.println("cleanup");
+}
+\end{lstlisting}
+\end{block}
+\note{Do not say finally always runs without qualification. A return or throw in finally can mask the original return or exception and should be avoided.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Rethrowing an exception}
+\begin{itemize}
+\item A handler may record useful context and rethrow the same exception.
+\item Rethrowing lets a higher layer decide how to recover.
+\item Avoid duplicate reports at every layer.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+catch (NumberFormatException ex) {
+  throw ex;
+}
+\end{lstlisting}
+\end{block}
+\note{The same exception preserves its type and original failure context. A handler that only rethrows may be unnecessary unless it performs a useful action.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Chained exceptions}
+\begin{itemize}
+\item Translation can express failure in the caller domain.
+\item Pass the original exception as the cause.
+\item Preserved causes help explain the underlying problem.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+catch (NumberFormatException ex) {
+  throw new IllegalArgumentException(
+      "Invalid record count", ex);
+}
+\end{lstlisting}
+\end{block}
+\note{Distinguish a friendly message from diagnostic evidence. The cause records the technical failure while the outer exception adds context.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A handler can pass responsibility upward}
+\begin{itemize}
+\item A catch may perform a local action and then rethrow the same exception.
+\item Its finally block still runs while control leaves the protected structure.
+\item An outer handler can then decide how the whole operation should respond.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Inner work prints A.
+Inner catch prints B and rethrows.
+Inner finally prints C.
+Outer catch prints D.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A catch may perform a local action and then rethrow the same exception. Its finally block still runs while control leaves the protected structure. An outer handler can then decide how the whole operation should respond.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A cause preserves diagnostic history}
+\begin{itemize}
+\item A translated exception can state which application operation failed.
+\item Its cause identifies the lower-level failure that explains why.
+\item Replacing an exception with a message alone discards that useful chain.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+throw new IllegalArgumentException(
+    "Invalid mark field", originalException);
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A translated exception can state which application operation failed. Its cause identifies the lower-level failure that explains why. Replacing an exception with a message alone discards that useful chain.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Preserve the cause when adding context}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {parseInt fails};
+\node[box] (n1) at (3.45,0) {Catch original};
+\node[box] (n2) at (6.9,0) {Wrap with context};
+\node[alt] (n3) at (10.350000000000001,0) {Caller inspects cause};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}A higher-level message explains the failed operation while the cause retains the original failure.\end{block}
+\note{Trace each labelled connection. A higher-level message explains the failed operation while the cause retains the original failure.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Action in catch & \color{white}\bfseries Original failure retained? & \color{white}\bfseries Where control goes next\\
+Handle and finish & Available in local catch & After try-catch-finally\\
+throw ex & Same exception & Outer compatible handler\\
+Throw wrapper with cause & As a cause & Outer compatible handler\\
+Return from finally & Can suppress failure & Caller receives the return\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static int readCount(String text) {
+  try { return Integer.parseInt(text); }
+  catch (NumberFormatException ex) {
+    throw new IllegalArgumentException("Invalid record count", ex);
+  }
+}
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+try {
+  readCount("bad");
+} catch (IllegalArgumentException ex) {
+  System.out.println(ex.getMessage());
+  System.out.println(ex.getCause().getClass().getSimpleName());
+} finally {
+  System.out.println("Cleanup");
+}
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture25.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Invalid record count\par NumberFormatException\par Cleanup\par The wrapper retains the original parse failure as its cause.
+\end{column}\begin{column}{0.35\textwidth}\small
+Rethrowing an exception
+
+Chained exceptions
+\end{column}\end{columns}
+\note{Expected output and interpretation: Invalid record count
+NumberFormatException
+Cleanup
+The wrapper retains the original parse failure as its cause.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace a try body that prints A and throws, a matching catch that prints B, and a finally block that prints C. What if the catch rethrows?
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Matching handler: A, B, C, then later code may continue. Rethrow: A, B, C, then propagation continues to a caller.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Place the failing operation inside an inner try.
+\item Print B in its catch, rethrow, and print C in its finally.
+\item Use an outer catch to show that propagation continues after cleanup.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution25 {
+  public static void main(String[] args) throws Exception {
+    try {
+      try {
+        System.out.println("A");
+        Integer.parseInt("bad");
+      } catch (NumberFormatException ex) {
+        System.out.println("B");
+        throw ex;
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution25.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+      } finally {
+        System.out.println("C");
+      }
+    } catch (NumberFormatException ex) {
+      System.out.println("D");
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution25.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Order & \color{white}\bfseries Location & \color{white}\bfseries Action & \color{white}\bfseries Output\\
+1 & Inner try & Start then parse failure & A\\
+2 & Inner catch & Report then rethrow & B\\
+3 & Inner finally & Cleanup path & C\\
+4 & Outer catch & Handle propagated failure & D\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Place the failing operation inside an inner try. Print B in its catch, rethrow, and print C in its finally. Use an outer catch to show that propagation continues after cleanup.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A\par B\par C\par D
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Use an outer catch to show that propagation continues after cleanup.
+\end{column}\end{columns}
+\note{Expected result: A
+B
+C
+D\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+finally \{ return 0; \}\par // The try body may throw an important exception.
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+A return from finally suppresses the pending exception. Remove that return and keep cleanup separate from the method result.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Wrap a numeric parsing failure with the input-field name and original cause. Show both messages.
+\end{column}\begin{column}{0.35\textwidth}\small
+Matching handler: A, B, C, then later code may continue. Rethrow: A, B, C, then propagation continues to a caller.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Matching handler: A, B, C, then later code may continue. Rethrow: A, B, C, then propagation continues to a caller.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What information does a cause preserve? Does finally guarantee recovery?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: The original failure behind a translated exception. No, finally performs cleanup but a failure may still propagate.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+The original failure behind a translated exception. No, finally performs cleanup but a failure may still propagate.
+\end{column}\begin{column}{0.35\textwidth}\small
+A return from finally suppresses the pending exception. Remove that return and keep cleanup separate from the method result.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Exception part & \color{white}\bfseries Example & \color{white}\bfseries Purpose\\
+Wrapper type & IllegalArgumentException & Caller-facing contract\\
+Wrapper message & Invalid record count & Operation context\\
+Cause & NumberFormatException & Underlying failure\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Wrap a parsing failure as IllegalArgumentException with message "Invalid count". Preserve the original exception as its cause.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Wrap a parsing failure as IllegalArgumentException with message "Invalid count". Preserve the original exception as its cause.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static int parseCount(String text) {
+  try {
+    return Integer.parseInt(text);
+  } catch (NumberFormatException ex) {
+    throw new IllegalArgumentException("Invalid count", ex);
+  }
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The two-argument constructor retains ex as the cause.
+\item getMessage() gives the added context; getCause() reaches the original exception.
+\item A finally block should avoid returning, because that can suppress a pending result or failure.
+\end{itemize}\note{Answer: The two-argument constructor retains ex as the cause. getMessage() gives the added context; getCause() reaches the original exception. A finally block should avoid returning, because that can suppress a pending result or failure.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Rethrowing preserves the failure}
+\begin{itemize}
+\item A handler may observe a failure and rethrow the same exception object.
+\item The caller then chooses whether to handle the propagated failure.
+\item A finally block runs during normal exception propagation; it must not suppress the pending exception.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Rethrowing preserves the failure}
+\begin{block}{Task}Adapt the source test1/test2 example: fail in one method, print context in another, then catch in main.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture25 {
+  public static void main(String[] args) throws Exception {
+    try {
+      relay();
+    } catch (ArithmeticException ex) {
+      System.out.println("Caught in main: " + ex.getMessage());
+    }
+  }
+  static void fail() {
+    System.out.println("Failure begins");
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture25.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+    throw new ArithmeticException("demo failure");
+  }
+  static void relay() {
+    try { fail(); }
+    catch (ArithmeticException ex) {
+      System.out.println("Relay observed failure");
+      throw ex;
+    } finally { System.out.println("Relay cleanup"); }
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture25.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Execution point & \color{white}\bfseries Action & \color{white}\bfseries Next destination\\
+fail() & Throw Arithmetic\allowbreak Exception & relay catch\\
+relay catch & Print then rethrow & finally\\
+finally & Print cleanup & main catch\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Failure begins\par Relay observed failure\par Relay cleanup\par Caught in main: demo failure\end{block}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}How does throw ex differ from wrapping ex in a new exception?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Rethrowing preserves the same object. Wrapping creates a different exception and should retain ex as its cause.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 35, 37, 38, 39. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Rethrowing preserves the same object. Wrapping creates a different exception and should retain ex as its cause.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item nested handlers and finally
+\item Rethrow or translate an exception
+\item Preserve the cause of a failure
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Place the failing operation inside an inner try.
+\item Print B in its catch, rethrow, and print C in its finally.
+\item Use an outer catch to show that propagation continues after cleanup.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Wrap a numeric parsing failure with the input-field name and original cause. Show both messages.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 11
+
+Next lecture: Programming environments and debugging
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+\end{document}

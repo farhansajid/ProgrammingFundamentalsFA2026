@@ -1,0 +1,408 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{13}
+\input{course-theme.tex}
+\title{String processing}
+\subtitle{CSC103 Programming Fundamentals / Lecture 13}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+For a nonempty email-like string with one @, extract the username and domain. Test ali@campus.edu.
+\end{column}\begin{column}{0.35\textwidth}\small
+Find the @ position and reject missing or empty parts.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Use common String methods
+\item Compare text content and extract substrings
+\item Convert numeric text and numeric values
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Length and character access\par Content comparison\par Substrings and searching\par Numbers and text
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Length and character access}
+\begin{itemize}
+\item length() counts UTF-16 code units.
+\item charAt(index) uses positions from 0 to length()-1.
+\item Basic Latin examples let each char correspond to one visible character.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String s = "Java";
+s.length()    // 4
+s.charAt(0)   // J
+\end{lstlisting}
+\end{block}
+\note{charAt(length()) is outside the valid range. Supplementary Unicode characters may occupy two char positions.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Content comparison}
+\begin{itemize}
+\item equals compares String content.
+\item equalsIgnoreCase ignores case distinctions for its comparison.
+\item compareTo returns a negative value, zero or a positive value.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+"cat".equals("cat")        // true
+"Cat".equals("cat")        // false
+"cat".compareTo("dog") < 0 // true
+\end{lstlisting}
+\end{block}
+\note{== compares references, so string interning can make an incorrect approach appear to work. compareTo is lexicographic, not locale-aware dictionary sorting.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Substrings and searching}
+\begin{itemize}
+\item substring(begin,end) includes begin and excludes end.
+\item indexOf returns the first matching position or -1.
+\item trim returns a result without leading or trailing basic whitespace.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String code = "CS-103";
+code.substring(3)     // "103"
+code.substring(0, 2)  // "CS"
+code.indexOf("-")     // 2
+\end{lstlisting}
+\end{block}
+\note{State the valid condition 0 \textless{}= begin \textless{}= end \textless{}= length. Assign the returned result if the program needs to retain a transformed String.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Numbers and text}
+\begin{itemize}
+\item Integer.parseInt and Double.parseDouble parse numeric text.
+\item String.valueOf converts a value to text.
+\item Malformed numeric text raises NumberFormatException.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int n = Integer.parseInt("42");
+String label = String.valueOf(n);
+\end{lstlisting}
+\end{block}
+\note{Parsing "42.5" as int fails. Formatting is a separate concern from conversion. Exception handling is taught in Lectures 24 and 25.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Substring boundaries form a half-open interval}
+\begin{itemize}
+\item A substring starts at begin and stops before end.
+\item The difference end - begin gives its UTF-16 length.
+\item An empty substring is valid when begin equals end.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+"JAVA".substring(1,3) is "AV"
+Included indexes: 1 and 2
+Excluded index: 3
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A substring starts at begin and stops before end. The difference end - begin gives its UTF-16 length. An empty substring is valid when begin equals end.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Search failure must be handled before slicing}
+\begin{itemize}
+\item indexOf returns -1 when it finds no match.
+\item Passing -1 as a substring boundary is invalid.
+\item Validate the position before extracting the two parts of a structured value.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For "ali@campus.edu": position=3
+Username: substring(0,3)
+Domain: substring(4)
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. indexOf returns -1 when it finds no match. Passing -1 as a substring boundary is invalid. Validate the position before extracting the two parts of a structured value.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Substring boundaries sit between characters}
+\begin{center}\begin{tikzpicture}
+\node[box,text width=13mm,minimum height=11mm] (n0) at (0.0,0.0) {C};
+\node[font=\scriptsize,text=accent] at (0.0,.85) {index 0};
+\node[box,text width=13mm,minimum height=11mm] (n1) at (1.8,0.0) {S};
+\node[font=\scriptsize,text=accent] at (1.8,.85) {index 1};
+\node[box,text width=13mm,minimum height=11mm] (n2) at (3.6,0.0) {C};
+\node[font=\scriptsize,text=accent] at (3.6,.85) {index 2};
+\node[box,text width=13mm,minimum height=11mm] (n3) at (5.4,0.0) {1};
+\node[font=\scriptsize,text=accent] at (5.4,.85) {index 3};
+\node[box,text width=13mm,minimum height=11mm] (n4) at (7.2,0.0) {0};
+\node[font=\scriptsize,text=accent] at (7.2,.85) {index 4};
+\node[box,text width=13mm,minimum height=11mm] (n5) at (9.0,0.0) {3};
+\node[font=\scriptsize,text=accent] at (9.0,.85) {index 5};
+\draw[very thick,draw=berry](-.75,-.8)--(4.35,-.8);\node[text=berry,font=\small] at (1.8,-1.25){substring(0,3)};
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}substring(0,3) selects positions 0, 1 and 2. The end index 3 is excluded.\end{block}
+\note{Trace each labelled connection. substring(0,3) selects positions 0, 1 and 2. The end index 3 is excluded.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Operation & \color{white}\bfseries Question answered & \color{white}\bfseries Example result\\
+equals & Same text content? & "CS" equals "CS": true\\
+== & Same object reference? & May differ for equal text\\
+indexOf & Where is the first match? & "CS-103" finds "-" at 2\\
+substring & Which interval of text? & substring(3) gives "103"\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+String code = "CS-103";
+String prefix = code.substring(0, 2);
+int number = Integer.parseInt(code.substring(3));
+System.out.println(prefix);
+System.out.println(number + 1);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture13.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+CS\par 104\par The numeric substring is "103". Parsing enables arithmetic.
+\end{column}\begin{column}{0.35\textwidth}\small
+Substrings and searching
+
+Numbers and text
+\end{column}\end{columns}
+\note{Expected output and interpretation: CS
+104
+The numeric substring is "103". Parsing enables arithmetic.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+For a nonempty email-like string with one @, extract the username and domain. Test ali@campus.edu.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Find position with indexOf("@"). Use substring(0,pos) and substring(pos+1). Results: ali and campus.edu. Reject a missing @ before extracting.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Find the @ position and reject missing or empty parts.
+\item Extract text before @ as the username.
+\item Extract text after @ as the domain.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution13 {
+  public static void main(String[] args) throws Exception {
+    String email = "ali@campus.edu";
+    int at = email.indexOf("@");
+    if (at <= 0 || at == email.length() - 1) {
+      System.out.println("Invalid format");
+    } else {
+      String user = email.substring(0, at);
+      String domain = email.substring(at + 1);
+      System.out.println(user);
+      System.out.println(domain);
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution13.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Part & \color{white}\bfseries Index interval & \color{white}\bfseries Result\\
+Username & [0, 3) & ali\\
+Separator & index 3 & @\\
+Domain & [4, 14) & campus.edu\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Find the @ position and reject missing or empty parts. Extract text before @ as the username. Extract text after @ as the domain.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+ali\par campus.edu
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Extract text after @ as the domain.
+\end{column}\end{columns}
+\note{Expected result: ali
+campus.edu\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+String name = new String("Ali");\par if (name == "Ali") \{ /* matched */ \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Use name.equals("Ali") or "Ali".equals(name). == checks reference identity, not text content.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Read an item code shaped like BOOK-250. Extract the category and price, then print the price plus 10.
+\end{column}\begin{column}{0.35\textwidth}\small
+Find position with indexOf("@"). Use substring(0,pos) and substring(pos+1). Results: ali and campus.edu. Reject a missing @ before extracting.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Find position with indexOf("@"). Use substring(0,pos) and substring(pos+1). Results: ali and campus.edu. Reject a missing @ before extracting.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What is "JAVA".substring(1,3)? Does s.trim() change the String referred to by s?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: "AV". No. Use s = s.trim() to keep the returned result.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+"AV". No. Use s = s.trim() to keep the returned result.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use name.equals("Ali") or "Ali".equals(name). == checks reference identity, not text content.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Call on "CSC103" & \color{white}\bfseries Indexes used & \color{white}\bfseries Result\\
+substring(0,3) & 0, 1, 2 & CSC\\
+substring(3) & 3, 4, 5 & 103\\
+substring(6) & No characters & Empty string\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Given "lab:42", find the colon and convert the text after it to an int. State the assumptions needed for the conversion.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Given "lab:42", find the colon and convert the text after it to an int. State the assumptions needed for the conversion.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+String text = "lab:42";
+int separator = text.indexOf(":");
+String number = text.substring(separator + 1);
+int value = Integer.parseInt(number);
+System.out.println(value + 1);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The colon is at index 3; substring(4) is "42".
+\item Parsing gives 42, so the output is 43.
+\item This example assumes a colon and a valid integer suffix; production code must validate them.
+\end{itemize}\note{Answer: The colon is at index 3; substring(4) is "42". Parsing gives 42, so the output is 43. This example assumes a colon and a valid integer suffix; production code must validate them.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Counting vowels in a sentence}
+\begin{itemize}
+\item Scan each character once and increase the count only on a vowel match.
+\item Normalise case to make uppercase and lowercase English vowels equivalent.
+\item This exercise counts a, e, i, o and u; it is not a general linguistic vowel detector.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 8, 9; Methods Practice.pptx, slides 10, 11. Uses Locale.ROOT and a compact membership check while retaining the source phrase and vowel{-}count task. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Counting vowels in a sentence}
+\begin{block}{Task}Count the vowels in Welcome to Java. Predict the six matching characters before running.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 8, 9; Methods Practice.pptx, slides 10, 11. Uses Locale.ROOT and a compact membership check while retaining the source phrase and vowel{-}count task. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture13 {
+  public static void main(String[] args) throws Exception {
+    String text = "Welcome to Java".toLowerCase(java.util.Locale.ROOT);
+    int count = 0;
+    for (int i = 0; i < text.length(); i++) {
+      char ch = text.charAt(i);
+      if ("aeiou".indexOf(ch) >= 0) count++;
+    }
+    System.out.println(count);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 8, 9; Methods Practice.pptx, slides 10, 11. Uses Locale.ROOT and a compact membership check while retaining the source phrase and vowel{-}count task. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture13.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Word & \color{white}\bfseries Matching vowels & \color{white}\bfseries Cumulative count\\
+Welcome & e, o, e & 3\\
+to & o & 4\\
+Java & a, a & 6\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 6\end{block}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 8, 9; Methods Practice.pptx, slides 10, 11. Uses Locale.ROOT and a compact membership check while retaining the source phrase and vowel{-}count task. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Predict the counts for an empty string, AEIOU and rhythm.\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}0, 5 and 0 under the stated five{-}vowel contract.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Strings {-}practice.pptx, slides 8, 9; Methods Practice.pptx, slides 10, 11. Uses Locale.ROOT and a compact membership check while retaining the source phrase and vowel{-}count task. Source exercise deck credits Instructor Khurram Iqbal. Answer: 0, 5 and 0 under the stated five{-}vowel contract.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item common String methods
+\item Compare text content and extract substrings
+\item Convert numeric text and numeric values
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Find the @ position and reject missing or empty parts.
+\item Extract text before @ as the username.
+\item Extract text after @ as the domain.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read an item code shaped like BOOK-250. Extract the category and price, then print the price plus 10.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 16
+
+Next lecture: Built-in and instance methods
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 16. CLO-2.}
+\end{frame}
+\end{document}

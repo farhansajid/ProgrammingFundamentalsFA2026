@@ -1,0 +1,403 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{15}
+\input{course-theme.tex}
+\title{User-defined methods}
+\subtitle{CSC103 Programming Fundamentals / Lecture 15}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Define static double average(int a, int b). Call it with 60 and 81 and print the result.
+\end{column}\begin{column}{0.35\textwidth}\small
+Define a static method with two integer parameters and a double result.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Define and call reusable methods
+\item Choose parameters and return types
+\item Separate computation from console output
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+A method definition\par Calls and returned values\par Void methods\par Method contracts
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A method definition}
+\begin{itemize}
+\item A method header names its return type and parameters.
+\item The body defines the computation.
+\item A non-void method must return a compatible value on every normal path.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static int square(int value) {
+  return value * value;
+}
+\end{lstlisting}
+\end{block}
+\note{This method belongs inside a class but outside main. There is no local method definition syntax inside a Java method body.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Calls and returned values}
+\begin{itemize}
+\item The caller evaluates arguments and passes their values.
+\item return ends the current method invocation.
+\item The caller can store, print or combine the result.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int area = square(5);
+System.out.println(square(3) + 1);
+\end{lstlisting}
+\end{block}
+\note{The results are 25 and 10. A method call can be an expression when it returns a value.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Void methods}
+\begin{itemize}
+\item A void method performs an action without returning a value.
+\item return; can end a void method early.
+\item A caller cannot assign a void result to a variable.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static void greet(String name) {
+  System.out.println("Hello " + name);
+}
+\end{lstlisting}
+\end{block}
+\note{Contrast a greeting action with a calculation that should remain reusable in a console app, GUI or test.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Method contracts}
+\begin{itemize}
+\item Choose parameters that represent the required inputs.
+\item State preconditions and what the return value means.
+\item Keep one clear responsibility per method.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Contract: rectangleArea(width,height)
+Inputs: nonnegative side lengths
+Result: product in square units
+\end{lstlisting}
+\end{block}
+\note{Separating input and output from calculation makes testing easier. Validation can enforce contracts or callers can guarantee documented preconditions.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A result is reusable when calculation stays separate}
+\begin{itemize}
+\item A calculation method returns a value instead of deciding how it will appear on screen.
+\item The caller can print, store or test that result.
+\item Keeping console input outside the method also permits deterministic tests.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+average(60,81) returns 70.5.
+The caller decides whether to show one or two decimal places.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A calculation method returns a value instead of deciding how it will appear on screen. The caller can print, store or test that result. Keeping console input outside the method also permits deterministic tests.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Correct types matter inside the method}
+\begin{itemize}
+\item The declared return type does not change integer arithmetic inside an expression.
+\item If a and b are int, (a+b)/2 truncates before returning.
+\item Convert before arithmetic that must retain a fraction.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+return ((double) a + b) / 2;
+The sum and division use double arithmetic.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The declared return type does not change integer arithmetic inside an expression. If a and b are int, (a+b)/2 truncates before returning. Convert before arithmetic that must retain a fraction.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A method is an input-output contract}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Call: average(8,9)};
+\node[box] (n1) at (3.45,0) {Bind a=8, b=9};
+\node[box] (n2) at (6.9,0) {Compute 17 / 2.0};
+\node[alt] (n3) at (10.350000000000001,0) {Return 8.5};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}The caller supplies values; the method returns a result that the caller can reuse.\end{block}
+\note{Trace each labelled connection. The caller supplies values; the method returns a result that the caller can reuse.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Part & \color{white}\bfseries Example & \color{white}\bfseries Role\\
+Return type & double & Type of result\\
+Method name & average & Operation identifier\\
+Parameters & int a, int b & Local inputs\\
+Return expression & ((double)a+b)/2 & Computed result\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static int rectangleArea(int width, int height) {
+  return width * height;
+}
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int result = rectangleArea(5, 3);
+System.out.println(result);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture15.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+15\par width receives 5 and height receives 3.\par return sends their product to the caller.
+\end{column}\begin{column}{0.35\textwidth}\small
+Void methods
+
+Method contracts
+\end{column}\end{columns}
+\note{Expected output and interpretation: 15
+width receives 5 and height receives 3.
+return sends their product to the caller.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Define static double average(int a, int b). Call it with 60 and 81 and print the result.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: return ((double) a + b) / 2;
+Expected: 70.5. Casting before addition also avoids int overflow during a+b for extreme integer inputs.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Define a static method with two integer parameters and a double result.
+\item Convert a to double before addition and division.
+\item Call the method from main and print the returned result.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution15 {
+  public static void main(String[] args) throws Exception {
+    double result = average(60, 81);
+    System.out.println(result);
+  }
+  static double average(int a, int b) {
+    return ((double) a + b) / 2;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution15.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Execution point & \color{white}\bfseries State & \color{white}\bfseries Result\\
+Call in main & Arguments 60, 81 & Invocation starts\\
+Parameter binding & a=60, b=81 & Copies of arguments\\
+Return calculation & 141.0 / 2 & 70.5\\
+Caller assignment & result receives return & 70.5\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Define a static method with two integer parameters and a double result. Convert a to double before addition and division. Call the method from main and print the returned result.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+70.5
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Call the method from main and print the returned result.
+\end{column}\end{columns}
+\note{Expected result: 70.5\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+static int larger(int a, int b) \{\par   if (a \textgreater{} b) return a;\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The path a <= b lacks a return. Add return b after the if.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Write isEven(int n) returning boolean. Demonstrate calls for -2, 0, 3 and 8.
+\end{column}\begin{column}{0.35\textwidth}\small
+return ((double) a + b) / 2;\par Expected: 70.5. Casting before addition also avoids int overflow during a+b for extreme integer inputs.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: return ((double) a + b) / 2;
+Expected: 70.5. Casting before addition also avoids int overflow during a+b for extreme integer inputs.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+How do a parameter and an argument differ? Can a void call appear on the right of an assignment?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: A parameter is declared in the method. An argument is supplied by the caller. A void call provides no value for assignment.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A parameter is declared in the method. An argument is supplied by the caller. A void call provides no value for assignment.
+\end{column}\begin{column}{0.35\textwidth}\small
+The path a \textless{}= b lacks a return. Add return b after the if.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Arguments & \color{white}\bfseries Correct mean & \color{white}\bfseries Reason to test\\
+8, 9 & 8.5 & Fractional answer\\
+0, 0 & 0.0 & Zero case\\
+-4, 4 & 0.0 & Opposite signs\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a double-returning average method for two ints. Prevent integer addition overflow before dividing.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a double-returning average method for two ints. Prevent integer addition overflow before dividing.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static double average(int a, int b) {
+  return ((double) a + b) / 2.0;
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Casting a before addition makes the addition use double arithmetic.
+\item Casting after a+b would occur too late if the int sum overflowed.
+\item The method returns a value and leaves output formatting to its caller.
+\end{itemize}\note{Answer: Casting a before addition makes the addition use double arithmetic. Casting after a+b would occur too late if the int sum overflowed. The method returns a value and leaves output formatting to its caller.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A reusable sumDigits method}
+\begin{itemize}
+\item The last decimal digit is n \% 10; n / 10 removes it for a nonnegative integer.
+\item A method contract must state whether negative inputs are accepted.
+\item The loop stops when no digits remain; zero has digit sum zero.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Added an explicit nonnegative{-}input contract and rejection path to the source method. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: A reusable sumDigits method}
+\begin{block}{Task}Implement sumDigits(long n) for nonnegative input, and demonstrate the source case 234 {-}\textgreater{} 9.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Added an explicit nonnegative{-}input contract and rejection path to the source method. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture15 {
+  public static void main(String[] args) throws Exception {
+    System.out.println(sumDigits(234));
+    System.out.println(sumDigits(0));
+  }
+  static int sumDigits(long n) {
+    if (n < 0) throw new IllegalArgumentException("nonnegative required");
+    int sum = 0;
+    while (n != 0) {
+      sum += n % 10;
+      n /= 10;
+    }
+    return sum;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Added an explicit nonnegative{-}input contract and rejection path to the source method. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture15.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries n before step & \color{white}\bfseries Digit added & \color{white}\bfseries sum afterward\\
+234 & 4 & 4\\
+23 & 3 & 7\\
+2 & 2 & 9\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 9\par 0\end{block}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Added an explicit nonnegative{-}input contract and rejection path to the source method. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}What should happen on {-}234 under this method contract?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Reject it with IllegalArgument\allowbreak Exception rather than silently returning a negative sum.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Added an explicit nonnegative{-}input contract and rejection path to the source method. Source exercise deck credits Instructor Khurram Iqbal. Answer: Reject it with IllegalArgument\allowbreak Exception rather than silently returning a negative sum.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item and call reusable methods
+\item parameters and return types
+\item Separate computation from console output
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Define a static method with two integer parameters and a double result.
+\item Convert a to double before addition and division.
+\item Call the method from main and print the returned result.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write isEven(int n) returning boolean. Demonstrate calls for -2, 0, 3 and 8.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 6
+
+Next lecture: Parameters, stack and scope
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+\end{document}

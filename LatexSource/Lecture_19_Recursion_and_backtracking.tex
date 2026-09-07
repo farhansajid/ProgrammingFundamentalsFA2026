@@ -1,0 +1,418 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{19}
+\input{course-theme.tex}
+\title{Recursion and backtracking}
+\subtitle{CSC103 Programming Fundamentals / Lecture 19}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace factorial(4) with base case factorial(0)=1. Then write the recursive method for inputs 0..12 using int.
+\end{column}\begin{column}{0.35\textwidth}\small
+Reject n outside the supported range before computing.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Identify base and recursive cases
+\item Trace recursive stack frames
+\item Explain recursive search and backtracking
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Base case and progress\par Recursive call stack\par Recursion and iteration\par Backtracking search
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Base case and progress}
+\begin{itemize}
+\item A recursive method calls itself directly or indirectly.
+\item A base case returns without another recursive call.
+\item Every permitted input must progress toward a base case.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+sumTo(0) = 0
+sumTo(n) = n + sumTo(n-1), n > 0
+\end{lstlisting}
+\end{block}
+\note{Use nonnegative n. Without a domain restriction, decrementing a negative argument moves away from zero.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Recursive call stack}
+\begin{itemize}
+\item Each recursive call keeps its own parameters and pending work.
+\item Returns unwind in reverse order.
+\item The deepest base case determines the first returned result.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+sumTo(3): waits for 3 + sumTo(2)
+sumTo(2): waits for 2 + sumTo(1)
+sumTo(1): waits for 1 + sumTo(0)
+sumTo(0): returns 0
+\end{lstlisting}
+\end{block}
+\note{Then return 1,3,6. Ask students to identify which frame owns each n rather than imagining a single shared n.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Recursion and iteration}
+\begin{itemize}
+\item Both can express repetition.
+\item A loop can often use constant auxiliary space for a simple sum.
+\item Recursive depth consumes stack space and can cause StackOverflowError.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Iterative sum:
+int total = 0;
+for (int i=1; i<=n; i++) total += i;
+\end{lstlisting}
+\end{block}
+\note{For this direct recursive sum, depth grows with n. Java does not guarantee tail-call optimisation. Use small demonstration inputs.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Backtracking search}
+\begin{itemize}
+\item Backtracking explores a choice, then explores alternatives when needed.
+\item A base case recognises a complete candidate.
+\item Immutable partial results naturally preserve the earlier choice state.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+binary("", 2)
+  binary("0", 1)
+    outputs 00, 01
+  binary("1", 1)
+    outputs 10, 11
+\end{lstlisting}
+\end{block}
+\note{Algorithm: if remaining==0 print prefix; otherwise call binary(prefix+"0",remaining-1), then prefix+"1". Mutable state would need explicit undo. This is exhaustive branching search.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A recursive definition needs a domain}
+\begin{itemize}
+\item factorial(0)=1 supplies the base case.
+\item For positive n, factorial(n)=n*factorial(n-1).
+\item For this int implementation, restrict n to 0..12 so that results fit the chosen type.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+factorial(4) = 4 * 3 * 2 * 1 = 24
+13! exceeds the positive int range.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. factorial(0)=1 supplies the base case. For positive n, factorial(n)=n*factorial(n-1). For this int implementation, restrict n to 0..12 so that results fit the chosen type.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Returning is different from making a call}
+\begin{itemize}
+\item A factorial frame waits for the smaller factorial before multiplying.
+\item The base case provides the first completed answer.
+\item Unwinding performs the pending multiplications from the deepest frame upward.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+fact(0) returns 1
+fact(1) returns 1 * 1
+fact(2) returns 2 * 1
+fact(3) returns 3 * 2
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A factorial frame waits for the smaller factorial before multiplying. The base case provides the first completed answer. Unwinding performs the pending multiplications from the deepest frame upward.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Recursive calls unwind in reverse order}
+\begin{center}\begin{tikzpicture}
+\node[box,text width=60mm] (n0) at (0,0.0) {fact(3)};
+\node[box,text width=60mm] (n1) at (0,-1.05) {fact(2)};
+\node[box,text width=60mm] (n2) at (0,-2.1) {fact(1)};
+\node[alt,text width=60mm] (n3) at (0,-3.1500000000000004) {fact(0) = 1};
+\draw[arr] (n0.east)--++(1,0)|-(n1.east);
+\draw[arr] (n1.east)--++(1,0)|-(n2.east);
+\draw[arr] (n2.east)--++(1,0)|-(n3.east);
+\draw[arr] (n3.west)--++(-1,0)|-node[lab,pos=.5]{returns unwind}(n0.west);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Calls move toward the base case; returned values then flow back to waiting callers.\end{block}
+\note{Trace each labelled connection. Calls move toward the base case; returned values then flow back to waiting callers.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Technique & \color{white}\bfseries Stored work & \color{white}\bfseries Good fit\\
+Iteration & Loop state and accumulator & Simple repeated accumulation\\
+Direct recursion & Pending work in frames & A problem with a smaller same-form case\\
+Backtracking & Choices and search state & Exploring alternative candidates\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static int sumTo(int n) {
+  if (n < 0) throw new IllegalArgumentException("negative n");
+  if (n == 0) return 0;
+  return n + sumTo(n - 1);
+}
+static void binary(String prefix, int remaining) {
+  if (remaining == 0) { System.out.println(prefix); return; }
+  binary(prefix + "0", remaining - 1);
+  binary(prefix + "1", remaining - 1);
+}
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+System.out.println(sumTo(4));
+binary("", 2);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture19.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+10\par 00\par 01\par 10\par 11\par Each binary choice reduces the remaining depth by one.
+\end{column}\begin{column}{0.35\textwidth}\small
+Recursion and iteration
+
+Backtracking search
+\end{column}\end{columns}
+\note{Expected output and interpretation: 10
+00
+01
+10
+11
+Each binary choice reduces the remaining depth by one.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace factorial(4) with base case factorial(0)=1. Then write the recursive method for inputs 0..12 using int.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Pending multiplications: 4*fact(3), 3*fact(2), 2*fact(1), 1*fact(0). Returns: 1,1,2,6,24. Larger values can overflow int.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Reject n outside the supported range before computing.
+\item Return 1 at n==0.
+\item For a positive n, return n multiplied by factorial(n-1).
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution19 {
+  public static void main(String[] args) throws Exception {
+    System.out.println(factorial(4));
+    System.out.println(factorial(0));
+  }
+  static int factorial(int n) {
+    if (n < 0 || n > 12) {
+      throw new IllegalArgumentException("n must be in 0..12");
+    }
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution19.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Returning frame & \color{white}\bfseries Calculation & \color{white}\bfseries Returned value\\
+factorial(0) & Base case & 1\\
+factorial(1) & 1 * 1 & 1\\
+factorial(2) & 2 * 1 & 2\\
+factorial(3) & 3 * 2 & 6\\
+factorial(4) & 4 * 6 & 24\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Reject n outside the supported range before computing. Return 1 at n==0. For a positive n, return n multiplied by factorial(n-1).\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+24\par 1
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+For a positive n, return n multiplied by factorial(n-1).
+\end{column}\end{columns}
+\note{Expected result: 24
+1\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+static int f(int n) \{ return n + f(n-1); \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+There is no base case. Add an appropriate base case and enforce a domain that progresses toward it.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check n=0, n=1 and n=4. Then verify rejection for n=-1 and n=13.
+\end{column}\begin{column}{0.35\textwidth}\small
+Pending multiplications: 4*fact(3), 3*fact(2), 2*fact(1), 1*fact(0). Returns: 1,1,2,6,24. Larger values can overflow int.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Pending multiplications: 4*fact(3), 3*fact(2), 2*fact(1), 1*fact(0). Returns: 1,1,2,6,24. Larger values can overflow int.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Why does backtracking need to restore mutable state? What causes the direct recursive sum to terminate?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: A later branch must start from the state before the earlier choice. sumTo reduces nonnegative n until n==0.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A later branch must start from the state before the earlier choice. sumTo reduces nonnegative n until n==0.
+\end{column}\begin{column}{0.35\textwidth}\small
+There is no base case. Add an appropriate base case and enforce a domain that progresses toward it.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Returning from & \color{white}\bfseries Calculation & \color{white}\bfseries Returned value\\
+fact(1) & 1 * 1 & 1\\
+fact(2) & 2 * 1 & 2\\
+fact(3) & 3 * 2 & 6\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write recursive sumTo(n) for 0 through 100. Trace sumTo(3), including the base-case return.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write recursive sumTo(n) for 0 through 100. Trace sumTo(3), including the base-case return.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static int sumTo(int n) {
+  if (n < 0 || n > 100)
+    throw new IllegalArgumentException("n outside 0..100");
+  if (n == 0) return 0;
+  return n + sumTo(n - 1);
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The calls are sumTo(3), sumTo(2), sumTo(1), sumTo(0).
+\item The returned values are 0, 1, 3 and 6.
+\item The stated bound limits recursion depth and keeps these sums within int.
+\end{itemize}\note{Answer: The calls are sumTo(3), sumTo(2), sumTo(1), sumTo(0). The returned values are 0, 1, 3 and 6. The stated bound limits recursion depth and keeps these sums within int.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Fibonacci recursion and repeated work}
+\begin{itemize}
+\item Two base cases define fib(0)=0 and fib(1)=1.
+\item For n\textgreater{}=2, two smaller calls contribute to the result.
+\item Naive recursion repeats subproblems; use only small n for the demonstration.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Recursion(New).pptx, slides 33, 34, 35; Java Recursion.pptx, slides 6, 7, 12, 13. Added a small demonstration bound. Memoization and tree traversal in the source are optional enrichment, not new assessed prerequisites.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Fibonacci recursion and repeated work}
+\begin{block}{Task}Calculate fib(6), and trace fib(4) to see fib(2) computed more than once.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Recursion(New).pptx, slides 33, 34, 35; Java Recursion.pptx, slides 6, 7, 12, 13. Added a small demonstration bound. Memoization and tree traversal in the source are optional enrichment, not new assessed prerequisites.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture19 {
+  public static void main(String[] args) throws Exception {
+    System.out.println(fib(6));
+  }
+  static int fib(int n) {
+    if (n < 0 || n > 30) throw new IllegalArgumentException("use 0..30");
+    if (n < 2) return n;
+    return fib(n - 1) + fib(n - 2);
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Recursion(New).pptx, slides 33, 34, 35; Java Recursion.pptx, slides 6, 7, 12, 13. Added a small demonstration bound. Memoization and tree traversal in the source are optional enrichment, not new assessed prerequisites. Complete file: ISB\_Java\_Examples/IsbLecture19.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Index & \color{white}\bfseries Recurrence / base & \color{white}\bfseries Value\\
+0 / 1 & Base cases & 0 / 1\\
+2 / 3 & 1+0 / 1+1 & 1 / 2\\
+4 / 5 / 6 & 2+1 / 3+2 / 5+3 & 3 / 5 / 8\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 8\end{block}
+\note{Adapted from the supplied ISB campus folder: Recursion(New).pptx, slides 33, 34, 35; Java Recursion.pptx, slides 6, 7, 12, 13. Added a small demonstration bound. Memoization and tree traversal in the source are optional enrichment, not new assessed prerequisites. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why does changing the method to tail{-}recursive form not guarantee constant stack space in Java?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Java does not guarantee tail{-}call elimination. Use an explicit loop when bounded stack usage is required.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Recursion(New).pptx, slides 33, 34, 35; Java Recursion.pptx, slides 6, 7, 12, 13. Added a small demonstration bound. Memoization and tree traversal in the source are optional enrichment, not new assessed prerequisites. Answer: Java does not guarantee tail{-}call elimination. Use an explicit loop when bounded stack usage is required.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item base and recursive cases
+\item recursive stack frames
+\item recursive search and backtracking
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Reject n outside the supported range before computing.
+\item Return 1 at n==0.
+\item For a positive n, return n multiplied by factorial(n-1).
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Generate all three-character binary strings recursively. Explain why there are eight results.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 18
+
+Next lecture: One-dimensional arrays
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 18. CLO-2.}
+\end{frame}
+\end{document}

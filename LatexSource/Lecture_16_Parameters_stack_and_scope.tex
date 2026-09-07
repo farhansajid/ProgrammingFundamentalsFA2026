@@ -1,0 +1,413 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{16}
+\input{course-theme.tex}
+\title{Parameters, stack and scope}
+\subtitle{CSC103 Programming Fundamentals / Lecture 16}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace main with x=4 calling addOne(x), storing its returned result in y. Show the caller and callee values before and after return.
+\end{column}\begin{column}{0.35\textwidth}\small
+Keep x in the caller and pass its value to addOne.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Explain pass-by-value and stack frames
+\item Resolve overloaded calls
+\item Identify local and block scope
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Pass-by-value\par Call stack and activation records\par Method overloading\par Variable scope
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Pass-by-value}
+\begin{itemize}
+\item Java copies each argument value into a parameter.
+\item Reassigning a primitive parameter does not reassign the caller variable.
+\item Reference values also pass by value.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static void change(int n) {
+  n = 99;
+}
+// change(x) leaves x unchanged
+\end{lstlisting}
+\end{block}
+\note{The reference case is explored with arrays in Lecture 21. Avoid saying Java passes objects by reference.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Call stack and activation records}
+\begin{itemize}
+\item Each active invocation has a stack frame with its own local state.
+\item A call suspends the caller until the called method returns normally or throws.
+\item A return resumes the caller at the call site.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+main calls doubleIt(4)
+doubleIt has its own parameter n=4
+doubleIt returns 8
+main stores 8
+\end{lstlisting}
+\end{block}
+\note{An activation record is the conceptual frame for an invocation. Do not present a rigid physical memory diagram as a JVM implementation guarantee.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Method overloading}
+\begin{itemize}
+\item Overloads share a name but use different parameter lists.
+\item The compiler selects an applicable overload from argument types.
+\item Return type alone cannot distinguish overloads.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static int twice(int n) { return n * 2; }
+static double twice(double n) { return n * 2; }
+\end{lstlisting}
+\end{block}
+\note{twice(3) chooses int, twice(3.0) chooses double. Widening can make an overload applicable. Avoid ambiguous overload sets.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Variable scope}
+\begin{itemize}
+\item A local name is available only within its scope.
+\item A block variable cannot be used outside its block.
+\item A local variable can hide a field with the same name.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (ready) {
+  int result = 10;
+}
+// result is unavailable here
+\end{lstlisting}
+\end{block}
+\note{Each method call has separate local variables. Scope describes where a name is accessible, whereas lifetime describes how long a value or object exists.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Each invocation owns its local variables}
+\begin{itemize}
+\item A caller's x and a callee's n are distinct variables.
+\item Parameter binding copies the argument value into the callee frame.
+\item The returned value travels back separately and can be stored in another caller variable.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Caller: x=4
+Callee: n receives 4, returns 5
+Caller after return: x=4, y=5
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A caller's x and a callee's n are distinct variables. Parameter binding copies the argument value into the callee frame. The returned value travels back separately and can be stored in another caller variable.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Overloading uses the declared parameter list}
+\begin{itemize}
+\item Methods with the same name can accept different argument counts or types.
+\item The compiler resolves the call using the argument types available at compilation.
+\item A different return type alone does not create a new overload.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+max(int a, int b)
+max(int a, int b, int c)
+These are distinct signatures.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Methods with the same name can accept different argument counts or types. The compiler resolves the call using the argument types available at compilation. A different return type alone does not create a new overload.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A call has its own local state}
+\begin{center}\begin{tikzpicture}
+\node[box,text width=60mm] (n0) at (0,0.0) {main: x = 4};
+\node[box,text width=60mm] (n1) at (0,-1.05) {addOne: n = 4};
+\node[box,text width=60mm] (n2) at (0,-2.1) {return n + 1 = 5};
+\node[alt,text width=60mm] (n3) at (0,-3.1500000000000004) {main: x = 4, y = 5};
+\draw[arr] (n0.east)--++(1,0)|-(n1.east);
+\draw[arr] (n1.east)--++(1,0)|-(n2.east);
+\draw[arr] (n2.east)--++(1,0)|-(n3.east);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}The parameter is a separate variable. Returning a value does not overwrite the argument.\end{block}
+\note{Trace each labelled connection. The parameter is a separate variable. Returning a value does not overwrite the argument.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Property & \color{white}\bfseries Scope & \color{white}\bfseries Lifetime\\
+Question & Where can a name be used? & How long does state exist?\\
+Local variable & Its enclosing declaration scope & During the invocation\\
+Block variable & Inside the relevant block & During block execution\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static void change(int n) { n = 99; }
+static int twice(int n) { return n * 2; }
+static double twice(double n) { return n * 2; }
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int x = 5;
+change(x);
+System.out.println(x);
+System.out.println(twice(3));
+System.out.println(twice(3.0));
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture16.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+5\par 6\par 6.0\par change modifies only its parameter. The argument type selects each twice overload.
+\end{column}\begin{column}{0.35\textwidth}\small
+Method overloading
+
+Variable scope
+\end{column}\end{columns}
+\note{Expected output and interpretation: 5
+6
+6.0
+change modifies only its parameter. The argument type selects each twice overload.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Trace main with x=4 calling addOne(x), storing its returned result in y. Show the caller and callee values before and after return.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Caller x=4. Callee parameter n=4. addOne returns n+1, which is 5. Caller y=5 and x remains 4.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Keep x in the caller and pass its value to addOne.
+\item Return n + 1 from the callee.
+\item Store the result in y and print both caller variables.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution16 {
+  public static void main(String[] args) throws Exception {
+    int x = 4;
+    int y = addOne(x);
+    System.out.println(x);
+    System.out.println(y);
+  }
+  static int addOne(int n) {
+    return n + 1;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution16.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Moment & \color{white}\bfseries main frame & \color{white}\bfseries addOne frame\\
+Before call & x=4, y not assigned & No frame yet\\
+Inside call & x=4, waiting & n=4\\
+At return & Waiting for result & Returns 5\\
+After return & x=4, y=5 & Invocation completed\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Keep x in the caller and pass its value to addOne. Return n + 1 from the callee. Store the result in y and print both caller variables.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+4\par 5
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Store the result in y and print both caller variables.
+\end{column}\end{columns}
+\note{Expected result: 4
+5\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+static int f(int x) \{ return x; \}\par static double f(int x) \{ return x; \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Both declarations have the same name and parameter types. Change the parameter list or use a different method name.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Write overloaded max methods for two ints and three ints. Reuse the two-argument version inside the three-argument version.
+\end{column}\begin{column}{0.35\textwidth}\small
+Caller x=4. Callee parameter n=4. addOne returns n+1, which is 5. Caller y=5 and x remains 4.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Caller x=4. Callee parameter n=4. addOne returns n+1, which is 5. Caller y=5 and x remains 4.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Does changing a parameter change its primitive argument? Is a for-header variable visible after the loop?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No. The parameter holds a copy. A variable declared in the for header is outside scope after that loop.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No. The parameter holds a copy. A variable declared in the for header is outside scope after that loop.
+\end{column}\begin{column}{0.35\textwidth}\small
+Both declarations have the same name and parameter types. Change the parameter list or use a different method name.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Moment & \color{white}\bfseries Caller x & \color{white}\bfseries Callee n\\
+Before call & 4 & Not active\\
+After n = n + 1 & 4 & 5\\
+After return & 4 & Invocation ended\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Trace bump(x) when bump increments its parameter and returns it, but main ignores the return value. How must main change to update x?\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Trace bump(x) when bump increments its parameter and returns it, but main ignores the return value. How must main change to update x?}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static int bump(int n) {
+  return n + 1;
+}
+// In main:
+int x = 4;
+bump(x);         // returned 5 is ignored
+x = bump(x);     // now x is 5
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The first call leaves x equal to 4.
+\item The second call computes from that same value and returns 5.
+\item Assignment in the caller is what stores the new value.
+\end{itemize}\note{Answer: The first call leaves x equal to 4. The second call computes from that same value and returns 5. Assignment in the caller is what stores the new value.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Overload resolution with mixed arguments}
+\begin{itemize}
+\item An overload is selected from the available parameter signatures.
+\item An int argument can widen to double when the chosen signature requires it.
+\item The desired return type does not resolve which overload to call.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}14.pptx, slides 28, 29, 30. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Overload resolution with mixed arguments}
+\begin{block}{Task}Define int and double max overloads, then call max(3,4) and max(2,2.5).\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}14.pptx, slides 28, 29, 30. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture16 {
+  public static void main(String[] args) throws Exception {
+    System.out.println(max(3, 4));
+    System.out.println(max(2, 2.5));
+  }
+  static int max(int a, int b) {
+    return a >= b ? a : b;
+  }
+  static double max(double a, double b) {
+    return a >= b ? a : b;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}14.pptx, slides 28, 29, 30. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture16.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Call & \color{white}\bfseries Selected parameters & \color{white}\bfseries Returned type / value\\
+max(3,4) & int, int & int / 4\\
+max(2,2.5) & double, double & double / 2.5\\
+max(2.0,2.5) & double, double & double / 2.5\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 4\par 2.5\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}14.pptx, slides 28, 29, 30. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why can overloads f(int,double) and f(double,int) make f(1,1) ambiguous?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Each candidate requires widening a different argument, and neither is more specific overall.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}14.pptx, slides 28, 29, 30. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Each candidate requires widening a different argument, and neither is more specific overall.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item pass-by-value and stack frames
+\item overloaded calls
+\item local and block scope
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Keep x in the caller and pass its value to addOne.
+\item Return n + 1 from the callee.
+\item Store the result in y and print both caller variables.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write overloaded max methods for two ints and three ints. Reuse the two-argument version inside the three-argument version.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 6
+
+Next lecture: Midterm concept review
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 6. CLO-2.}
+\end{frame}
+\end{document}

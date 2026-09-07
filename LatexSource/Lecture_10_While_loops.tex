@@ -1,0 +1,435 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{10}
+\input{course-theme.tex}
+\title{While loops}
+\subtitle{CSC103 Programming Fundamentals / Lecture 10}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Design a sentinel loop for marks ending at -1. Print the count and average, or No data when the sentinel arrives first.
+\end{column}\begin{column}{0.35\textwidth}\small
+Initialise sum and count to zero, then read the first mark.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Design terminating while loops
+\item Use counter, sentinel and flag control
+\item Trace state across iterations
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+The while structure\par Counter-controlled repetition\par Sentinel-controlled repetition\par Flag-controlled repetition
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The while structure}
+\begin{itemize}
+\item A while loop checks its condition before each iteration.
+\item Its body may run zero times.
+\item Initialisation, condition and progress must agree.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int i = 1;
+while (i <= 3) {
+  System.out.println(i);
+  i++;
+}
+\end{lstlisting}
+\end{block}
+\note{Trace i=1,2,3,4. The last condition check is false and does not execute the body.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Counter-controlled repetition}
+\begin{itemize}
+\item Use a counter when the number of repetitions is known.
+\item An accumulator starts at an appropriate identity, such as zero for a sum.
+\item State the range clearly.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int total = 0;
+int i = 1;
+while (i <= 4) {
+  total += i;
+  i++;
+}
+\end{lstlisting}
+\end{block}
+\note{The sum after each iteration is 1,3,6,10. An invariant is that total contains the sum of all already processed values.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Sentinel-controlled repetition}
+\begin{itemize}
+\item A sentinel marks the end of input and is not ordinary data.
+\item Read before the loop and again after processing each accepted value.
+\item Do not include the sentinel in a sum or count.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int x = in.nextInt();
+while (x != -1) {
+  total += x;
+  count++;
+  x = in.nextInt();
+}
+\end{lstlisting}
+\end{block}
+\note{Assume valid integer tokens and nonnegative data. Test the sentinel as the first input. Check count before calculating an average.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Flag-controlled repetition}
+\begin{itemize}
+\item A Boolean flag can record whether a condition has been achieved.
+\item Every path must permit progress toward stopping.
+\item A loop that never changes its condition may not terminate.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+boolean found = false;
+int candidate = 1;
+while (!found && candidate <= 10) {
+  found = candidate % 7 == 0;
+  candidate++;
+}
+\end{lstlisting}
+\end{block}
+\note{This loop stops after finding 7. The increment leaves candidate at 8, illustrating why the final counter and matched value can differ.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A loop maintains a useful relationship}
+\begin{itemize}
+\item After processing k marks, count should equal k and sum should contain their total.
+\item The next iteration extends this relationship with one accepted mark.
+\item This makes the final calculation easier to justify.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Before input: count=0, sum=0
+After 60: count=1, sum=60
+After 80: count=2, sum=140
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. After processing k marks, count should equal k and sum should contain their total. The next iteration extends this relationship with one accepted mark. This makes the final calculation easier to justify.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The sentinel is control data}
+\begin{itemize}
+\item The stop value ends repetition and contributes neither a mark nor a count.
+\item Checking before accumulation prevents a biased sum.
+\item An immediate sentinel leaves count at zero, so there is no average to divide for.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input: 60 80 -1
+Data values: 60 and 80
+Sentinel: -1
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The stop value ends repetition and contributes neither a mark nor a count. Checking before accumulation prevents a biased sum. An immediate sentinel leaves count at zero, so there is no average to divide for.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A while loop checks before every iteration}
+\begin{center}\begin{tikzpicture}
+\node[box] (a) at (-4,0) {Initialise i = 1};
+\node[decision] (b) at (0,0) {i \textless{}= 3?};
+\node[alt] (c) at (4,0) {Use i; increment};
+\node[hot] (d) at (0,-2.0) {Continue after loop};
+\draw[arr] (a)--(b);\draw[arr] (b)--node[lab]{true}(c);\draw[arr] (b)--node[lab]{false}(d);\draw[arr] (c.north)--++(0,.8)-| (b.north);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}The back edge returns to the condition. A false first check gives zero iterations.\end{block}
+\note{Trace each labelled connection. The back edge returns to the condition. A false first check gives zero iterations.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Control style & \color{white}\bfseries Stop rule & \color{white}\bfseries Typical use\\
+Counter & Required number processed & Read exactly 5 marks\\
+Sentinel & Special input encountered & Read until -1\\
+Flag & State becomes true or false & Stop after a match\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int i = 1;
+int total = 0;
+while (i <= 4) {
+  total += i;
+  i++;
+}
+System.out.println(total);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture10.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+10\par After bodies: (i,total) = (2,1), (3,3), (4,6), (5,10).\par The condition fails when i is 5.
+\end{column}\begin{column}{0.35\textwidth}\small
+Sentinel-controlled repetition
+
+Flag-controlled repetition
+\end{column}\end{columns}
+\note{Expected output and interpretation: 10
+After bodies: (i,total) = (2,1), (3,3), (4,6), (5,10).
+The condition fails when i is 5.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Design a sentinel loop for marks ending at -1. Print the count and average, or No data when the sentinel arrives first.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Initialise sum=0 and count=0. Add only non-sentinel marks. Divide (double) sum by count only when count \textgreater{} 0. Inputs 60,80,-1 give count 2 and average 70.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Initialise sum and count to zero, then read the first mark.
+\item While the mark is not -1, accumulate it and read the next mark.
+\item If count is positive, divide using floating-point arithmetic. Otherwise print No data.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+Sample console input\par 60 80 -1\par 
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution10 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    int sum = 0;
+    int count = 0;
+    int mark = in.nextInt();
+    while (mark != -1) {
+      sum += mark;
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution10.java. Standard input: 60 80 -1
+  \par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+      count++;
+      mark = in.nextInt();
+    }
+    if (count == 0) System.out.println("No data");
+    else System.out.println((double) sum / count);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution10.java. Standard input: 60 80 -1
+  \par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries mark != -1 & \color{white}\bfseries sum after body & \color{white}\bfseries count after body\\
+60 & true & 60 & 1\\
+80 & true & 140 & 2\\
+-1 & false & 140 unchanged & 2 unchanged\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Initialise sum and count to zero, then read the first mark. While the mark is not -1, accumulate it and read the next mark. If count is positive, divide using floating-point arithmetic. Otherwise print No data.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+70.0
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+If count is positive, divide using floating-point arithmetic. Otherwise print No data.
+\end{column}\end{columns}
+\note{Expected result: 70.0\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int i = 1;\par while (i \textless{}= 5) \{ System.out.println(i); \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+i never changes. Add i++ inside the loop so the condition eventually becomes false.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Use while to compute the digit sum of a nonnegative integer. Test 0, 7 and 204.
+\end{column}\begin{column}{0.35\textwidth}\small
+Initialise sum=0 and count=0. Add only non-sentinel marks. Divide (double) sum by count only when count \textgreater{} 0. Inputs 60,80,-1 give count 2 and average 70.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Initialise sum=0 and count=0. Add only non-sentinel marks. Divide (double) sum by count only when count \textgreater{} 0. Inputs 60,80,-1 give count 2 and average 70.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Can while run zero times? Why must a sentinel be outside the normal input domain?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: Yes, if the initial condition is false. Otherwise the program cannot distinguish a data value from the stop signal.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Yes, if the initial condition is false. Otherwise the program cannot distinguish a data value from the stop signal.
+\end{column}\begin{column}{0.35\textwidth}\small
+i never changes. Add i++ inside the loop so the condition eventually becomes false.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Check & \color{white}\bfseries i & \color{white}\bfseries Action\\
+First & 1 & Use 1; set i to 2\\
+Third & 3 & Use 3; set i to 4\\
+Final & 4 & Exit without using 4\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a while loop that adds the odd integers 1, 3, 5 and 7. State the final counter value and the number of condition checks.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a while loop that adds the odd integers 1, 3, 5 and 7. State the final counter value and the number of condition checks.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int i = 1;
+int sum = 0;
+while (i <= 7) {
+  sum += i;
+  i += 2;
+}
+System.out.println(sum);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The four additions give 16.
+\item The counter is 9 after the final update.
+\item There are five condition checks, including the last false check.
+\end{itemize}\note{Answer: The four additions give 16. The counter is 9 after the final update. There are five condition checks, including the last false check.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A bounded number{-}guessing loop}
+\begin{itemize}
+\item The flag records success; the counter limits how long the loop may continue.
+\item Increment the attempt count once for each accepted integer guess.
+\item Use a fixed secret while tracing so the expected outcome is reproducible.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: A bounded number{-}guessing loop}
+\begin{block}{Task}Use secret 42 and at most five guesses. Test input 10, 80, 42 and report Low, High, then Correct.\end{block}
+\small Input: 10 80 42\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture10 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    int secret = 42, attempts = 0;
+    boolean done = false;
+    while (attempts < 5 && !done) {
+      int guess = in.nextInt();
+      attempts++;
+      if (guess == secret) {
+        done = true;
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit. Complete file: ISB\_Java\_Examples/IsbLecture10.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+        System.out.println("Correct");
+      } else {
+        System.out.println(guess < secret ? "Low" : "High");
+      }
+    }
+    System.out.println("Attempts: " + attempts);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit. Complete file: ISB\_Java\_Examples/IsbLecture10.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Guess & \color{white}\bfseries attempts & \color{white}\bfseries done / message\\
+10 & 1 & false / Low\\
+80 & 2 & false / High\\
+42 & 3 & true / Correct\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Low\par High\par Correct\par Attempts: 3\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Give an input sequence that exercises termination by the attempt limit rather than success.\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Five wrong integers, such as 1 2 3 4 5, produce five attempts with done still false.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}10.pptx, slides 12, 13, 14, 22, 23, 24. Replaced randomness with secret 42 for reproducible tracing; numeric input is assumed. Kept the source five{-}attempt limit. Answer: Five wrong integers, such as 1 2 3 4 5, produce five attempts with done still false.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Design terminating while loops
+\item counter, sentinel and flag control
+\item state across iterations
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Initialise sum and count to zero, then read the first mark.
+\item While the mark is not -1, accumulate it and read the next mark.
+\item If count is positive, divide using floating-point arithmetic. Otherwise print No data.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Use while to compute the digit sum of a nonnegative integer. Test 0, 7 and 204.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 8 (as listed)
+
+Next lecture: For and do-while loops
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 8 (as listed). CLO-2.}
+\end{frame}
+\end{document}

@@ -1,0 +1,432 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{22}
+\input{course-theme.tex}
+\title{Two-dimensional arrays}
+\subtitle{CSC103 Programming Fundamentals / Lecture 22}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Compute the total of every element in \{\{2,4\},\{6,8\}\}. Then compute its main diagonal sum.
+\end{column}\begin{column}{0.35\textwidth}\small
+Traverse every element with nested loops to accumulate the grand total.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Create and access a table of values
+\item Traverse rows and columns
+\item Compute row and column totals
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Arrays of arrays\par Nested traversal\par Row totals\par Column totals
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Arrays of arrays}
+\begin{itemize}
+\item A Java two-dimensional array is an array of row references.
+\item data[r][c] selects column c in row r.
+\item A rectangular example has equal row lengths.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int[][] marks = {
+  {60, 70, 80},
+  {50, 65, 75}
+};
+\end{lstlisting}
+\end{block}
+\note{The outer array has length 2. Each row in this example has length 3. Java does not require every row to share that length.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Nested traversal}
+\begin{itemize}
+\item Use the outer length for row count.
+\item Use each row length for its column count.
+\item Keep the row and column indexes distinct.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+for (int r=0; r<data.length; r++) {
+  for (int c=0; c<data[r].length; c++) {
+    System.out.println(data[r][c]);
+  }
+}
+\end{lstlisting}
+\end{block}
+\note{This traversal accommodates non-null ragged rows. A null row needs separate handling.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Row totals}
+\begin{itemize}
+\item Reset a row accumulator at the start of each row.
+\item The inner loop adds elements from that row.
+\item A row mean divides by the row length only when nonempty.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+for (int[] row : data) {
+  int total = 0;
+  for (int value : row) total += value;
+  System.out.println(total);
+}
+\end{lstlisting}
+\end{block}
+\note{Explain that placing total outside this outer loop would produce cumulative totals rather than independent row totals.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Column totals}
+\begin{itemize}
+\item Column traversal reverses the roles of the indexes.
+\item A rectangular-matrix contract simplifies column totals.
+\item Check shape assumptions before using data[0].
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For {{1,2},{3,4}}:
+Column 0 total: 1 + 3 = 4
+Column 1 total: 2 + 4 = 6
+\end{lstlisting}
+\end{block}
+\note{For an empty outer array data[0] is invalid. A ragged array can lack a requested column in some rows.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Different traversals answer different questions}
+\begin{itemize}
+\item A row traversal keeps the row fixed while the column changes.
+\item A column traversal keeps the column fixed while the row changes.
+\item A main-diagonal traversal selects entries whose row and column indexes match.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For {{2,4},{6,8}}:
+Row 0: 2,4
+Column 0: 2,6
+Main diagonal: 2,8
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A row traversal keeps the row fixed while the column changes. A column traversal keeps the column fixed while the row changes. A main-diagonal traversal selects entries whose row and column indexes match.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Accumulator placement changes the meaning}
+\begin{itemize}
+\item A grand total starts before both loops.
+\item A row total resets inside the outer loop.
+\item A diagonal sum needs one selected element per suitable row.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Grand total: 2 + 4 + 6 + 8 = 20
+Diagonal total: 2 + 8 = 10
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A grand total starts before both loops. A row total resets inside the outer loop. A diagonal sum needs one selected element per suitable row.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Rows and columns identify one element}
+\begin{center}\begin{tikzpicture}
+\node[box,text width=13mm,minimum height=11mm] (n0) at (0.0,0.0) {2};
+\node[box,text width=13mm,minimum height=11mm] (n1) at (1.8,0.0) {4};
+\node[box,text width=13mm,minimum height=11mm] (n2) at (3.6,0.0) {6};
+\node[box,text width=13mm,minimum height=11mm] (n3) at (0.0,-1.2) {1};
+\node[box,text width=13mm,minimum height=11mm] (n4) at (1.8,-1.2) {3};
+\node[box,text width=13mm,minimum height=11mm] (n5) at (3.6,-1.2) {5};
+\node[font=\small,text=accent] at (0.0,.85) {column 0};
+\node[font=\small,text=accent] at (1.8,.85) {column 1};
+\node[font=\small,text=accent] at (3.6,.85) {column 2};
+\node[font=\small,text=accent] at (-1.7,0.0) {row 0};
+\node[font=\small,text=accent] at (-1.7,-1.2) {row 1};
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}For this 2 by 3 array, data[1][2] is 5: row 1, column 2.\end{block}
+\note{Trace each labelled connection. For this 2 by 3 array, data[1][2] is 5: row 1, column 2.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Row / column & \color{white}\bfseries Column 0 & \color{white}\bfseries Column 1 & \color{white}\bfseries Row total\\
+Row 0 & 2 & 4 & 6\\
+Row 1 & 6 & 8 & 14\\
+Column total & 8 & 12 & 20 overall\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[][] data = {{1, 2, 3}, {4, 5, 6}};
+for (int[] row : data) {
+  int total = 0;
+  for (int value : row) total += value;
+  System.out.println(total);
+}
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture22.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+6\par 15\par A fresh total starts at zero for each row.
+\end{column}\begin{column}{0.35\textwidth}\small
+Row totals
+
+Column totals
+\end{column}\end{columns}
+\note{Expected output and interpretation: 6
+15
+A fresh total starts at zero for each row.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Compute the total of every element in \{\{2,4\},\{6,8\}\}. Then compute its main diagonal sum.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: All-element sum: 20. Main diagonal: data[0][0]+data[1][1]=10. For general diagonal traversal use the declared matrix shape contract.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Traverse every element with nested loops to accumulate the grand total.
+\item For this square matrix, add data[i][i] in a separate loop.
+\item Report each result with a distinct label.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution22 {
+  public static void main(String[] args) throws Exception {
+    int[][] data = {{2, 4}, {6, 8}};
+    int total = 0;
+    for (int[] row : data) {
+      for (int value : row) total += value;
+    }
+    int diagonal = 0;
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution22.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+    for (int i = 0; i < data.length; i++) {
+      diagonal += data[i][i];
+    }
+    System.out.println("Total: " + total);
+    System.out.println("Diagonal: " + diagonal);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution22.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Selected element & \color{white}\bfseries Value & \color{white}\bfseries Running grand total\\
+data[0][0] & 2 & 2\\
+data[0][1] & 4 & 6\\
+data[1][0] & 6 & 12\\
+data[1][1] & 8 & 20\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Traverse every element with nested loops to accumulate the grand total. For this square matrix, add data[i][i] in a separate loop. Report each result with a distinct label.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Total: 20\par Diagonal: 10
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Report each result with a distinct label.
+\end{column}\end{columns}
+\note{Expected result: Total: 20
+Diagonal: 10\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+for(int c=0; c\textless{}data.length; c++) \{\par   total += data[r][c];\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The bound uses the number of rows. Use data[r].length for columns in row r.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Represent marks for three students in two quizzes. Print each student total and each quiz average.
+\end{column}\begin{column}{0.35\textwidth}\small
+All-element sum: 20. Main diagonal: data[0][0]+data[1][1]=10. For general diagonal traversal use the declared matrix shape contract.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: All-element sum: 20. Main diagonal: data[0][0]+data[1][1]=10. For general diagonal traversal use the declared matrix shape contract.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What does data.length measure? Where should a row-total accumulator be reset?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: The number of rows in the outer array. Reset it inside the outer row loop before the inner traversal.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+The number of rows in the outer array. Reset it inside the outer row loop before the inner traversal.
+\end{column}\begin{column}{0.35\textwidth}\small
+The bound uses the number of rows. Use data[r].length for columns in row r.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Aggregate & \color{white}\bfseries Elements & \color{white}\bfseries Result\\
+Row 0 & 2 + 4 + 6 & 12\\
+Column 1 & 4 + 3 & 7\\
+All elements & 2 + 4 + 6 + 1 + 3 + 5 & 21\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}For \{\{2,4,6\},\{1,3,5\}\}, compute column 1 using a loop over rows. State the shape assumption.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. For \{\{2,4,6\},\{1,3,5\}\}, compute column 1 using a loop over rows. State the shape assumption.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int[][] data = {{2, 4, 6}, {1, 3, 5}};
+int total = 0;
+for (int row = 0; row < data.length; row++) {
+  total += data[row][1];
+}
+System.out.println(total);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Column 1 contains 4 and 3, so the output is 7.
+\item Every visited row must be non-null and contain index 1.
+\item For arbitrary ragged data, check each row before accessing that column.
+\end{itemize}\note{Answer: Column 1 contains 4 and 3, so the output is 7. Every visited row must be non-null and contain index 1. For arbitrary ragged data, check each row before accessing that column.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Grading a multiple{-}choice test}
+\begin{itemize}
+\item Rows represent students and columns represent questions.
+\item Compare each answer with the key at the same column index.
+\item Reset the score for each student, so scores do not accumulate across rows.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Grading a multiple{-}choice test}
+\begin{block}{Task}Use the first three source students and answer key \{D,B,D,C,C\}. Compute each score out of five.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture22 {
+  public static void main(String[] args) throws Exception {
+    char[][] answers = {
+      {'A','B','A','C','C'},
+      {'D','B','A','B','C'},
+      {'E','D','D','A','C'}
+    };
+    char[] key = {'D','B','D','C','C'};
+    for (int student = 0; student < answers.length; student++) {
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes. Complete file: ISB\_Java\_Examples/IsbLecture22.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+      int score = 0;
+      for (int question = 0; question < key.length; question++) {
+        if (answers[student][question] == key[question]) score++;
+      }
+      System.out.println("Student " + (student + 1) + ": " + score);
+    }
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes. Complete file: ISB\_Java\_Examples/IsbLecture22.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Student & \color{white}\bfseries Correct question numbers & \color{white}\bfseries Score\\
+1 & 2, 4, 5 & 3\\
+2 & 1, 2, 5 & 3\\
+3 & 3, 5 & 2\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Student 1: 3\par Student 2: 3\par Student 3: 2\end{block}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Which assumption must be checked when rows come from an input file?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Every student row must have the same number of answers as the key; reject malformed row lengths.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Multi{-}dimensional arrays.pptx, slides 71, 72. Uses the first three of the ten supplied students; retains the original five{-}question key and answers. Replaced typographic quotes with Java quotes. Answer: Every student row must have the same number of answers as the key; reject malformed row lengths.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item and access a table of values
+\item Traverse rows and columns
+\item row and column totals
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Traverse every element with nested loops to accumulate the grand total.
+\item For this square matrix, add data[i][i] in a separate loop.
+\item Report each result with a distinct label.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Represent marks for three students in two quizzes. Print each student total and each quiz average.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7
+
+Next lecture: Ragged and multidimensional arrays
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+\end{document}

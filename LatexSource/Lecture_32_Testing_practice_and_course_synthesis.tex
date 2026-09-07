@@ -1,0 +1,474 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{32}
+\input{course-theme.tex}
+\title{Testing practice and course synthesis}
+\subtitle{CSC103 Programming Fundamentals / Lecture 32}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Design tests for a marks-file summary: normal data, one mark, threshold 50, empty file, malformed token and out-of-range mark.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use a pure mean method that rejects empty or out-of-range data.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Organise parameterised and regression tests
+\item Distinguish unit and integration checks
+\item Test a program that reads and summarises marks
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-4
+
+Parameterised tests\par Isolation and fixtures\par Testing an integrated program\par Coverage and final review
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Parameterised tests}
+\begin{itemize}
+\item A parameterised test applies one behaviour check to several cases.
+\item @CsvSource supplies small literal datasets.
+\item Each case should add a reason to test.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+@ParameterizedTest
+@CsvSource({"2,5,5", "-4,-2,-2", "3,3,3"})
+void maximumCases(int a, int b, int expected) {
+  assertEquals(expected, Numbers.max(a,b));
+}
+\end{lstlisting}
+\end{block}
+\note{Required imports: org.junit.jupiter.params.ParameterizedTest and org.junit.jupiter.params.provider.CsvSource. The supplied junit-jupiter dependency includes parameterised-test support.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Isolation and fixtures}
+\begin{itemize}
+\item Tests should avoid shared mutable state.
+\item Temporary directories isolate file tests.
+\item Resource cleanup matters even when an assertion fails.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+@TempDir Path temp;
+Path file = temp.resolve("marks.txt");
+// Write a controlled fixture for this test.
+\end{lstlisting}
+\end{block}
+\note{The temporary directory facility belongs to Jupiter. A file-processing test checks several cooperating components and is an integration check, even if it is small.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Testing an integrated program}
+\begin{itemize}
+\item Separate parsing, validation and calculation.
+\item Test pure calculations with small unit tests.
+\item Use file fixtures to check the whole reading-and-summary path.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Fixture: "40 50 60 70"
+Expected mean: 55.0
+Expected passes: 3
+Invalid fixture: "50 bad 60"
+\end{lstlisting}
+\end{block}
+\note{State whether invalid data rejects the whole file. The companion project rejects malformed or out-of-range marks and rejects empty data for a mean.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Coverage and final review}
+\begin{itemize}
+\item Line coverage says which lines executed, not whether outcomes were checked well.
+\item A small changed condition can reveal weak tests.
+\item Review algorithms, control flow, arrays and error handling together.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Mutation thought experiment:
+Change mark >= 50 to mark > 50.
+Which test must fail?
+Answer: the case at exactly 50.
+\end{lstlisting}
+\end{block}
+\note{This is a manual reasoning exercise, not a claim that a mutation-testing tool ran. Final exam scheduling and marks remain governed by the supplied syllabus.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A test matrix connects requirements to evidence}
+\begin{itemize}
+\item Each requirement should have an observable result and a corresponding test.
+\item Boundary cases expose comparisons that ordinary values may never challenge.
+\item Failure cases should check the intended exception or message.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Requirement: 50 counts as a pass.
+Test input: {50}
+Expected passing count: 1
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Each requirement should have an observable result and a corresponding test. Boundary cases expose comparisons that ordinary values may never challenge. Failure cases should check the intended exception or message.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A file fixture isolates an integration test}
+\begin{itemize}
+\item A fixture supplies controlled input data for a test.
+\item A temporary directory prevents collisions with a user's real files.
+\item The test then checks the result of file reading and calculation together.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Write "40 50 60 70" to a temporary file.
+Read it through the production method.
+Assert mean 55.0 and passing count 3.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A fixture supplies controlled input data for a test. A temporary directory prevents collisions with a user's real files. The test then checks the result of file reading and calculation together.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Integration tests cross component boundaries}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Temporary file};
+\node[box] (n1) at (3.45,0) {Parser};
+\node[box] (n2) at (6.9,0) {Summary methods};
+\node[alt] (n3) at (10.350000000000001,0) {Assertions};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}An integration test checks that collaborating components agree on data and behaviour.\end{block}
+\note{Trace each labelled connection. An integration test checks that collaborating components agree on data and behaviour.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Requirement & \color{white}\bfseries Test input & \color{white}\bfseries Expected evidence\\
+Mean calculation & 40 50 60 70 & 55.0\\
+One-record handling & 80 & Mean 80.0\\
+Passing threshold & 50 & Pass count 1\\
+Empty mean policy & Empty file & Exception for mean\\
+Format validation & 50 bad 60 & Parsing-related exception\\
+Range validation & 101 & Range exception\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[] marks = {40, 50, 60, 70};
+int sum = 0, passes = 0;
+for (int mark : marks) {
+  sum += mark;
+  if (mark >= 50) passes++;
+}
+System.out.println((double) sum / marks.length);
+System.out.println(passes);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture32.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+55.0\par 3\par A boundary test at 50 distinguishes \textgreater{}= from \textgreater{}.
+\end{column}\begin{column}{0.35\textwidth}\small
+Testing an integrated program
+
+Coverage and final review
+\end{column}\end{columns}
+\note{Expected output and interpretation: 55.0
+3
+A boundary test at 50 distinguishes \textgreater{}= from \textgreater{}.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Design tests for a marks-file summary: normal data, one mark, threshold 50, empty file, malformed token and out-of-range mark.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Normal: 40 50 60 70 gives mean55 and passes3. One 80 gives mean80 and passes1. One 50 passes. Empty data rejects a mean. "bad" fails parsing. -1 or 101 fails validation.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Use a pure mean method that rejects empty or out-of-range data.
+\item Use a pass-count method with the inclusive threshold 50.
+\item Compare a normal dataset with a single mark exactly on the boundary.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution32 {
+  public static void main(String[] args) throws Exception {
+    int[] marks = {40, 50, 60, 70};
+    System.out.println(mean(marks));
+    System.out.println(passes(marks));
+    System.out.println(passes(new int[]{50}));
+  }
+  static double mean(int[] marks) {
+    if (marks.length == 0) throw new IllegalArgumentException("empty");
+    long sum = 0;
+    for (int mark : marks) {
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution32.java. Inputs are fixed in the program.  \par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+      if (mark < 0 || mark > 100) throw new IllegalArgumentException("range");
+      sum += mark;
+    }
+    return (double) sum / marks.length;
+  }
+  static int passes(int[] marks) {
+    int count = 0;
+    for (int mark : marks) if (mark >= 50) count++;
+    return count;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution32.java. Inputs are fixed in the program.  \par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Test & \color{white}\bfseries Expected & \color{white}\bfseries If \textgreater{}= becomes \textgreater{} & \color{white}\bfseries Detects change?\\
+Passes in \{40,50,60,70\} & 3 & 2 & Yes\\
+Passes in \{80\} & 1 & 1 & No\\
+Passes in \{50\} & 1 & 0 & Yes\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Use a pure mean method that rejects empty or out-of-range data. Use a pass-count method with the inclusive threshold 50. Compare a normal dataset with a single mark exactly on the boundary.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+55.0\par 3\par 1
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Compare a normal dataset with a single mark exactly on the boundary.
+\end{column}\end{columns}
+\note{Expected result: 55.0
+3
+1\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+A suite executes every line, but never checks the calculated average. Is the calculation verified?
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+No. Executed lines can still produce incorrect results. Add explicit assertions with independently calculated expected averages.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Test 49, 50 and 51 as separate one-mark datasets.
+\end{column}\begin{column}{0.35\textwidth}\small
+Normal: 40 50 60 70 gives mean55 and passes3. One 80 gives mean80 and passes1. One 50 passes. Empty data rejects a mean. "bad" fails parsing. -1 or 101 fails validation.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Normal: 40 50 60 70 gives mean55 and passes3. One 80 gives mean80 and passes1. One 50 passes. Empty data rejects a mean. "bad" fails parsing. -1 or 101 fails validation.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A complete file integration test (1/2)}
+\begin{lstlisting}
+package edu.cui.csc103;
+
+import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.*;
+
+class FileSummaryTest {
+  @TempDir Path folder;
+
+\end{lstlisting}
+\note{The temporary directory isolates this test. The assertions check both parsing and the computed summary. Numbers and MarksFile are supplied production classes in the companion project.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A complete file integration test (2/2)}
+\begin{lstlisting}
+  @Test
+  void summarisesAControlledFile() throws Exception {
+    Path file = folder.resolve("marks.txt");
+    Files.writeString(file, "40 50 60 70", StandardCharsets.UTF_8);
+    int[] marks = MarksFile.read(file);
+    assertArrayEquals(new int[]{40,50,60,70}, marks);
+    assertEquals(55.0, Numbers.mean(marks), 1e-9);
+    assertEquals(3, Numbers.passes(marks));
+  }
+}
+\end{lstlisting}
+\note{The temporary directory isolates this test. The assertions check both parsing and the computed summary. Numbers and MarksFile are supplied production classes in the companion project.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Which tests should fail if \textgreater{}=50 becomes \textgreater{}50? What does a file integration test cover beyond a pure unit test?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: A case containing a mark exactly 50 with a pass-count assertion. The integration test also checks file opening, encoding, token parsing and cooperation between methods.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A case containing a mark exactly 50 with a pass-count assertion. The integration test also checks file opening, encoding, token parsing and cooperation between methods.
+\end{column}\begin{column}{0.35\textwidth}\small
+No. Executed lines can still produce incorrect results. Add explicit assertions with independently calculated expected averages.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Fixture & \color{white}\bfseries Expected outcome & \color{white}\bfseries Boundary exercised\\
+40 60 & Mean 50.0; passes 1 & File through summary\\
+50 bad & Parsing failure & Malformed file token\\
+Empty file & Empty array; mean rejected & No-data contract\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Plan an integration test for a temporary file containing 40 and 60. List the assertions that distinguish successful reading from successful calculation.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Plan an integration test for a temporary file containing 40 and 60. List the assertions that distinguish successful reading from successful calculation.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+Parsed array: assertArrayEquals(new int[]{40, 60}, marks)
+Mean: assertEquals(50.0, Numbers.mean(marks), 1e-9)
+Passes: assertEquals(1, Numbers.passes(marks))
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The array assertion checks parsing and record order.
+\item The mean and pass assertions check the downstream computation.
+\item Use an isolated temporary directory so tests do not depend on a personal file.
+\end{itemize}\note{Answer: The array assertion checks parsing and record order. The mean and pass assertions check the downstream computation. Use an isolated temporary directory so tests do not depend on a personal file.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Integration checks for student{-}record files}
+\begin{itemize}
+\item A temporary fixture isolates the test from personal files and previous runs.
+\item Check parsing separately from an aggregate calculation.
+\item Malformed fields and out{-}of{-}range scores are distinct failure cases.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Integration checks for student{-}record files}
+\begin{block}{Task}Write the two source records to a temporary UTF{-}8 file, parse the scores, and assert scores \{90,85\} and mean 87.5.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture32 {
+  public static void main(String[] args) throws Exception {
+    java.nio.file.Path file = java.nio.file.Files.createTempFile("isb-test-", ".txt");
+    java.nio.file.Files.writeString(file, "John T Smith 90\nEric K Jones 85\n",
+      java.nio.charset.StandardCharsets.UTF_8);
+    int[] scores = readScores(file);
+    org.junit.jupiter.api.Assertions.assertArrayEquals(new int[]{90, 85}, scores);
+    double mean = (scores[0] + scores[1]) / 2.0;
+    org.junit.jupiter.api.Assertions.assertEquals(87.5, mean, 1e-9);
+    System.out.println("Record integration passed");
+  }
+  static int[] readScores(java.nio.file.Path file) throws java.io.IOException {
+    java.util.List<String> lines = java.nio.file.Files.readAllLines(
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit. Complete file: ISB\_Java\_Examples/IsbLecture32.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+      file, java.nio.charset.StandardCharsets.UTF_8);
+    int[] scores = new int[lines.size()];
+    for (int i = 0; i < lines.size(); i++) {
+      String[] fields = lines.get(i).trim().split("\\s+");
+      if (fields.length != 4) throw new IllegalArgumentException("four fields required");
+      int score = Integer.parseInt(fields[3]);
+      if (score < 0 || score > 100) throw new IllegalArgumentException("score range");
+      scores[i] = score;
+    }
+    return scores;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit. Complete file: ISB\_Java\_Examples/IsbLecture32.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Fixture & \color{white}\bfseries Expected parsing & \color{white}\bfseries Expected next step\\
+Two source records & [90, 85] & Mean 87.5\\
+John T Smith bad & Reject non{-}integer & No aggregate\\
+John T Smith 101 & Reject range & No aggregate\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Record integration passed\end{block}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why is checking only mean 87.5 weaker than also checking the parsed array?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Different incorrect arrays can share the same mean. The array assertion checks record count, values and order.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: File Handling.pptx, slides 14, 15, 18. Instructor{-}authored integration{-}test extension of the source records. List\textless{}String\textgreater{} is a supporting library use, not a new assessed data{-}structure unit. Answer: Different incorrect arrays can share the same mean. The array assertion checks record count, values and order.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item parameterised and regression tests
+\item unit and integration checks
+\item a program that reads and summarises marks
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Use a pure mean method that rejects empty or out-of-range data.
+\item Use a pass-count method with the inclusive threshold 50.
+\item Compare a normal dataset with a single mark exactly on the boundary.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Prepare a small marks-analysis project with methods, arrays, file I/O and a documented test suite. Use the companion project as a starting point.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Reference material: JUnit Jupiter
+
+Next: course revision and final-exam preparation
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+\end{document}

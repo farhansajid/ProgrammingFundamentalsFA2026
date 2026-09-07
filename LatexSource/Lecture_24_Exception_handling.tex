@@ -1,0 +1,425 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{24}
+\input{course-theme.tex}
+\title{Exception handling}
+\subtitle{CSC103 Programming Fundamentals / Lecture 24}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Define validateMark(int marks) that throws IllegalArgumentException outside 0..100. Test -1, 0, 100 and 101.
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a validator that throws when marks are outside 0..100.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Explain propagation and the exception hierarchy
+\item Use try, throw and catch
+\item Distinguish checked and unchecked exceptions
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-3
+
+Exceptional control flow\par Exception hierarchy\par Checked and unchecked exceptions\par Throwing and catching
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Exceptional control flow}
+\begin{itemize}
+\item An exception interrupts the normal flow at the failure point.
+\item Java searches for an applicable handler.
+\item Statements after the failure in the same try body are skipped.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+try {
+  int n = Integer.parseInt("cat");
+  System.out.println(n);
+} catch (NumberFormatException ex) {
+  System.out.println("Invalid integer");
+}
+\end{lstlisting}
+\end{block}
+\note{The println(n) statement does not execute. A catch handler can recover, report or translate an error depending on the method contract.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Exception hierarchy}
+\begin{itemize}
+\item Throwable is the common base for Error and Exception.
+\item RuntimeException is a subclass of Exception.
+\item Most application recovery targets specific Exception subclasses.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Throwable
+  Error
+  Exception
+    RuntimeException
+\end{lstlisting}
+\end{block}
+\note{Checked exceptions exclude RuntimeException subclasses and Error subclasses. Do not normally catch Error to continue as if an ordinary input mistake occurred.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Checked and unchecked exceptions}
+\begin{itemize}
+\item Checked exceptions must be caught or declared with throws.
+\item Unchecked exceptions do not have that compiler requirement.
+\item The distinction is about checking, not whether an event occurs at runtime.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Checked: IOException
+Unchecked: NumberFormatException
+Unchecked: IllegalArgumentException
+\end{lstlisting}
+\end{block}
+\note{Both kinds can occur during execution. A method should not suppress an exception simply to satisfy the compiler.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Throwing and catching}
+\begin{itemize}
+\item throw raises a particular exception object.
+\item throws appears in a method declaration.
+\item Place specific catches before broader compatible catches.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+if (marks < 0 || marks > 100) {
+  throw new IllegalArgumentException(
+      "marks outside 0..100");
+}
+\end{lstlisting}
+\end{block}
+\note{A catch for Exception before a catch for NumberFormatException makes the latter unreachable. Introduce the validation rule as part of the method contract.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Validation and parsing solve different problems}
+\begin{itemize}
+\item Parsing checks whether text can represent a number of the requested kind.
+\item Validation checks whether the parsed number belongs to the application's allowed domain.
+\item The value 101 parses as int but violates a marks range of 0..100.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+"cat": NumberFormatException while parsing
+"101": parses, then fails range validation
+"100": passes both checks
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Parsing checks whether text can represent a number of the requested kind. Validation checks whether the parsed number belongs to the application's allowed domain. The value 101 parses as int but violates a marks range of 0..100.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Exception handling changes the path}
+\begin{itemize}
+\item throw immediately interrupts the ordinary path in the current block.
+\item A compatible catch can report the failure and allow later work to continue.
+\item A loop with a try-catch inside its body can examine later inputs after one failure.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For inputs -1,0,100,101:
+Reject the first, accept the next two, reject the last.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. throw immediately interrupts the ordinary path in the current block. A compatible catch can report the failure and allow later work to continue. A loop with a try-catch inside its body can examine later inputs after one failure.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{An exception transfers control to a handler}
+\begin{center}\begin{tikzpicture}
+\node[decision] (a) at (0,0) {parse succeeds?};
+\node[alt] (b) at (-3.6,-1.65) {Use integer};
+\node[hot] (c) at (3.6,-1.65) {Matching catch};
+\node[box] (d) at (0,-3.25) {Continue after try/catch};
+\draw[arr] (a.west) -| node[lab,pos=.25]{true} (b.north);\draw[arr] (a.east) -| node[lab,pos=.25]{false} (c.north);\draw[arr] (b.south) |- (d.west);\draw[arr] (c.south) |- (d.east);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}When parsing fails, the remaining statements in that try block are skipped.\end{block}
+\note{Trace each labelled connection. When parsing fails, the remaining statements in that try block are skipped.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Parses as int? & \color{white}\bfseries Valid mark? & \color{white}\bfseries Outcome\\
+"cat" & No & Not evaluated & Parsing failure\\
+"-1" & Yes & No & Range failure\\
+"0" & Yes & Yes & Accept\\
+"100" & Yes & Yes & Accept\\
+"101" & Yes & No & Range failure\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+try {
+  int marks = Integer.parseInt("bad");
+  System.out.println(marks);
+} catch (NumberFormatException ex) {
+  System.out.println("Invalid integer");
+}
+System.out.println("Finished");
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture24.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Invalid integer\par Finished\par The handler runs, then normal execution continues after the try-catch.
+\end{column}\begin{column}{0.35\textwidth}\small
+Checked and unchecked exceptions
+
+Throwing and catching
+\end{column}\end{columns}
+\note{Expected output and interpretation: Invalid integer
+Finished
+The handler runs, then normal execution continues after the try-catch.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Define validateMark(int marks) that throws IllegalArgumentException outside 0..100. Test -1, 0, 100 and 101.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Throw when marks\textless{}0 || marks\textgreater{}100. Inputs -1 and 101 fail. Inputs 0 and 100 return normally.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Write a validator that throws when marks are outside 0..100.
+\item Call the validator for each boundary example inside a try block.
+\item Print a success message only after validation returns normally.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution24 {
+  public static void main(String[] args) throws Exception {
+    int[] cases = {-1, 0, 100, 101};
+    for (int mark : cases) {
+      try {
+        validateMark(mark);
+        System.out.println(mark + " accepted");
+      } catch (IllegalArgumentException ex) {
+        System.out.println(mark + " rejected");
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution24.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+      }
+    }
+  }
+  static void validateMark(int mark) {
+    if (mark < 0 || mark > 100) {
+      throw new IllegalArgumentException("marks outside 0..100");
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution24.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Mark & \color{white}\bfseries Invalid condition & \color{white}\bfseries Control path & \color{white}\bfseries Printed result\\
+-1 & true & throw then catch & -1 rejected\\
+0 & false & Normal return & 0 accepted\\
+100 & false & Normal return & 100 accepted\\
+101 & true & throw then catch & 101 rejected\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Write a validator that throws when marks are outside 0..100. Call the validator for each boundary example inside a try block. Print a success message only after validation returns normally.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+-1 rejected\par 0 accepted\par 100 accepted\par 101 rejected
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Print a success message only after validation returns normally.
+\end{column}\end{columns}
+\note{Expected result: -1 rejected
+0 accepted
+100 accepted
+101 rejected\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+try \{ work(); \}\par catch (Exception ex) \{ \}\par catch (NumberFormatException ex) \{ \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The specific handler is unreachable. Catch NumberFormatException first, and give each handler a meaningful action.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Read one integer and report malformed input using a specific catch. Keep parsing and range validation distinguishable.
+\end{column}\begin{column}{0.35\textwidth}\small
+Throw when marks\textless{}0 || marks\textgreater{}100. Inputs -1 and 101 fail. Inputs 0 and 100 return normally.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Throw when marks\textless{}0 || marks\textgreater{}100. Inputs -1 and 101 fail. Inputs 0 and 100 return normally.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Does throws itself create an exception? Must unchecked exceptions be declared?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No. throws declares a possible exception. Unchecked exceptions have no catch-or-declare compiler requirement.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No. throws declares a possible exception. Unchecked exceptions have no catch-or-declare compiler requirement.
+\end{column}\begin{column}{0.35\textwidth}\small
+The specific handler is unreachable. Catch NumberFormatException first, and give each handler a meaningful action.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Token & \color{white}\bfseries Parsing outcome & \color{white}\bfseries Handler needed?\\
+42 & int 42 & No\\
+four & NumberFormatException & Yes\\
+2147483648 & Outside int range & Yes\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Parse "four" inside try/catch, print "Invalid integer" on failure, then print "Finished" after the handler. Predict both output lines.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Parse "four" inside try/catch, print "Invalid integer" on failure, then print "Finished" after the handler. Predict both output lines.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+try {
+  int n = Integer.parseInt("four");
+  System.out.println(n);
+} catch (NumberFormatException ex) {
+  System.out.println("Invalid integer");
+}
+System.out.println("Finished");
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item parseInt throws before n is printed.
+\item The matching handler prints Invalid integer.
+\item Normal control resumes after the try/catch and prints Finished.
+\end{itemize}\note{Answer: parseInt throws before n is printed. The matching handler prints Invalid integer. Normal control resumes after the try/catch and prints Finished.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Which exception is observed first?}
+\begin{itemize}
+\item One statement can contain more than one potential failure. Execution order determines the observed exception.
+\item For a simple array assignment, the right{-}hand expression is evaluated before the final bounds check.
+\item Only the first thrown exception reaches a matching handler in this execution.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 29, 30. Made the divisor a variable and verified simple{-}assignment evaluation order against Java 17 JLS 15.26.1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Which exception is observed first?}
+\begin{block}{Task}Trace int[] a=new int[5]; a[5]=30/zero with zero=0, then compare the case zero=2.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 29, 30. Made the divisor a variable and verified simple{-}assignment evaluation order against Java 17 JLS 15.26.1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture24 {
+  public static void main(String[] args) throws Exception {
+    int[] a = new int[5];
+    int zero = 0;
+    try {
+      a[5] = 30 / zero;
+    } catch (ArithmeticException ex) {
+      System.out.println("Arithmetic exception");
+    } catch (ArrayIndexOutOfBoundsException ex) {
+      System.out.println("Array index exception");
+    }
+    System.out.println("Rest of the code");
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 29, 30. Made the divisor a variable and verified simple{-}assignment evaluation order against Java 17 JLS 15.26.1. Complete file: ISB\_Java\_Examples/IsbLecture24.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Divisor / index & \color{white}\bfseries First failure & \color{white}\bfseries Handler\\
+0 / 5 & Integer division by zero & Arithmetic\allowbreak Exception\\
+2 / 5 & Invalid index after RHS & ArrayIndexOutOfBounds\allowbreak Exception\\
+2 / 4 & None & Assignment succeeds\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Arithmetic exception\par Rest of the code\end{block}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 29, 30. Made the divisor a variable and verified simple{-}assignment evaluation order against Java 17 JLS 15.26.1. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}What happens if catch(\allowbreak Exception ex) precedes both specific handlers?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Compilation fails because the later subclass handlers are unreachable.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: \allowbreak Exception handling(updated).pptx, slides 29, 30. Made the divisor a variable and verified simple{-}assignment evaluation order against Java 17 JLS 15.26.1. Answer: Compilation fails because the later subclass handlers are unreachable.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item propagation and the exception hierarchy
+\item try, throw and catch
+\item checked and unchecked exceptions
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Write a validator that throws when marks are outside 0..100.
+\item Call the validator for each boundary example inside a try block.
+\item Print a success message only after validation returns normally.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read one integer and report malformed input using a specific catch. Keep parsing and range validation distinguishable.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 11
+
+Next lecture: Cleanup and exception propagation
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 11. CLO-3.}
+\end{frame}
+\end{document}

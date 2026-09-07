@@ -1,0 +1,396 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{01}
+\input{course-theme.tex}
+\title{Computer programming}
+\subtitle{CSC103 Programming Fundamentals / Lecture 01}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write pseudocode for converting hours and minutes into total minutes. Trace 2 hours 35 minutes and 0 hours 0 minutes.
+\end{column}\begin{column}{0.35\textwidth}\small
+Accept nonnegative hours and minutes in 0..59.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Explain how a program solves a problem
+\item Describe structured, object-oriented and functional approaches
+\item Write and trace a finite algorithm
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1
+
+Programs and algorithms\par Input, processing and output\par Programming paradigms\par Problem-solving workflow
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Programs and algorithms}
+\begin{itemize}
+\item A program expresses instructions in a programming language.
+\item An algorithm gives precise steps for a task and must terminate for its intended inputs.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Task: calculate the cost of 3 notebooks at Rs 120 each.
+Inputs: quantity, unit price
+Process: multiply
+Output: Rs 360
+\end{lstlisting}
+\end{block}
+\note{Ask students to identify a real task that has several possible algorithms. A recipe is a useful analogy, but program steps must resolve ambiguity.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Input, processing and output}
+\begin{itemize}
+\item Inputs represent the information a problem supplies.
+\item Processing transforms that information. Outputs answer the original question.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+READ quantity
+READ unitPrice
+total = quantity * unitPrice
+DISPLAY total
+\end{lstlisting}
+\end{block}
+\note{This is pseudocode, not Java. Trace quantity=0 as well as quantity=3. Discuss whether negative quantity belongs in the allowed input domain.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Programming paradigms}
+\begin{itemize}
+\item Structured programming organises sequence, selection and repetition.
+\item Object-oriented programming groups state and behaviour in objects.
+\item Functional programming emphasises computing results from functions.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Structured: calculate a bill step by step.
+Object-oriented: a Cart holds items and calculates its total.
+Functional: calculate a new total from supplied prices.
+\end{lstlisting}
+\end{block}
+\note{These are styles, not mutually exclusive languages. Java supports several styles. This course starts with structured programs inside classes.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Problem-solving workflow}
+\begin{itemize}
+\item State the required result and input constraints before coding.
+\item Work a small example manually, write an algorithm, then test the implementation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Requirement: average two marks in 0..100.
+Example: 60 and 80 gives 70.
+Boundary: 0 and 100 gives 50.
+\end{lstlisting}
+\end{block}
+\note{Distinguish an example from a complete specification. Testing provides evidence, not proof that every possible execution is correct.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Precision in an algorithm}
+\begin{itemize}
+\item A computer follows the stated rule even when the rule is unsuitable.
+\item An instruction such as "calculate the time" leaves the units and formula unspecified.
+\item A useful algorithm defines input, calculation and output precisely.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Ambiguous: convert the time.
+Precise: multiply hours by 60, then add minutes.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A computer follows the stated rule even when the rule is unsuitable. An instruction such as "calculate the time" leaves the units and formula unspecified. A useful algorithm defines input, calculation and output precisely.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Testing the model before coding}
+\begin{itemize}
+\item A manually solved case checks whether the formula represents the task.
+\item A zero case checks that the algorithm behaves sensibly at the smallest allowed input.
+\item Invalid inputs require a stated response before implementation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+2 h 35 min = 120 + 35 = 155 min
+0 h 0 min = 0 min
+2 h 75 min violates the stated minute range.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A manually solved case checks whether the formula represents the task. A zero case checks that the algorithm behaves sensibly at the smallest allowed input. Invalid inputs require a stated response before implementation.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{From a requirement to a result}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Requirement};
+\node[box] (n1) at (3.45,0) {Inputs};
+\node[box] (n2) at (6.9,0) {Calculation};
+\node[alt] (n3) at (10.350000000000001,0) {Output};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}A useful algorithm makes the meaning and units of every stage explicit.\end{block}
+\note{Trace each labelled connection. A useful algorithm makes the meaning and units of every stage explicit.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Approach & \color{white}\bfseries Main organising idea & \color{white}\bfseries Example in a billing program\\
+Structured & Ordered steps and control flow & Read items, calculate, print\\
+Object-oriented & Objects with state and behaviour & A Cart calculates its total\\
+Functional & Functions transform inputs & A function returns a total\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int quantity = 3;
+int unitPrice = 120;
+int total = quantity * unitPrice;
+System.out.println(total);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture01.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+360\par quantity=3 and unitPrice=120 remain unchanged.\par total receives the product 360.
+\end{column}\begin{column}{0.35\textwidth}\small
+Programming paradigms
+
+Problem-solving workflow
+\end{column}\end{columns}
+\note{Expected output and interpretation: 360
+quantity=3 and unitPrice=120 remain unchanged.
+total receives the product 360.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write pseudocode for converting hours and minutes into total minutes. Trace 2 hours 35 minutes and 0 hours 0 minutes.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: READ hours, minutes
+totalMinutes = hours * 60 + minutes
+DISPLAY totalMinutes
+Results: 155 and 0. Assume nonnegative hours and minutes in 0..59.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Accept nonnegative hours and minutes in 0..59.
+\item Convert only the hours to minutes using hours * 60.
+\item Add the remaining minutes and label the output unit.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution01 {
+  public static void main(String[] args) throws Exception {
+    int hours = 2;
+    int minutes = 35;
+    int totalMinutes = hours * 60 + minutes;
+    System.out.println(totalMinutes + " minutes");
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution01.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Step & \color{white}\bfseries Expression & \color{white}\bfseries Value\\
+Read hours & hours & 2\\
+Read minutes & minutes & 35\\
+Convert hours & hours * 60 & 120\\
+Combine & 120 + 35 & 155\\
+Report & totalMinutes & 155 minutes\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Accept nonnegative hours and minutes in 0..59. Convert only the hours to minutes using hours * 60. Add the remaining minutes and label the output unit.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+155 minutes
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Add the remaining minutes and label the output unit.
+\end{column}\end{columns}
+\note{Expected result: 155 minutes\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+A student calculates totalMinutes = hours + minutes * 60. Use 2 hours 35 minutes to explain the error.
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The formula gives 2102. Hours require multiplication by 60. Correct result: 155.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Write an algorithm for a rectangle perimeter. Give normal, zero-size and invalid-input examples.
+\end{column}\begin{column}{0.35\textwidth}\small
+READ hours, minutes\par totalMinutes = hours * 60 + minutes\par DISPLAY totalMinutes\par Results: 155 and 0. Assume nonnegative hours and minutes in 0..59.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: READ hours, minutes
+totalMinutes = hours * 60 + minutes
+DISPLAY totalMinutes
+Results: 155 and 0. Assume nonnegative hours and minutes in 0..59.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+How does an algorithm differ from a program? Why is a single successful test insufficient?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: An algorithm describes a procedure. A program implements instructions in a language. One test covers only one selected case.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+An algorithm describes a procedure. A program implements instructions in a language. One test covers only one selected case.
+\end{column}\begin{column}{0.35\textwidth}\small
+The formula gives 2102. Hours require multiplication by 60. Correct result: 155.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Case & \color{white}\bfseries Inputs & \color{white}\bfseries Expected area\\
+Ordinary rectangle & width 8, height 3 & 24 square units\\
+Zero width & width 0, height 3 & 0 square units\\
+Outside the domain & width -2, height 3 & Reject negative length\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Design pseudocode for rectangle area. Reject a negative side; allow a zero side. Trace (8,3), (0,3), and (-2,3).\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Design pseudocode for rectangle area. Reject a negative side; allow a zero side. Trace (8,3), (0,3), and (-2,3).}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+READ width, height
+IF width < 0 OR height < 0
+    PRINT "Invalid length"
+ELSE
+    PRINT width * height
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Validate before calculating; a negative area would misrepresent the stated model.
+\item Multiplication gives 24 and 0 for the two valid cases.
+\item The invalid case produces a message instead of a numeric area.
+\end{itemize}\note{Answer: Validate before calculating; a negative area would misrepresent the stated model. Multiplication gives 24 and 0 for the two valid cases. The invalid case produces a message instead of a numeric area.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Payroll as an algorithm}
+\begin{itemize}
+\item Identify the two inputs before writing Java: hours worked and hourly rate.
+\item The basic model multiplies hours by rate; overtime is a different requirement.
+\item Work a numeric case, generalise the steps, then test zero and ordinary inputs.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}2.pptx, slides 27, 29, 30, 31, 33. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Payroll as an algorithm}
+\begin{block}{Task}Calculate basic gross pay for 35 hours at 20 currency units per hour. State the input and output units.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}2.pptx, slides 27, 29, 30, 31, 33. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture01 {
+  public static void main(String[] args) throws Exception {
+    double hours = 35;
+    double rate = 20;
+    double grossPay = hours * rate;
+    System.out.printf(java.util.Locale.US, "Gross pay: %.2f%n", grossPay);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}2.pptx, slides 27, 29, 30, 31, 33. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture01.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Hours & \color{white}\bfseries Rate & \color{white}\bfseries Gross pay\\
+35 & 20 & 700.00\\
+0 & 20 & 0.00\\
+40 & 20 & 800.00\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Gross pay: 700.00\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}2.pptx, slides 27, 29, 30, 31, 33. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}What changes when the requirement introduces an overtime rate after 40 hours?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}A decision and a second calculation are required. The original multiplication is correct only for the basic{-}pay model.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}2.pptx, slides 27, 29, 30, 31, 33. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: A decision and a second calculation are required. The original multiplication is correct only for the basic{-}pay model.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item how a program solves a problem
+\item structured, object-oriented and functional approaches
+\item and trace a finite algorithm
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Accept nonnegative hours and minutes in 0..59.
+\item Convert only the hours to minutes using hours * 60.
+\item Add the remaining minutes and label the output unit.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write an algorithm for a rectangle perimeter. Give normal, zero-size and invalid-input examples.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 1
+
+Next lecture: Source files and execution
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 1. CLO-1.}
+\end{frame}
+\end{document}

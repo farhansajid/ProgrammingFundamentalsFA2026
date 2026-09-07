@@ -1,0 +1,422 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{21}
+\input{course-theme.tex}
+\title{Arrays and method arguments}
+\subtitle{CSC103 Programming Fundamentals / Lecture 21}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a method returning a new doubled array while leaving the supplied array unchanged. Test \{2,3\}.
+\end{column}\begin{column}{0.35\textwidth}\small
+Allocate an output array with input.length elements.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Pass and return arrays
+\item Distinguish mutation from parameter reassignment
+\item Use varargs and command-line arguments
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Passing an array reference\par Reassignment and returned arrays\par Variable-length argument lists\par Command-line arguments
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Passing an array reference}
+\begin{itemize}
+\item A parameter receives a copy of the array reference.
+\item Both references can reach the same array object.
+\item Changing an element is visible to the caller.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static void setFirst(int[] a) {
+  a[0] = 99;
+}
+\end{lstlisting}
+\end{block}
+\note{Require a non-null, nonempty array. Java still uses pass-by-value: the copied value here is a reference.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Reassignment and returned arrays}
+\begin{itemize}
+\item Reassigning the parameter does not reassign the caller reference.
+\item A method can construct and return a new array.
+\item A copy can protect the original data from later mutations.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static int[] pair(int a, int b) {
+  return new int[]{a, b};
+}
+\end{lstlisting}
+\end{block}
+\note{Compare a[0]=99 with a=new int[]\{99\}. In the second case, only the local parameter changes its target.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Variable-length argument lists}
+\begin{itemize}
+\item int... values accepts zero or more int arguments.
+\item Inside the method, values behaves as an array.
+\item A varargs parameter must be last.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+static int sum(int... values) {
+  int total = 0;
+  for (int v : values) total += v;
+  return total;
+}
+\end{lstlisting}
+\end{block}
+\note{sum() returns zero for this implementation. You can also pass an existing int array. Only one varargs parameter is permitted.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Command-line arguments}
+\begin{itemize}
+\item main receives command-line tokens as String elements.
+\item Check args.length before indexing.
+\item Parse a numeric argument before arithmetic.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+java Program 10 20
+
+args[0] is "10"
+args[1] is "20"
+\end{lstlisting}
+\end{block}
+\note{Shell quoting determines how a multiword argument is grouped. A missing argument and malformed numeric text are different error cases.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A new output array preserves the input}
+\begin{itemize}
+\item An output array can hold transformed values while the caller keeps the original.
+\item The method allocates storage of the same length and writes each result by index.
+\item The returned reference identifies the new array.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input array: {2,3}
+Output array: {4,6}
+The two arrays have different identities.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. An output array can hold transformed values while the caller keeps the original. The method allocates storage of the same length and writes each result by index. The returned reference identifies the new array.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Reference copying does not copy elements}
+\begin{itemize}
+\item Assigning int[] b=a makes b reach the same array.
+\item Creating new int[a.length] makes separate element storage.
+\item The choice determines whether later element updates are shared.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int[] alias = a;       // same array
+int[] copy = a.clone(); // independent primitive elements
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Assigning int[] b=a makes b reach the same array. Creating new int[a.length] makes separate element storage. The choice determines whether later element updates are shared.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A parameter copies an array reference}
+\begin{center}\begin{tikzpicture}
+\node[box] (a) at (0,0) {caller: data};
+\node[box] (b) at (0,-1.6) {parameter: a};
+\node[alt] (c) at (5,-0.8) {One array: [2, 3]};
+\draw[arr](a.east)--++(.8,0)|-(c.west);\draw[arr](b.east)--++(1.3,0)|-(c.west);
+\node[hot,text width=90mm] (d) at (2.5,-3) {a[0] = 9 changes shared storage};
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Both references reach one array, so an element update is visible to the caller.\end{block}
+\note{Trace each labelled connection. Both references reach one array, so an element update is visible to the caller.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Operation & \color{white}\bfseries New array? & \color{white}\bfseries Caller sees element changes?\\
+b = a & No & Yes, shared array\\
+a[0] = 9 & No & Yes, element mutation\\
+parameter = new int[2] & Yes & Caller variable unchanged\\
+return new int[2] & Yes & Caller can store returned reference\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static void modify(int[] a) {
+  a[0] = 9;
+  a = new int[]{7};
+}
+static int sum(int... values) {
+  int total = 0;
+  for (int v : values) total += v;
+  return total;
+}
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[] data = {1, 2};
+modify(data);
+System.out.println(data[0]);
+System.out.println(sum(2, 3, 4));
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture21.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+9\par 9\par modify changes the shared first element.\par Its later parameter reassignment leaves the caller reference unchanged.
+\end{column}\begin{column}{0.35\textwidth}\small
+Variable-length argument lists
+
+Command-line arguments
+\end{column}\end{columns}
+\note{Expected output and interpretation: 9
+9
+modify changes the shared first element.
+Its later parameter reassignment leaves the caller reference unchanged.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a method returning a new doubled array while leaving the supplied array unchanged. Test \{2,3\}.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Create an output array of the same length. Set out[i]=input[i]*2 and return out. Output: \{4,6\}. Input stays \{2,3\}.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Allocate an output array with input.length elements.
+\item Calculate each doubled value into the corresponding output position.
+\item Return the output and show that the original remains unchanged.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution21 {
+  public static void main(String[] args) throws Exception {
+    int[] original = {2, 3};
+    int[] result = doubled(original);
+    System.out.println(java.util.Arrays.toString(result));
+    System.out.println(java.util.Arrays.toString(original));
+  }
+  static int[] doubled(int[] input) {
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution21.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+    int[] output = new int[input.length];
+    for (int i = 0; i < input.length; i++) {
+      output[i] = input[i] * 2;
+    }
+    return output;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution21.java. Inputs are fixed in the program.  \par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Index & \color{white}\bfseries Input value & \color{white}\bfseries Output calculation & \color{white}\bfseries Output value\\
+0 & 2 & 2 * 2 & 4\\
+1 & 3 & 3 * 2 & 6\\
+After return & Input still \{2,3\} & New array reference & \{4,6\}\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Allocate an output array with input.length elements. Calculate each doubled value into the corresponding output position. Return the output and show that the original remains unchanged.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+[4, 6]\par [2, 3]
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Return the output and show that the original remains unchanged.
+\end{column}\end{columns}
+\note{Expected result: [4, 6]
+[2, 3]\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+static void replace(int[] a) \{ a = new int[]\{7\}; \}\par // The caller expects its variable to become \{7\}.
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Return the new array and assign the result in the caller, or intentionally mutate the existing array elements.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Create a program that sums integer command-line arguments. Handle zero arguments explicitly.
+\end{column}\begin{column}{0.35\textwidth}\small
+Create an output array of the same length. Set out[i]=input[i]*2 and return out. Output: \{4,6\}. Input stays \{2,3\}.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Create an output array of the same length. Set out[i]=input[i]*2 and return out. Output: \{4,6\}. Input stays \{2,3\}.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Does passing an array copy all its elements? Where must a varargs parameter occur?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No, it copies the reference value. The varargs parameter must be last.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No, it copies the reference value. The varargs parameter must be last.
+\end{column}\begin{column}{0.35\textwidth}\small
+Return the new array and assign the result in the caller, or intentionally mutate the existing array elements.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Inside the method & \color{white}\bfseries Caller observes & \color{white}\bfseries Reason\\
+a[0] = 9 & Element becomes 9 & Shared array\\
+a = new int[]\{7\} & Original array unchanged & Only parameter reassigned\\
+return a & Caller may store it & Explicit returned reference\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a method that changes the first element to 9, then reassigns its parameter to a new array. Predict the caller array \{2,3\} afterward.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a method that changes the first element to 9, then reassigns its parameter to a new array. Predict the caller array \{2,3\} afterward.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+static void change(int[] a) {
+  a[0] = 9;
+  a = new int[]{7};
+}
+// After change(data), data contains {9, 3}.
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The first statement mutates the original array.
+\item The second statement changes only the local parameter reference.
+\item The caller still reaches the original two-element array.
+\end{itemize}\note{Answer: The first statement mutates the original array. The second statement changes only the local parameter reference. The caller still reaches the original two-element array.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Copying a slice into another array}
+\begin{itemize}
+\item Array assignment copies a reference; arraycopy copies elements between arrays.
+\item Specify source position, target position and the number of elements.
+\item For primitive elements the copied values are independent; reference elements would still be references.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 21, 22, 23, 24, 25, 27. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Copying a slice into another array}
+\begin{block}{Task}Copy elements 20 and 30 from \{10,20,30,40\} into positions 0 and 1 of a new length{-}3 int array.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 21, 22, 23, 24, 25, 27. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture21 {
+  public static void main(String[] args) throws Exception {
+    int[] source = {10, 20, 30, 40};
+    int[] target = new int[3];
+    System.arraycopy(source, 1, target, 0, 2);
+    source[1] = 99;
+    System.out.println(java.util.Arrays.toString(target));
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 21, 22, 23, 24, 25, 27. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture21.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Copy step & \color{white}\bfseries Source element & \color{white}\bfseries Target position\\
+First & source[1] = 20 & target[0]\\
+Second & source[2] = 30 & target[1]\\
+Not copied & Default zero & target[2]\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize [20, 30, 0]\end{block}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 21, 22, 23, 24, 25, 27. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why does the later source[1]=99 not change target[0]?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}The primitive int value was copied into separate storage. The two arrays are distinct objects.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Arrays1D(new).pptx, slides 21, 22, 23, 24, 25, 27. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: The primitive int value was copied into separate storage. The two arrays are distinct objects.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item and return arrays
+\item mutation from parameter reassignment
+\item varargs and command-line arguments
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Allocate an output array with input.length elements.
+\item Calculate each doubled value into the corresponding output position.
+\item Return the output and show that the original remains unchanged.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a program that sums integer command-line arguments. Handle zero arguments explicitly.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 7
+
+Next lecture: Two-dimensional arrays
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 7. CLO-2.}
+\end{frame}
+\end{document}

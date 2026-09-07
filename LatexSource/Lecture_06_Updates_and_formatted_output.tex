@@ -1,0 +1,393 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{06}
+\input{course-theme.tex}
+\title{Updates and formatted output}
+\subtitle{CSC103 Programming Fundamentals / Lecture 06}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Print a two-column receipt for Pen 25.5 and Book 120.0. Use aligned names and two decimal places.
+\end{column}\begin{column}{0.35\textwidth}\small
+Print each item with a fixed-width name and a numeric price field.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Trace prefix and postfix updates
+\item Distinguish print, println and printf
+\item Format a readable numeric report
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1
+
+Increment and decrement\par Compound assignment\par Output methods\par Format specifiers
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Increment and decrement}
+\begin{itemize}
+\item x++ and ++x both increase x by one.
+\item Postfix produces the old value. Prefix produces the updated value.
+\item Standalone updates are easier to read.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int x = 4;
+int a = x++; // a=4, x=5
+int b = ++x; // x=6, b=6
+\end{lstlisting}
+\end{block}
+\note{Ask students to track the expression result separately from the stored variable value. Avoid complicated mixed-update expressions in production code.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Compound assignment}
+\begin{itemize}
+\item x += amount updates x using its current value.
+\item The same pattern supports -=, *=, /= and \%.
+\item Use ordinary assignment when a conversion needs explanation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int stock = 20;
+stock -= 3;
+stock += 5;
+// stock is 22
+\end{lstlisting}
+\end{block}
+\note{Compound assignment includes an implicit cast to the left variable type. Do not describe it as perfectly identical to expanded assignment for every primitive type.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Output methods}
+\begin{itemize}
+\item print leaves the cursor on the current line.
+\item println ends the line. printf uses a format string and arguments.
+\item \%n inserts a platform-appropriate line separator.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+System.out.print("Total: ");
+System.out.println(24);
+System.out.printf("%d%n", 24);
+\end{lstlisting}
+\end{block}
+\note{Explain that the format controls presentation and does not change the stored value.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Format specifiers}
+\begin{itemize}
+\item \%d formats an integer and \%s formats text.
+\item \%.2f shows two decimal places for floating-point output.
+\item A width reserves a minimum field size.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+System.out.printf("%-8s %6.2f%n",
+                  "Tea", 125.5);
+\end{lstlisting}
+\end{block}
+\note{The minus flag left-aligns. Width does not truncate an oversized value. Decimal separators depend on locale unless explicitly fixed.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A stored value and an expression result differ}
+\begin{itemize}
+\item Postfix increment first produces the old value, then updates the variable.
+\item Prefix increment first updates the variable, then produces its new value.
+\item Separating updates from larger expressions makes this ordering easier to inspect.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int x = 4;
+int old = x++;
+// old is 4, x is 5
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Postfix increment first produces the old value, then updates the variable. Prefix increment first updates the variable, then produces its new value. Separating updates from larger expressions makes this ordering easier to inspect.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Formatted output as a small report}
+\begin{itemize}
+\item A format string defines how each supplied value appears.
+\item Field width is a minimum width, so a longer value can still expand the field.
+\item A consistent decimal format lets a reader compare prices quickly.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+%-8s means left-aligned text in at least 8 positions.
+%8.2f means a number with two decimal places.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A format string defines how each supplied value appears. Field width is a minimum width, so a longer value can still expand the field. A consistent decimal format lets a reader compare prices quickly.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Postfix preserves the old expression value}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {x starts at 4};
+\node[box] (n1) at (3.45,0) {y = x++};
+\node[box] (n2) at (6.9,0) {y receives 4};
+\node[alt] (n3) at (10.350000000000001,0) {x becomes 5};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Separate the expression result from the variable state after evaluation.\end{block}
+\note{Trace each labelled connection. Separate the expression result from the variable state after evaluation.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Format & \color{white}\bfseries Argument example & \color{white}\bfseries Displayed purpose\\
+\%d & 25 & Whole number\\
+\%.2f & 25.5 & 25.50\\
+\%-8s & Pen & Left-aligned item name\\
+\%n & No argument & Platform line ending\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int count = 4;
+int before = count++;
+System.out.printf(java.util.Locale.US,
+    "%d %d %.2f%n", before, count, 12.5);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture06.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+4 5 12.50\par before receives 4, then count becomes 5.\par The floating-point value displays two decimal places.
+\end{column}\begin{column}{0.35\textwidth}\small
+Output methods
+
+Format specifiers
+\end{column}\end{columns}
+\note{Expected output and interpretation: 4 5 12.50
+before receives 4, then count becomes 5.
+The floating-point value displays two decimal places.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Print a two-column receipt for Pen 25.5 and Book 120.0. Use aligned names and two decimal places.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Use \%-8s for each item name and \%8.2f for each price, followed by \%n. Total: 145.50.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Print each item with a fixed-width name and a numeric price field.
+\item Use Locale.US to keep the demonstrated decimal point consistent.
+\item Calculate the total separately, then format it with the same price pattern.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution06 {
+  public static void main(String[] args) throws Exception {
+    double pen = 25.5;
+    double book = 120.0;
+    System.out.printf(java.util.Locale.US, "%-8s %8.2f%n", "Pen", pen);
+    System.out.printf(java.util.Locale.US, "%-8s %8.2f%n", "Book", book);
+    System.out.printf(java.util.Locale.US, "%-8s %8.2f%n", "Total", pen + book);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution06.java. Inputs are fixed in the program.  \par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Item & \color{white}\bfseries Stored price & \color{white}\bfseries Displayed price\\
+Pen & 25.5 & 25.50\\
+Book & 120.0 & 120.00\\
+Total & 145.5 & 145.50\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Print each item with a fixed-width name and a numeric price field. Use Locale.US to keep the demonstrated decimal point consistent. Calculate the total separately, then format it with the same price pattern.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Pen         25.50\par Book       120.00\par Total      145.50
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Calculate the total separately, then format it with the same price pattern.
+\end{column}\end{columns}
+\note{Expected result: Pen         25.50
+Book       120.00
+Total      145.50\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+System.out.printf("Price: \%d", 12.5);
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+%d expects an integral value. Use %.2f for this double value.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Create a marks report showing a name, integer marks and percentage to one decimal place.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use \%-8s for each item name and \%8.2f for each price, followed by \%n. Total: 145.50.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Use \%-8s for each item name and \%8.2f for each price, followed by \%n. Total: 145.50.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+With x=2, what does y=++x do? Does \%.2f round the stored variable?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: x becomes 3 and y receives 3. Formatting rounds the displayed representation, not the stored variable.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+x becomes 3 and y receives 3. Formatting rounds the displayed representation, not the stored variable.
+\end{column}\begin{column}{0.35\textwidth}\small
+\%d expects an integral value. Use \%.2f for this double value.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Statement (fresh x=4) & \color{white}\bfseries Assigned y & \color{white}\bfseries Final x\\
+y = x++ & 4 & 5\\
+y = ++x & 5 & 5\\
+x++; y = x & 5 & 5\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Trace x=4, y=x++, z=++x. Then print y, z and x in labelled columns.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Trace x=4, y=x++, z=++x. Then print y, z and x in labelled columns.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int x = 4;
+int y = x++;
+int z = ++x;
+System.out.printf("y=%d z=%d x=%d%n", y, z, x);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Postfix stores the old value in y, then x is 5.
+\item Prefix increments x to 6 and supplies 6 to z.
+\item Output: y=4 z=6 x=6.
+\end{itemize}\note{Answer: Postfix stores the old value in y, then x is 5. Prefix increments x to 6 and supplies 6 to z. Output: y=4 z=6 x=6.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Tracing four update operators}
+\begin{itemize}
+\item Java evaluates these operands left to right, so each update affects later operands.
+\item Record the value supplied by an operand separately from the new value of i.
+\item Such expressions are useful trace exercises; separate updates are easier to maintain.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}6.pptx, slides 6, 7, 15, 16, 17. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Tracing four update operators}
+\begin{block}{Task}Trace int i=5 and result=++i+i{-}{-}+i+++{-}{-}i, written with spaces in the program. Predict both printed values.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}6.pptx, slides 6, 7, 15, 16, 17. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture06 {
+  public static void main(String[] args) throws Exception {
+    int i = 5;
+    int result = ++i + i-- + i++ + --i;
+    System.out.println("Result: " + result);
+    System.out.println("Final i: " + i);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}6.pptx, slides 6, 7, 15, 16, 17. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture06.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Operand & \color{white}\bfseries Value supplied & \color{white}\bfseries i afterward\\
+++i & 6 & 6\\
+i{-}{-} & 6 & 5\\
+i++ & 5 & 6\\
+{-}{-}i & 5 & 5\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Result: 22\par Final i: 5\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}6.pptx, slides 6, 7, 15, 16, 17. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Replace the expression with four named intermediate values and verify the same total.\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Store each operand in sequence, then add 6 + 6 + 5 + 5 = 22. i ends at 5.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}6.pptx, slides 6, 7, 15, 16, 17. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Store each operand in sequence, then add 6 + 6 + 5 + 5 = 22. i ends at 5.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item prefix and postfix updates
+\item print, println and printf
+\item Format a readable numeric report
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Print each item with a fixed-width name and a numeric price field.
+\item Use Locale.US to keep the demonstrated decimal point consistent.
+\item Calculate the total separately, then format it with the same price pattern.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a marks report showing a name, integer marks and percentage to one decimal place.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Liang Ch 2
+
+Next lecture: Boolean expressions
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+\end{document}

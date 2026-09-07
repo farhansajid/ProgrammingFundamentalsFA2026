@@ -1,0 +1,434 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{30}
+\input{course-theme.tex}
+\title{Test harnesses}
+\subtitle{CSC103 Programming Fundamentals / Lecture 30}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a harness for absolute value over -5, 0 and 5. State what your method does for Integer.MIN\_VALUE.
+\end{column}\begin{column}{0.35\textwidth}\small
+Store manually calculated expected results in long values.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Build a repeatable test harness
+\item Choose expected results independently
+\item Report passes and failures meaningfully
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-4
+
+Tests and oracles\par A simple harness\par Equivalence and boundaries\par Repeatability and regression
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Tests and oracles}
+\begin{itemize}
+\item A test supplies input and checks observable behaviour.
+\item An oracle specifies the expected outcome.
+\item Calculate expected results independently of the implementation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Function: max(a,b)
+Input: (-4,-2)
+Expected: -2
+Observed: result returned by the method
+\end{lstlisting}
+\end{block}
+\note{Copying the implementation into the expected-value calculation can repeat the same defect and make a broken program appear correct.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A simple harness}
+\begin{itemize}
+\item A harness calls the target repeatedly and reports results.
+\item Each failure should identify its case and expected value.
+\item A summary helps detect missed or skipped cases.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Case: negative pair
+Expected: -2
+Actual: 0
+Status: FAIL
+\end{lstlisting}
+\end{block}
+\note{A console harness works before a testing framework is introduced. Make the comparison and result reporting separate from the target calculation.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Equivalence and boundaries}
+\begin{itemize}
+\item Group inputs that should behave similarly.
+\item Test transitions between groups and exceptional inputs.
+\item Include empty or zero-sized input where the contract permits it.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+For isPass(mark):
+49, 50, 51
+For a valid-mark contract:
+-1, 0, 100, 101
+\end{lstlisting}
+\end{block}
+\note{These serve different purposes: threshold behaviour versus allowed-input validation. Do not assume a predicate validates its entire input domain unless its contract says so.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Repeatability and regression}
+\begin{itemize}
+\item Tests should produce the same result under the same conditions.
+\item Control random seeds, data files and other changing dependencies.
+\item Keep a small test that exposes each fixed bug.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Regression case:
+Input: two negative numbers
+Expected: larger negative number
+Purpose: detect zero initialisation bug
+\end{lstlisting}
+\end{block}
+\note{A passing test suite supplies evidence about selected cases. It does not prove that every input is correct.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{The expected result must be independent}
+\begin{itemize}
+\item A harness compares actual behaviour to an oracle derived from the specification.
+\item Using the same potentially faulty implementation on both sides proves little.
+\item Literal expected results work well for a small set of manually solved cases.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input -5 has expected absolute value 5.
+The expected value comes from the mathematical definition.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A harness compares actual behaviour to an oracle derived from the specification. Using the same potentially faulty implementation on both sides proves little. Literal expected results work well for a small set of manually solved cases.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Numeric limits belong in the contract}
+\begin{itemize}
+\item Integer.MIN\_VALUE has no positive counterpart representable as int.
+\item Returning long lets an absolute-value function represent that magnitude.
+\item The conversion must happen before negation to avoid int overflow.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+long widened = value;
+return widened < 0 ? -widened : widened;
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Integer.MIN\_VALUE has no positive counterpart representable as int. Returning long lets an absolute-value function represent that magnitude. The conversion must happen before negation to avoid int overflow.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A test harness compares two independent paths}
+\begin{center}\begin{tikzpicture}
+\node[box] (a) at (0,0) {Chosen input};
+\node[alt] (b) at (4,1) {Program result};
+\node[hot] (c) at (4,-1) {Expected result};
+\node[box] (d) at (8,0) {Compare and report};
+\draw[arr](a.east)--++(.6,0)|-(b.west);\draw[arr](a.east)--++(.6,0)|-(c.west);\draw[arr](b.east)--++(.6,0)|-(d.west);\draw[arr](c.east)--++(.6,0)|-(d.west);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}The expected result must come from the specification, not from calling the same implementation again.\end{block}
+\note{Trace each labelled connection. The expected result must come from the specification, not from calling the same implementation again.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Expected long result & \color{white}\bfseries Reason for case\\
+-5 & 5 & Negative ordinary input\\
+0 & 0 & Zero boundary\\
+5 & 5 & Positive ordinary input\\
+Integer.MIN\_VALUE & 2147483648 & Minimum int magnitude\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static int max(int a, int b) { return a >= b ? a : b; }
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int[][] cases = {{2, 5, 5}, {-4, -2, -2}, {3, 3, 3}};
+int passed = 0;
+for (int[] c : cases) {
+  int actual = max(c[0], c[1]);
+  if (actual == c[2]) passed++;
+  else System.out.println("FAIL expected " + c[2] + " got " + actual);
+}
+System.out.println("Passed " + passed + "/" + cases.length);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture30.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Passed 3/3\par Each row contains first input, second input and expected result.\par The equal-input case checks ties.
+\end{column}\begin{column}{0.35\textwidth}\small
+Equivalence and boundaries
+
+Repeatability and regression
+\end{column}\end{columns}
+\note{Expected output and interpretation: Passed 3/3
+Each row contains first input, second input and expected result.
+The equal-input case checks ties.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Create a harness for absolute value over -5, 0 and 5. State what your method does for Integer.MIN\_VALUE.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Expected ordinary results: 5,0,5. Since the positive counterpart of Integer.MIN\_VALUE does not fit int, explicitly reject it, use long, or document the behaviour. Do not invent an in-range result.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Store manually calculated expected results in long values.
+\item Call the absolute-value method for each input.
+\item Print expected and actual values with a clear pass or fail label.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution30 {
+  public static void main(String[] args) throws Exception {
+    int[] inputs = {-5, 0, 5, Integer.MIN_VALUE};
+    long[] expected = {5L, 0L, 5L, 2147483648L};
+    for (int i = 0; i < inputs.length; i++) {
+      long actual = absolute(inputs[i]);
+      String status = actual == expected[i] ? "PASS" : "FAIL";
+      System.out.println(status + " " + inputs[i] + " => " + actual);
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution30.java. Inputs are fixed in the program.  \par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+    }
+  }
+  static long absolute(int value) {
+    long widened = value;
+    return widened < 0 ? -widened : widened;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution30.java. Inputs are fixed in the program.  \par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Widened value & \color{white}\bfseries Negation needed? & \color{white}\bfseries Actual result\\
+-5 & -5L & Yes & 5L\\
+0 & 0L & No & 0L\\
+5 & 5L & No & 5L\\
+Minimum int & -2147483648L & Yes & 2147483648L\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Store manually calculated expected results in long values. Call the absolute-value method for each input. Print expected and actual values with a clear pass or fail label.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+PASS -5 =\textgreater{} 5\par PASS 0 =\textgreater{} 0\par PASS 5 =\textgreater{} 5\par PASS -2147483648 =\textgreater{} 2147483648
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Print expected and actual values with a clear pass or fail label.
+\end{column}\end{columns}
+\note{Expected result: PASS -5 =\textgreater{} 5
+PASS 0 =\textgreater{} 0
+PASS 5 =\textgreater{} 5
+PASS -2147483648 =\textgreater{} 2147483648\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int expected = buggyMax(a,b);\par int actual = buggyMax(a,b);
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The oracle repeats the same implementation. Write the expected value from the contract and a manually solved case.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Build a harness with at least six cases for your average or maximum method and retain one deliberate bug demonstration.
+\end{column}\begin{column}{0.35\textwidth}\small
+Expected ordinary results: 5,0,5. Since the positive counterpart of Integer.MIN\_VALUE does not fit int, explicitly reject it, use long, or document the behaviour. Do not invent an in-range result.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Expected ordinary results: 5,0,5. Since the positive counterpart of Integer.MIN\_VALUE does not fit int, explicitly reject it, use long, or document the behaviour. Do not invent an in-range result.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What makes a failed test useful? Why include a tie case for maximum?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: It names the case and reports expected versus actual. Ties exercise equality rather than only strict ordering.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+It names the case and reports expected versus actual. Ties exercise equality rather than only strict ordering.
+\end{column}\begin{column}{0.35\textwidth}\small
+The oracle repeats the same implementation. Write the expected value from the contract and a manually solved case.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Test & \color{white}\bfseries Expected max & \color{white}\bfseries Fault it can expose\\
+max(3,7) & 7 & Wrong comparison\\
+max(-3,-7) & -3 & Incorrect zero initialisation\\
+max(5,5) & 5 & Mishandled equality\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Build a small explicit check for max(-3,-7). Explain why Java assert statements can be an unreliable default harness without the required runtime option.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Build a small explicit check for max(-3,-7). Explain why Java assert statements can be an unreliable default harness without the required runtime option.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int actual = Math.max(-3, -7);
+int expected = -3;
+if (actual != expected) {
+  throw new AssertionError("expected -3, got " + actual);
+}
+System.out.println("Passed");
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The expected value is reasoned from the ordering of negative numbers.
+\item The explicit check executes normally.
+\item Java language assertions are disabled by default unless enabled, for example with -ea.
+\end{itemize}\note{Answer: The expected value is reasoned from the ordering of negative numbers. The explicit check executes normally. Java language assertions are disabled by default unless enabled, for example with -ea.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A harness for the digit{-}sum exercise}
+\begin{itemize}
+\item Turn the source example into a method contract with ordinary and boundary cases.
+\item An expected value must be derived independently of the method under test.
+\item A harness should fail visibly when a comparison fails.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: A harness for the digit{-}sum exercise}
+\begin{block}{Task}Check digit sums for 234, 0 and 1001 with explicit comparisons; report how many pass.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/2)}
+\begin{lstlisting}
+public class IsbLecture30 {
+  public static void main(String[] args) throws Exception {
+    long[] inputs = {234, 0, 1001};
+    int[] expected = {9, 0, 2};
+    for (int i = 0; i < inputs.length; i++) {
+      int actual = sumDigits(inputs[i]);
+      if (actual != expected[i]) throw new AssertionError("case " + i);
+    }
+    System.out.println("Passed 3/3");
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture30.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (2/2)}
+\begin{lstlisting}
+  }
+  static int sumDigits(long n) {
+    if (n < 0) throw new IllegalArgumentException("nonnegative required");
+    int sum = 0;
+    while (n != 0) { sum += n % 10; n /= 10; }
+    return sum;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture30.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Expected sum & \color{white}\bfseries Reason\\
+234 & 9 & Ordinary source case\\
+0 & 0 & Zero boundary\\
+1001 & 2 & Internal zero digits\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Passed 3/3\end{block}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Would a method that always returns 9 pass this harness?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}It would pass only the first case and fail the zero case. The tests distinguish more than the original example.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored testing adaptation of the supplied digit{-}sum exercise; the source does not contain this harness. Source exercise deck credits Instructor Khurram Iqbal. Answer: It would pass only the first case and fail the zero case. The tests distinguish more than the original example.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item a repeatable test harness
+\item expected results independently
+\item Report passes and failures meaningfully
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Store manually calculated expected results in long values.
+\item Call the absolute-value method for each input.
+\item Print expected and actual values with a clear pass or fail label.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Build a harness with at least six cases for your average or maximum method and retain one deliberate bug demonstration.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Reference material
+
+Next lecture: Unit testing with JUnit
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Reference material. CLO-4.}
+\end{frame}
+\end{document}

@@ -1,0 +1,434 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{31}
+\input{course-theme.tex}
+\title{Unit testing with JUnit}
+\subtitle{CSC103 Programming Fundamentals / Lecture 31}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a Jupiter test asserting that a mark validator rejects 101 and accepts 100.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use the same validator contract as the production method.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Write a focused unit test
+\item Use equality and exception assertions
+\item Separate test setup, action and checks
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-4
+
+A unit test\par JUnit structure\par Assertions for behaviour\par Setup, action and checks
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A unit test}
+\begin{itemize}
+\item A unit test checks a small unit of behaviour, usually through a method.
+\item A test name explains the case and expected outcome.
+\item Keep the test independent of other tests.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Test name: largerOfTwoNegatives
+Given: -4 and -2
+Expected: -2
+\end{lstlisting}
+\end{block}
+\note{Use JUnit Jupiter 5.11.4 as a fixed teaching dependency. It is a course baseline, not a claim about the newest release.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{JUnit structure}
+\begin{itemize}
+\item @Test marks a Jupiter test method.
+\item Assertions fail the test when a result violates the expectation.
+\item Production code and test code belong in separate source folders.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+@Test
+void largerOfTwoNegatives() {
+  assertEquals(-2, Numbers.max(-4, -2));
+}
+\end{lstlisting}
+\end{block}
+\note{Required imports: org.junit.jupiter.api.Test and static org.junit.jupiter.api.Assertions.assertEquals. The package dependency must be on the test classpath.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Assertions for behaviour}
+\begin{itemize}
+\item assertEquals compares an expected result to the actual result.
+\item assertTrue checks a condition. assertThrows checks an exception contract.
+\item For approximate doubles, choose a justified tolerance.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+assertEquals(2.5, mean(2,3), 1e-9);
+assertThrows(IllegalArgumentException.class,
+             () -> validateMark(-1));
+\end{lstlisting}
+\end{block}
+\note{The lambda is a deferred action executed by assertThrows. Explain only that mechanism here. Tolerance depends on the calculation and scale.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Setup, action and checks}
+\begin{itemize}
+\item Arrange the input and required state.
+\item Act by calling the target.
+\item Assert the outcome without depending on a previous test.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Arrange: int[] a = {2,3};
+Act: int[] b = doubled(a);
+Assert: b is {4,6}; a is still {2,3}.
+\end{lstlisting}
+\end{block}
+\note{Use assertArrayEquals for contents. Fixture helpers may reduce repetition, but each test should remain understandable.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Exception assertions execute an action}
+\begin{itemize}
+\item assertThrows receives an expected exception type and an action to execute.
+\item The action must be deferred so the assertion can observe its failure.
+\item A lambda supplies that action without running it during argument preparation.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+assertThrows(IllegalArgumentException.class,
+    () -> validateMark(101));
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. assertThrows receives an expected exception type and an action to execute. The action must be deferred so the assertion can observe its failure. A lambda supplies that action without running it during argument preparation.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A passing boundary test checks inclusion}
+\begin{itemize}
+\item The upper allowed value, 100, should return normally.
+\item The next value, 101, should throw the documented exception.
+\item Testing both distinguishes inclusive and exclusive range implementations.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Valid condition: 0 <= mark && mark <= 100
+Reject condition: mark < 0 || mark > 100
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The upper allowed value, 100, should return normally. The next value, 101, should throw the documented exception. Testing both distinguishes inclusive and exclusive range implementations.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{A unit test separates setup, action and check}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Arrange inputs};
+\node[box] (n1) at (3.45,0) {Act: call method};
+\node[box] (n2) at (6.9,0) {Assert result};
+\node[alt] (n3) at (10.350000000000001,0) {Runner reports};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}A passing assertion is evidence about its chosen case, not proof for every input.\end{block}
+\note{Trace each labelled connection. A passing assertion is evidence about its chosen case, not proof for every input.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Assertion & \color{white}\bfseries Checks & \color{white}\bfseries Typical use\\
+assertEquals & Expected and actual values & A numerical result\\
+assertArrayEquals & Element contents & An array transformation\\
+assertThrows & Expected exception type & Invalid input\\
+assertDoesNotThrow & Normal completion & A valid boundary input\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: methods}
+\begin{lstlisting}
+static int max(int a, int b) { return a >= b ? a : b; }
+\end{lstlisting}
+\note{Method definitions belong inside the class and outside main. Explain the parameters and return values.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int result = max(-4, -2);
+if (result != -2) throw new AssertionError("negative pair");
+System.out.println("Unit behaviour passed");
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture31.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Unit behaviour passed\par The companion JUnit project expresses this same check with @Test and assertEquals.\par This console demonstration has no external dependency.
+\end{column}\begin{column}{0.35\textwidth}\small
+Assertions for behaviour
+
+Setup, action and checks
+\end{column}\end{columns}
+\note{Expected output and interpretation: Unit behaviour passed
+The companion JUnit project expresses this same check with @Test and assertEquals.
+This console demonstration has no external dependency.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write a Jupiter test asserting that a mark validator rejects 101 and accepts 100.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Use assertThrows(IllegalArgumentException.class, () -\textgreater{} Numbers.validateMark(101)); and assertDoesNotThrow(() -\textgreater{} Numbers.validateMark(100)); in separate named tests.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Use the same validator contract as the production method.
+\item Assert that 101 throws IllegalArgumentException.
+\item Assert that 100 completes without throwing.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+The next program uses fixed inputs so its result can be reproduced.
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution31 {
+  public static void main(String[] args) throws Exception {
+    org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class, () -> validateMark(101));
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+        () -> validateMark(100));
+    System.out.println("2 checks passed");
+  }
+  static void validateMark(int mark) {
+    if (mark < 0 || mark > 100) {
+      throw new IllegalArgumentException("mark outside 0..100");
+    }
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution31.java. Inputs are fixed in the program. JUnit Jupiter is required on the classpath. See JUnit\_Project. \par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Expected behaviour & \color{white}\bfseries Assertion & \color{white}\bfseries Result\\
+101 & Throws IllegalArgumentException & assertThrows & Pass\\
+100 & Returns normally & assertDoesNotThrow & Pass\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Use the same validator contract as the production method. Assert that 101 throws IllegalArgumentException. Assert that 100 completes without throwing.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+2 checks passed
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Assert that 100 completes without throwing.
+\end{column}\end{columns}
+\note{Expected result: 2 checks passed\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+@Test void test() \{\par   Numbers.max(2,5);\par \}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+The test checks no outcome. Add assertEquals(5, Numbers.max(2,5)) so an incorrect return value fails the test.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check both endpoints 0 and 100, then -1 and 101.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use assertThrows for mark 101 and assertDoesNotThrow for mark 100. Put each case in a separately named test; the complete test class follows.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Use assertThrows(IllegalArgumentException.class, () -\textgreater{} Numbers.validateMark(101)); and assertDoesNotThrow(() -\textgreater{} Numbers.validateMark(100)); in separate named tests.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A complete Jupiter test class (1/2)}
+\begin{lstlisting}
+package edu.cui.csc103;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class BoundaryTest {
+  @Test
+  void rejectsMarkAbove100() {
+    assertThrows(IllegalArgumentException.class,
+\end{lstlisting}
+\note{Save this file in the test source directory alongside the supplied Numbers production class. The @Test annotation makes each method discoverable by the test runner.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A complete Jupiter test class (2/2)}
+\begin{lstlisting}
+        () -> Numbers.validateMark(101));
+  }
+
+  @Test
+  void acceptsMarkAt100() {
+    assertDoesNotThrow(() -> Numbers.validateMark(100));
+  }
+}
+\end{lstlisting}
+\note{Save this file in the test source directory alongside the supplied Numbers production class. The @Test annotation makes each method discoverable by the test runner.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Does an assertion-free test prove a returned value is correct? Why use assertArrayEquals?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No. It may only establish that the call returned without an uncaught failure. assertArrayEquals checks element contents rather than array identity.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No. It may only establish that the call returned without an uncaught failure. assertArrayEquals checks element contents rather than array identity.
+\end{column}\begin{column}{0.35\textwidth}\small
+The test checks no outcome. Add assertEquals(5, Numbers.max(2,5)) so an incorrect return value fails the test.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Test input & \color{white}\bfseries Expected behaviour & \color{white}\bfseries JUnit assertion\\
+mark 100 & Accepted & assertDoesNotThrow\\
+mark 101 & Rejected & assertThrows\\
+mean of 40 and 60 & 50.0 & assertEquals with tolerance\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Write a Jupiter test for mean(\{40,60\}) using the supplied Numbers class. Identify the expected value and tolerance.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Write a Jupiter test for mean(\{40,60\}) using the supplied Numbers class. Identify the expected value and tolerance.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+@org.junit.jupiter.api.Test
+void meanOfTwoMarks() {
+  double actual = Numbers.mean(new int[]{40, 60});
+  org.junit.jupiter.api.Assertions.assertEquals(50.0, actual, 1e-9);
+}
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The independently calculated expected mean is 50.0.
+\item The delta 1e-9 is the allowed absolute difference for this example.
+\item Place the method inside a test class in the companion project.
+\end{itemize}\note{Answer: The independently calculated expected mean is 50.0. The delta 1e-9 is the allowed absolute difference for this example. Place the method inside a test class in the companion project.}
+\end{frame}
+
+\begin{frame}[fragile,t]{JUnit assertions for digit processing}
+\begin{itemize}
+\item Reuse the same digit{-}sum contract in automated tests.
+\item Assert the returned value for valid cases and the exception type for rejected cases.
+\item JUnit assertions run when called; @Test methods are discovered by the test runner in the companion project.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored JUnit adaptation, not a claim that the supplied slides teach JUnit. Runnable with Jupiter on the classpath. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: JUnit assertions for digit processing}
+\begin{block}{Task}Check sumDigits(234), sumDigits(0), and rejection of a negative input using Jupiter assertions.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored JUnit adaptation, not a claim that the supplied slides teach JUnit. Runnable with Jupiter on the classpath. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture31 {
+  public static void main(String[] args) throws Exception {
+    org.junit.jupiter.api.Assertions.assertEquals(9, sumDigits(234));
+    org.junit.jupiter.api.Assertions.assertEquals(0, sumDigits(0));
+    org.junit.jupiter.api.Assertions.assertThrows(
+      IllegalArgumentException.class, () -> sumDigits(-1));
+    System.out.println("JUnit checks passed");
+  }
+  static int sumDigits(long n) {
+    if (n < 0) throw new IllegalArgumentException("nonnegative required");
+    int sum = 0;
+    while (n != 0) { sum += n % 10; n /= 10; }
+    return sum;
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored JUnit adaptation, not a claim that the supplied slides teach JUnit. Runnable with Jupiter on the classpath. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture31.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Input & \color{white}\bfseries Expected behaviour & \color{white}\bfseries Assertion\\
+234 & Returns 9 & assertEquals\\
+0 & Returns 0 & assertEquals\\
+{-}1 & Rejected & assertThrows\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize JUnit checks passed\end{block}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored JUnit adaptation, not a claim that the supplied slides teach JUnit. Runnable with Jupiter on the classpath. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}What assertion would check the internal{-}zero case without changing production code?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}assertEquals(2, sumDigits(1001)); Add it as a named or parameterised case.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 2, 3. Instructor{-}authored JUnit adaptation, not a claim that the supplied slides teach JUnit. Runnable with Jupiter on the classpath. Source exercise deck credits Instructor Khurram Iqbal. Answer: assertEquals(2, sumDigits(1001)); Add it as a named or parameterised case.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item a focused unit test
+\item equality and exception assertions
+\item Separate test setup, action and checks
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Use the same validator contract as the production method.
+\item Assert that 101 throws IllegalArgumentException.
+\item Assert that 100 completes without throwing.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Add JUnit tests for negative values, ties and invalid input to the supplied Numbers example.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Reference material: JUnit Jupiter
+
+Next lecture: Testing practice and course synthesis
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Reference material: JUnit Jupiter. CLO-4.}
+\end{frame}
+\end{document}

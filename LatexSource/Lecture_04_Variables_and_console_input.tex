@@ -1,0 +1,401 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{04}
+\input{course-theme.tex}
+\title{Variables and console input}
+\subtitle{CSC103 Programming Fundamentals / Lecture 04}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a quantity and price using Scanner. Print their product. Then read a one-letter category. Use quantity 3, price 12.5, category A.
+\end{column}\begin{column}{0.35\textwidth}\small
+Create one Scanner and read quantity, price and category in order.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Declare and initialise variables and constants
+\item Read numeric and character input
+\item Trace assignment as a change of stored value
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1
+
+Variables and initialisation\par Assignment copies a value\par Scanner input\par Reading one character
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Variables and initialisation}
+\begin{itemize}
+\item A variable has a declared type and a name.
+\item Initialisation supplies its first value. A local variable must receive a value before a read.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int seats = 30;
+seats = 28;
+final int ROOM_LIMIT = 40;
+\end{lstlisting}
+\end{block}
+\note{A final variable can be assigned once. Explain the distinction between a variable value changing and a constant preserving a fixed value.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Assignment copies a value}
+\begin{itemize}
+\item The right-hand expression is evaluated before assignment.
+\item For primitive variables, assigning one variable to another copies the current primitive value.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int a = 7;
+int b = a;
+a = 9;
+// b is still 7
+\end{lstlisting}
+\end{block}
+\note{Use a board trace with a and b as separate named cells. This is a conceptual model, not a claim about exact physical memory layout.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Scanner input}
+\begin{itemize}
+\item Create one Scanner for console input.
+\item nextInt reads an integer token and nextDouble reads a decimal token.
+\item The entered token must match the requested type.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+java.util.Scanner in =
+    new java.util.Scanner(System.in);
+int age = in.nextInt();
+\end{lstlisting}
+\end{block}
+\note{Give an import java.util.Scanner alternative. State that exception handling for malformed input appears later. Do not create several wrappers around System.in.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Reading one character}
+\begin{itemize}
+\item Scanner has no nextChar method.
+\item next().charAt(0) reads the first UTF-16 code unit of the next token.
+\item For this exercise, input is one basic Latin character.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String token = in.next();
+char choice = token.charAt(0);
+\end{lstlisting}
+\end{block}
+\note{The token cannot be empty after a successful next(). A multi-character token gives only its first char. A Java char does not necessarily represent an entire Unicode character.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Choosing a type from the data}
+\begin{itemize}
+\item A quantity that counts whole items fits an integer type.
+\item A price with a fractional part needs a suitable numeric representation.
+\item For introductory arithmetic, double is convenient, but exact financial applications need decimal handling.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+quantity: 3
+price: 12.5
+category: A
+Each input has a different role and type.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. A quantity that counts whole items fits an integer type. A price with a fractional part needs a suitable numeric representation. For introductory arithmetic, double is convenient, but exact financial applications need decimal handling.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Console input is a sequence of tokens}
+\begin{itemize}
+\item Scanner reads the next available token when a next method succeeds.
+\item The program must request the token type in the order the user supplies it.
+\item A character read through next().charAt(0) uses only the first character of that token.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input tokens: 3 12.5 A
+nextInt consumes 3
+nextDouble consumes 12.5
+next consumes A
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Scanner reads the next available token when a next method succeeds. The program must request the token type in the order the user supplies it. A character read through next().charAt(0) uses only the first character of that token.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Input tokens become typed values}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {12  2.5  A};
+\node[box] (n1) at (3.45,0) {nextInt: 12};
+\node[box] (n2) at (6.9,0) {nextDouble: 2.5};
+\node[alt] (n3) at (10.350000000000001,0) {next: A};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Each Scanner call consumes the next token according to the requested type.\end{block}
+\note{Trace each labelled connection. Each Scanner call consumes the next token according to the requested type.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Declaration & \color{white}\bfseries Initial value & \color{white}\bfseries May be reassigned?\\
+int quantity = 3 & 3 & Yes\\
+double price = 12.5 & 12.5 & Yes\\
+char category = 'A' & A & Yes\\
+final int LIMIT = 20 & 20 & No after initial assignment\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int initial = 10;
+int remaining = initial;
+remaining = remaining - 3;
+final int CAPACITY = 20;
+System.out.println(remaining);
+System.out.println(initial);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture04.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+7\par 10\par Assigning remaining does not change initial.
+\end{column}\begin{column}{0.35\textwidth}\small
+Scanner input
+
+Reading one character
+\end{column}\end{columns}
+\note{Expected output and interpretation: 7
+10
+Assigning remaining does not change initial.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a quantity and price using Scanner. Print their product. Then read a one-letter category. Use quantity 3, price 12.5, category A.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Use int quantity = in.nextInt(), double price = in.nextDouble(), and char category = in.next().charAt(0). Product: 37.5. Category: A.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Create one Scanner and read quantity, price and category in order.
+\item Calculate quantity * price using the numeric values.
+\item Print the product and the selected category.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+Sample console input\par 3 12.5 A\par 
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution04 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    in.useLocale(java.util.Locale.US);
+    int quantity = in.nextInt();
+    double price = in.nextDouble();
+    char category = in.next().charAt(0);
+    double total = quantity * price;
+    System.out.println(total);
+    System.out.println(category);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution04.java. Standard input: 3 12.5 A
+  \par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Read or calculation & \color{white}\bfseries Consumed token & \color{white}\bfseries Stored result\\
+nextInt() & 3 & quantity = 3\\
+nextDouble() & 12.5 & price = 12.5\\
+next().charAt(0) & A & category = 'A'\\
+quantity * price & No new input & total = 37.5\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Create one Scanner and read quantity, price and category in order. Calculate quantity * price using the numeric values. Print the product and the selected category.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+37.5\par A
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Print the product and the selected category.
+\end{column}\end{columns}
+\note{Expected result: 37.5
+A\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+int total;\par System.out.println(total);
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+A local variable has no usable automatic initial value. Assign total before printing it, for example int total = 0.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Read a rectangle length and width. Print area and perimeter. State the units and allowed input range.
+\end{column}\begin{column}{0.35\textwidth}\small
+Use int quantity = in.nextInt(), double price = in.nextDouble(), and char category = in.next().charAt(0). Product: 37.5. Category: A.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Use int quantity = in.nextInt(), double price = in.nextDouble(), and char category = in.next().charAt(0). Product: 37.5. Category: A.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+After int x=4; int y=x; y=8;, what is x? Can a final variable be assigned again?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: x remains 4. A final variable cannot be reassigned after its initial assignment.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+x remains 4. A final variable cannot be reassigned after its initial assignment.
+\end{column}\begin{column}{0.35\textwidth}\small
+A local variable has no usable automatic initial value. Assign total before printing it, for example int total = 0.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Next token & \color{white}\bfseries Requested operation & \color{white}\bfseries Result\\
+12 & nextInt() & int value 12\\
+2.5 & nextDouble() & double value 2.5\\
+A & next().charAt(0) & char value A\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}A shop sells 12 items at 2.5 each. Show the variable declarations and total. Then predict what happens if nextInt() is used for the token 2.5.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. A shop sells 12 items at 2.5 each. Show the variable declarations and total. Then predict what happens if nextInt() is used for the token 2.5.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+int quantity = 12;
+double unitPrice = 2.5;
+double total = quantity * unitPrice;
+System.out.println(total);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The int operand is promoted for multiplication with double.
+\item The result is 30.0.
+\item Scanner.nextInt() cannot consume 2.5 as an int and throws InputMismatchException.
+\end{itemize}\note{Answer: The int operand is promoted for multiplication with double. The result is 30.0. Scanner.nextInt() cannot consume 2.5 as an int and throws InputMismatchException.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Circle area with console input}
+\begin{itemize}
+\item Declaration introduces radius and area; assignment gives a local variable a usable value.
+\item A named constant documents the chosen approximation to pi.
+\item Read the radius as double, then calculate only after input is available.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}5.pptx, slides 3, 4, 5, 6, 12, 15, 22, 23. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Circle area with console input}
+\begin{block}{Task}Read radius 20 and calculate its area with PI = 3.14159, matching the source example. Assume a nonnegative radius.\end{block}
+\small Input: 20\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}5.pptx, slides 3, 4, 5, 6, 12, 15, 22, 23. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture04 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner input = new java.util.Scanner(System.in);
+    input.useLocale(java.util.Locale.US);
+    final double PI = 3.14159;
+    double radius = input.nextDouble();
+    double area = PI * radius * radius;
+    System.out.printf(java.util.Locale.US, "Area: %.3f%n", area);
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}5.pptx, slides 3, 4, 5, 6, 12, 15, 22, 23. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture04.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Moment & \color{white}\bfseries radius & \color{white}\bfseries area\\
+After reading & 20.0 & Not assigned yet\\
+After calculation & 20.0 & 1256.636\\
+Radius changed to zero & 0.0 & Recalculation gives 0.000\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Area: 1256.636\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}5.pptx, slides 3, 4, 5, 6, 12, 15, 22, 23. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why does changing radius after calculating area not automatically change area?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Assignment stores the computed value at that moment. Recompute area after changing radius.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}5.pptx, slides 3, 4, 5, 6, 12, 15, 22, 23. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Assignment stores the computed value at that moment. Recompute area after changing radius.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item and initialise variables and constants
+\item numeric and character input
+\item assignment as a change of stored value
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Create one Scanner and read quantity, price and category in order.
+\item Calculate quantity * price using the numeric values.
+\item Print the product and the selected category.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a rectangle length and width. Print area and perimeter. State the units and allowed input range.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Liang Ch 2
+
+Next lecture: Types and arithmetic expressions
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Liang Ch 2. CLO-1.}
+\end{frame}
+\end{document}

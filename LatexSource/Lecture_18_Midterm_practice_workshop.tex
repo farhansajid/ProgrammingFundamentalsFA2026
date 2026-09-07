@@ -1,0 +1,420 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{18}
+\input{course-theme.tex}
+\title{Midterm practice workshop}
+\subtitle{CSC103 Programming Fundamentals / Lecture 18}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write the full console version for a user-specified nonnegative count. Use a method isPass(int mark).
+\end{column}\begin{column}{0.35\textwidth}\small
+Read count and initialise both accumulators.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Solve an integrated problem under time constraints
+\item Justify input and boundary cases
+\item Review solutions using an explicit rubric
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-1 and CLO-2
+
+Practice task and assumptions\par Decomposition\par Boundary test design\par Peer-review rubric
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Practice task and assumptions}
+\begin{itemize}
+\item Process a fixed number of valid marks in 0..100.
+\item Calculate the average and count marks at least 50.
+\item Handle zero records without division.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input example: 4 then 40, 50, 60, 70
+Expected count passing: 3
+Expected average: 55.0
+\end{lstlisting}
+\end{block}
+\note{This is a formative workshop for the second midterm slot. Allow 25 minutes for individual work, 15 for pair review and 15 for a discussion. Keep actual exam scheduling separate.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Decomposition}
+\begin{itemize}
+\item Separate reading marks from computing a classification.
+\item Choose a counter, sum and passing count.
+\item Define what should happen when the count is zero.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+State: i, sum, passes, count
+Repeated step: read one mark, update totals
+Final step: report or print No data
+\end{lstlisting}
+\end{block}
+\note{No arrays are needed. Assume valid integer tokens so that later exception-handling content does not become a prerequisite.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary test design}
+\begin{itemize}
+\item A mark of 49 fails the threshold and 50 passes.
+\item A count of zero exercises the no-data branch.
+\item Equal values make averages easy to verify manually.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Case A: count 0
+Case B: count 1, mark 50
+Case C: count 2, marks 49 and 50
+\end{lstlisting}
+\end{block}
+\note{Expected: No data; passes 1 and average 50; passes 1 and average 49.5. Require students to write the oracle before execution.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Peer-review rubric}
+\begin{itemize}
+\item Specification and assumptions: 2 practice points.
+\item Correct control flow and calculation: 4 points.
+\item Boundary tests: 2 points. Clear explanation and style: 2 points.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Reviewer: cite one concrete strength.
+Reviewer: identify one reproducible failure.
+Author: explain the correction.
+\end{lstlisting}
+\end{block}
+\note{This is a suggested formative rubric out of 10, not an official assessment allocation. Do not award correctness points merely because a program compiles.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A specification determines the loop state}
+\begin{itemize}
+\item Reading a fixed number of marks requires a counter.
+\item The average requires a sum and a count.
+\item A passing count requires a Boolean rule applied to every mark.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+count = requested number of records
+sum = sum of accepted records
+passes = number at least 50
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Reading a fixed number of marks requires a counter. The average requires a sum and a count. A passing count requires a Boolean rule applied to every mark.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Zero records need a separate outcome}
+\begin{itemize}
+\item The loop executes no bodies when the requested count is zero.
+\item A zero count cannot support an arithmetic mean.
+\item Printing No data states the situation without inventing a numeric result.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input: 0
+No mark tokens are read.
+Output: No data
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. The loop executes no bodies when the requested count is zero. A zero count cannot support an arithmetic mean. Printing No data states the situation without inventing a numeric result.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{An integrated marks problem has stages}
+\begin{center}\begin{tikzpicture}
+\node[box] (n0) at (0.0,0) {Read count};
+\node[box] (n1) at (3.45,0) {Read each mark};
+\node[box] (n2) at (6.9,0) {Update totals};
+\node[alt] (n3) at (10.350000000000001,0) {Report summary};
+\draw[arr] (n0) -- (n1);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Separate the loop state from the final reporting decision.\end{block}
+\note{Trace each labelled connection. Separate the loop state from the final reporting decision.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Case & \color{white}\bfseries Marks & \color{white}\bfseries Mean & \color{white}\bfseries Passing count\\
+Ordinary & 40,50,60,70 & 55.0 & 3\\
+Threshold & 50 & 50.0 & 1\\
+Mixed boundary & 49,50 & 49.5 & 1\\
+No records & None & No data & 0\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+int sum = 0, passes = 0;
+for (int mark = 40; mark <= 70; mark += 10) {
+  sum += mark;
+  if (mark >= 50) passes++;
+}
+System.out.println(sum / 4.0);
+System.out.println(passes);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture18.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+55.0\par 3\par The values are 40, 50, 60 and 70.\par This deterministic demonstration substitutes for console input.
+\end{column}\begin{column}{0.35\textwidth}\small
+Boundary test design
+
+Peer-review rubric
+\end{column}\end{columns}
+\note{Expected output and interpretation: 55.0
+3
+The values are 40, 50, 60 and 70.
+This deterministic demonstration substitutes for console input.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Write the full console version for a user-specified nonnegative count. Use a method isPass(int mark).
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Read count. Loop count times, reading a mark and accumulating sum and passes. If count\textgreater{}0 print (double)sum/count, otherwise No data. isPass returns mark\textgreater{}=50.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Read count and initialise both accumulators.
+\item Read count marks, adding to sum and incrementing passes when isPass returns true.
+\item Handle count zero separately and otherwise report the mean and passing count.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+Sample console input\par 4 40 50 60 70\par 
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (1/2)}
+\begin{lstlisting}
+public class Solution18 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    int count = in.nextInt();
+    int sum = 0;
+    int passes = 0;
+    for (int i = 0; i < count; i++) {
+      int mark = in.nextInt();
+      sum += mark;
+      if (isPass(mark)) passes++;
+    }
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution18.java. Standard input: 4 40 50 60 70
+  \par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution (2/2)}
+\begin{lstlisting}
+    if (count == 0) System.out.println("No data");
+    else {
+      System.out.println((double) sum / count);
+      System.out.println(passes);
+    }
+  }
+  static boolean isPass(int mark) {
+    return mark >= 50;
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution18.java. Standard input: 4 40 50 60 70
+  \par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Mark & \color{white}\bfseries sum after addition & \color{white}\bfseries Pass? & \color{white}\bfseries passes\\
+40 & 40 & No & 0\\
+50 & 90 & Yes & 1\\
+60 & 150 & Yes & 2\\
+70 & 220 & Yes & 3\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Read count and initialise both accumulators. Read count marks, adding to sum and incrementing passes when isPass returns true. Handle count zero separately and otherwise report the mean and passing count.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+55.0\par 3
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Handle count zero separately and otherwise report the mean and passing count.
+\end{column}\end{columns}
+\note{Expected result: 55.0
+3\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+double average = sum / count;\par // count may be zero; sum and count are int
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+First handle count==0. On the nonzero branch use (double) sum / count to avoid truncation.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Revise your workshop solution and attach three tests with expected and actual results.
+\end{column}\begin{column}{0.35\textwidth}\small
+Read count. Loop count times, reading a mark and accumulating sum and passes. If count\textgreater{}0 print (double)sum/count, otherwise No data. isPass returns mark\textgreater{}=50.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Read count. Loop count times, reading a mark and accumulating sum and passes. If count\textgreater{}0 print (double)sum/count, otherwise No data. isPass returns mark\textgreater{}=50.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+What test separates \textgreater{}=50 from \textgreater{}50? What part of this solution is reusable without console input?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: A mark exactly 50. The isPass calculation and, after further decomposition, the summary calculation.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+A mark exactly 50. The isPass calculation and, after further decomposition, the summary calculation.
+\end{column}\begin{column}{0.35\textwidth}\small
+First handle count==0. On the nonzero branch use (double) sum / count to avoid truncation.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Input marks & \color{white}\bfseries Mean & \color{white}\bfseries Passes (\textgreater{}=50)\\
+49, 50, 51 & 50.0 & 2\\
+80 & 80.0 & 1\\
+No records & No data & 0\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Design a three-case test plan for a console marks summary: an ordinary case, the pass boundary, and zero records. Explain the expected results before coding.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Design a three-case test plan for a console marks summary: an ordinary case, the pass boundary, and zero records. Explain the expected results before coding.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+Ordinary: 60 80 -> mean 70.0, passes 2
+Boundary: 49 50 -> mean 49.5, passes 1
+Zero records: count 0 -> No data
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item Each expected result is derived independently of the program.
+\item Testing 49 and 50 detects an accidental strict \textgreater{} comparison.
+\item Zero records must avoid division by zero.
+\end{itemize}\note{Answer: Each expected result is derived independently of the program. Testing 49 and 50 detects an accidental strict \textgreater{} comparison. Zero records must avoid division by zero.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Sorting three values with compare{-}and{-}swap}
+\begin{itemize}
+\item Swap the first pair if out of order, then the second pair, then the first pair again.
+\item The third comparison repairs the first pair after the second swap.
+\item The method changes local parameter values and prints them; it does not mutate caller primitives.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 8, 9. Corrected syntax and supplied fixed inputs for the source sorting exercise; restricted to finite ordinary numbers. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Sorting three values with compare{-}and{-}swap}
+\begin{block}{Task}Adapt the source displaySortedNumbers method and trace inputs 9, 2 and 5.\end{block}
+\small Input: Values are fixed in the program for a reproducible demonstration.\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 8, 9. Corrected syntax and supplied fixed inputs for the source sorting exercise; restricted to finite ordinary numbers. Source exercise deck credits Instructor Khurram Iqbal.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture18 {
+  public static void main(String[] args) throws Exception {
+    displaySortedNumbers(9, 2, 5);
+  }
+  static void displaySortedNumbers(double a, double b, double c) {
+    double temp;
+    if (a > b) { temp = a; a = b; b = temp; }
+    if (b > c) { temp = b; b = c; c = temp; }
+    if (a > b) { temp = a; a = b; b = temp; }
+    System.out.println(a + " " + b + " " + c);
+  }
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 8, 9. Corrected syntax and supplied fixed inputs for the source sorting exercise; restricted to finite ordinary numbers. Source exercise deck credits Instructor Khurram Iqbal. Complete file: ISB\_Java\_Examples/IsbLecture18.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Stage & \color{white}\bfseries Values & \color{white}\bfseries Reason\\
+Start & 9, 2, 5 & Unsorted\\
+Compare first pair & 2, 9, 5 & Swap 9 and 2\\
+Compare second pair & 2, 5, 9 & Swap 9 and 5\\
+Compare first pair again & 2, 5, 9 & No swap\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize 2.0 5.0 9.0\end{block}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 8, 9. Corrected syntax and supplied fixed inputs for the source sorting exercise; restricted to finite ordinary numbers. Source exercise deck credits Instructor Khurram Iqbal. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Which input makes the final comparison necessary?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}For 5, 9, 2 the second swap gives 5, 2, 9, so the final swap is required.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Methods Practice.pptx, slides 8, 9. Corrected syntax and supplied fixed inputs for the source sorting exercise; restricted to finite ordinary numbers. Source exercise deck credits Instructor Khurram Iqbal. Answer: For 5, 9, 2 the second swap gives 5, 2, 9, so the final swap is required.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item an integrated problem under time constraints
+\item input and boundary cases
+\item solutions using an explicit rubric
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Read count and initialise both accumulators.
+\item Read count marks, adding to sum and incrementing passes when isPass returns true.
+\item Handle count zero separately and otherwise report the mean and passing count.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Revise your workshop solution and attach three tests with expected and actual results.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Lectures 1--16
+
+Next lecture: Recursion and backtracking
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Lectures 1--16. CLO-1 and CLO-2.}
+\end{frame}
+\end{document}

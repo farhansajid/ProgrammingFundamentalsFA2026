@@ -1,0 +1,401 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+\newcommand{\LectureNumber}{12}
+\input{course-theme.tex}
+\title{References and string input}
+\subtitle{CSC103 Programming Fundamentals / Lecture 12}
+\author{Dr. Muhammad Farhan}
+\institute{Associate Professor of Computer Science\\Department of Computer Science\\COMSATS University Islamabad\\Sahiwal Campus}
+\date{Fall 2026}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}[fragile,t]{The problem for this lecture}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a student age from one line and full name from the next. Explain why next() is insufficient for a name containing spaces.
+\end{column}\begin{column}{0.35\textwidth}\small
+Read the age as an integer token.
+\end{column}\end{columns}
+\note{Introduce the target problem before explaining the tools. Revisit it in the guided solution later.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Learning objectives}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Distinguish values from references
+\item Explain aliasing and null
+\item Read tokens and complete lines
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+CLO-2
+
+Primitive and reference variables\par Objects and null\par String values are immutable\par Token input and line input
+\end{column}\end{columns}
+\note{Explain how each objective supports the opening problem. The final questions check these objectives.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Primitive and reference variables}
+\begin{itemize}
+\item A primitive variable holds a primitive value.
+\item A reference variable holds a reference to an object or null.
+\item Copying a reference can make two variables refer to one object.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int count = 3;
+String name = "Amina";
+String sameName = name;
+\end{lstlisting}
+\end{block}
+\note{Use named boxes and object labels verbally. Do not claim that Java exposes a portable numeric address for a reference.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Objects and null}
+\begin{itemize}
+\item new requests construction of an object.
+\item null means a reference does not refer to an object.
+\item Calling an instance method through null throws NullPointerException.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String text = null;
+boolean missing = text == null;
+\end{lstlisting}
+\end{block}
+\note{A local reference still needs assignment before use. null is different from the empty String "".\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{String values are immutable}
+\begin{itemize}
+\item A String object represents text.
+\item Operations such as concatenation produce a result without changing the original String object.
+\item Reassignment changes which result a variable refers to.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String a = "CS";
+String b = a;
+a = a + "C103";
+// b still refers to "CS"
+\end{lstlisting}
+\end{block}
+\note{This example separates reassignment from mutation. Mutable array aliasing is introduced in Lecture 21.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Token input and line input}
+\begin{itemize}
+\item next reads a token separated by whitespace.
+\item nextLine reads the rest of the current line.
+\item After nextInt, the pending line ending can yield an empty nextLine result.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+int age = in.nextInt();
+in.nextLine(); // finish the numeric line
+String fullName = in.nextLine();
+\end{lstlisting}
+\end{block}
+\note{This pattern assumes the name starts on the next line. Consuming a line blindly can discard wanted data when inputs share a line.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A token read leaves the line ending}
+\begin{itemize}
+\item nextInt consumes the integer token but usually leaves its following line separator.
+\item The next nextLine reads the remainder of that same line, which may be empty.
+\item When the full name belongs on the next line, finish the numeric line first.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Input:
+20
+Amina Khan
+
+The first nextLine after nextInt finishes line 1.
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. nextInt consumes the integer token but usually leaves its following line separator. The next nextLine reads the remainder of that same line, which may be empty. When the full name belongs on the next line, finish the numeric line first.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Aliasing differs from reassignment}
+\begin{itemize}
+\item Two reference variables can identify the same object.
+\item Reassigning one variable changes only that variable's stored reference.
+\item String immutability means a transformation returns text rather than editing the original String.
+\end{itemize}
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+String a = "CS";
+String b = a;
+a = "Math";
+// b still denotes "CS"
+\end{lstlisting}
+\end{block}
+\note{Explain the mechanism using the displayed example. Two reference variables can identify the same object. Reassigning one variable changes only that variable's stored reference. String immutability means a transformation returns text rather than editing the original String.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Two variables can refer to the same string}
+\begin{center}\begin{tikzpicture}
+\node[box] (a) at (0,0) {first};
+\node[box] (b) at (0,-1.6) {second};
+\node[alt] (c) at (5,-0.8) {String object: CS};
+\draw[arr](a.east)--++(.8,0)|-(c.west);\draw[arr](b.east)--++(1.3,0)|-(c.west);
+\node[hot,text width=90mm] (d) at (2.5,-3) {first + 103 gives a new result};
+\end{tikzpicture}\end{center}
+\begin{block}{What to notice}Before concatenation both references identify CS. Reassigning first leaves second unchanged.\end{block}
+\note{Trace each labelled connection. Before concatenation both references identify CS. Reassigning first leaves second unchanged.}
+\end{frame}
+\begin{frame}[fragile,t]{Key distinctions}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Value & \color{white}\bfseries Meaning & \color{white}\bfseries Safe length call?\\
+null & No String object & No\\
+"" & An empty String & Yes, returns 0\\
+"Ali" & A String with basic Latin text & Yes, returns 3\\
+\end{tabularx}
+\vspace{3mm}\footnotesize These distinctions determine which operation or control structure fits the problem.
+\note{\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: execution}
+\begin{lstlisting}
+String first = "CS";
+String second = first;
+first = first + "C103";
+System.out.println(first);
+System.out.println(second);
+\end{lstlisting}
+\note{This is the main body from Java\_Examples/Lecture12.java. The source file includes the complete class. Predict the result before the next slide.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{First example: result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+CSC103\par CS\par The second variable still refers to the original text.
+\end{column}\begin{column}{0.35\textwidth}\small
+String values are immutable
+
+Token input and line input
+\end{column}\end{columns}
+\note{Expected output and interpretation: CSC103
+CS
+The second variable still refers to the original text.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Guided practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Read a student age from one line and full name from the next. Explain why next() is insufficient for a name containing spaces.
+\end{column}\begin{column}{0.35\textwidth}\small
+Attempt the solution before continuing.
+
+Use the definitions and examples from this lecture.
+\end{column}\end{columns}
+\note{Give students 8 minutes to attempt the problem. The following slides provide a complete solution. Original solution guidance: Read age with nextInt, finish that line with nextLine, then read the name with nextLine. next would return only the first token.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution strategy}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item Read the age as an integer token.
+\item Consume the remainder of that line.
+\item Read the next complete line as the name, preserving spaces.
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+Sample console input\par 20\par Amina Khan\par 
+\end{column}\end{columns}
+\note{Discuss why each step is needed. State the input assumptions before executing the program.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete solution}
+\begin{lstlisting}
+public class Solution12 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    int age = in.nextInt();
+    in.nextLine();
+    String fullName = in.nextLine();
+    System.out.println(fullName);
+    System.out.println(age);
+  }
+}
+\end{lstlisting}
+\note{Complete runnable file: Java\_Examples/Solution12.java. Standard input: 20
+Amina Khan
+  \par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Execution trace}
+\small\renewcommand{\arraystretch}{1.5}
+\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\rowcolor{navy}
+\color{white}\bfseries Operation & \color{white}\bfseries What it reads & \color{white}\bfseries Stored result\\
+nextInt() & 20 & age = 20\\
+first nextLine() & Remainder of numeric line & Discarded empty text\\
+second nextLine() & Amina Khan & fullName includes the space\\
+\end{tabularx}
+\vspace{3mm}\footnotesize Follow the changing state in execution order.
+\note{Manually derived trace for the complete solution. Read the age as an integer token. Consume the remainder of that line. Read the next complete line as the name, preserving spaces.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution result}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Amina Khan\par 20
+\end{column}\begin{column}{0.35\textwidth}\small
+Why this result follows
+
+Read the next complete line as the name, preserving spaces.
+\end{column}\end{columns}
+\note{Expected result: Amina Khan
+20\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{A common incorrect approach}
+String name = null;\par System.out.println(name.length());
+\vspace{1mm}\begin{block}{Example}
+\begin{lstlisting}
+Calling length through null throws NullPointerException. Check name != null or ensure a valid input value first.
+\end{lstlisting}
+\end{block}
+\note{Ask students to predict the failure before discussing the explanation. The right side gives the correction.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Boundary and failure checks}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Check the stated input assumptions.
+
+Build a profile input program with an integer ID and a full name on separate lines. Test a name with two spaces.
+\end{column}\begin{column}{0.35\textwidth}\small
+Read age with nextInt, finish that line with nextLine, then read the name with nextLine. next would return only the first token.
+\end{column}\end{columns}
+\note{Use the specification to derive each expected result. Exercise solution: Read age with nextInt, finish that line with nextLine, then read the name with nextLine. next would return only the first token.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Check your understanding}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Is "" the same as null? What happens to b after a="new" when b previously received a?
+\end{column}\begin{column}{0.35\textwidth}\small
+Write a prediction and explain the rule that supports it.
+\end{column}\end{columns}
+\note{Answer: No. Empty text is a String object with length zero. Reassigning a does not reassign b.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Answer and explanation}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+No. Empty text is a String object with length zero. Reassigning a does not reassign b.
+\end{column}\begin{column}{0.35\textwidth}\small
+Calling length through null throws NullPointerException. Check name != null or ensure a valid input value first.
+\end{column}\end{columns}
+\note{Reconnect the answer to the relevant definition rather than treating it as a fact to memorise.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+
+\begin{frame}[fragile,t]{Compare cases and predict outcomes}
+\small\renewcommand{\arraystretch}{1.5}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries Step & \color{white}\bfseries first refers to & \color{white}\bfseries second refers to\\
+second = first & CS & CS\\
+first = first + "103" & CSC103 & CS\\
+Print second & CSC103 & CS is printed\\
+\end{tabularx}\par\vspace{3mm}\begin{exampleblock}{Discuss}Explain each expected result before running the example. Which case would reveal a wrong assumption?\end{exampleblock}
+\note{Read the first two columns and invite predictions before discussing the outcome.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Apply the idea}
+\begin{alertblock}{Independent practice}Predict the output after assigning a="PF", b=a, and a=a+"1". Explain why b does not change.\end{alertblock}\vspace{3mm}\begin{enumerate}\item Work through the input by hand.\item Write or correct the program.\item Justify the expected result.\end{enumerate}\note{Allow 3–5 minutes, then compare answers in pairs. Predict the output after assigning a="PF", b=a, and a=a+"1". Explain why b does not change.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Solution and reasoning}
+\begin{lstlisting}
+String a = "PF";
+String b = a;
+a = a + "1";
+System.out.println(a);
+System.out.println(b);
+\end{lstlisting}\vspace{1mm}\small\begin{itemize}
+\item The output lines are PF1 and PF.
+\item Concatenation does not modify the original immutable String.
+\item Assignment changes the reference stored in a.
+\end{itemize}\note{Answer: The output lines are PF1 and PF. Concatenation does not modify the original immutable String. Assignment changes the reference stored in a.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Ordering two city names}
+\begin{itemize}
+\item Read full lines so a city name may contain spaces.
+\item compareTo returns a negative value, zero, or a positive value; its sign is what matters.
+\item This comparison is case{-}sensitive lexicographic ordering, not locale{-}aware dictionary collation.
+\end{itemize}
+\vspace{3mm}\footnotesize\textcolor{accent}{Source: supplied ISB campus slides. See speaker notes and ISB\_Source\_Map.md.}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 27, 28, 29, 30, 31. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked problem: Ordering two city names}
+\begin{block}{Task}Read Islamabad and Sahiwal on separate lines and print them in lexicographic order.\end{block}
+\small Input: Islamabad / Sahiwal\par\vspace{3mm}\begin{exampleblock}{Before running}Predict the output and identify the variables that change.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 27, 28, 29, 30, 31. Adapted explanation and runnable implementation; sample inputs and traces added for this course.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Complete ISB example (1/1)}
+\begin{lstlisting}
+public class IsbLecture12 {
+  public static void main(String[] args) throws Exception {
+    java.util.Scanner in = new java.util.Scanner(System.in);
+    String first = in.nextLine();
+    String second = in.nextLine();
+    if (first.compareTo(second) <= 0) {
+      System.out.println(first + " | " + second);
+    } else {
+      System.out.println(second + " | " + first);
+    }
+  }
+
+}
+\end{lstlisting}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 27, 28, 29, 30, 31. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Complete file: ISB\_Java\_Examples/IsbLecture12.java.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Worked trace and expected result}
+\small\renewcommand{\arraystretch}{1.4}\rowcolors{2}{pale}{white}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\rowcolor{navy}
+\color{white}\bfseries First / second & \color{white}\bfseries Comparison sign & \color{white}\bfseries Printed order\\
+Islamabad / Sahiwal & Negative & Islamabad, Sahiwal\\
+Sahiwal / Islamabad & Positive & Islamabad, Sahiwal\\
+Sahiwal / Sahiwal & Zero & Both unchanged\\
+\end{tabularx}\par\vspace{2mm}
+\begin{block}{Expected console output}\ttfamily\footnotesize Islamabad | Sahiwal\end{block}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 27, 28, 29, 30, 31. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Trace and expected values independently worked for this edition.}
+\end{frame}
+
+\begin{frame}[fragile,t]{Extend the ISB example}
+\begin{alertblock}{Practice}Why is testing compareTo(...) == {-}1 an incorrect general ordering test?\end{alertblock}\vspace{3mm}\begin{exampleblock}{Explain your reasoning}Negative results are not restricted to {-}1. Use \textless{} 0, == 0 or \textgreater{} 0 according to the relation.\end{exampleblock}
+\note{Adapted from the supplied ISB campus folder: Lecture{-}12.pptx, slides 27, 28, 29, 30, 31. Adapted explanation and runnable implementation; sample inputs and traces added for this course. Answer: Negative results are not restricted to {-}1. Use \textless{} 0, == 0 or \textgreater{} 0 according to the relation.}
+\end{frame}
+\begin{frame}[fragile,t]{Lecture summary}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+\begin{itemize}
+\item values from references
+\item aliasing and null
+\item tokens and complete lines
+\end{itemize}
+\end{column}\begin{column}{0.35\textwidth}\small
+\begin{itemize}
+\item Read the age as an integer token.
+\item Consume the remainder of that line.
+\item Read the next complete line as the name, preserving spaces.
+\end{itemize}
+\end{column}\end{columns}
+\note{Ask students to give one concrete example for the concepts listed. Use the worked solution to connect the topics.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+
+\begin{frame}[fragile,t]{After-class practice}
+\begin{columns}[T,onlytextwidth]\begin{column}{0.60\textwidth}
+Build a profile input program with an integer ID and a full name on separate lines. Test a name with two spaces.
+\end{column}\begin{column}{0.35\textwidth}\small
+Syllabus reading\par Deitel Ch 3
+
+Next lecture: String processing
+\end{column}\end{columns}
+\note{Reading labels follow the supplied outline. Check topic headings against the available textbook edition. Require a program and expected results for the practice task.\par Syllabus reading: Deitel Ch 3. CLO-2.}
+\end{frame}
+\end{document}
