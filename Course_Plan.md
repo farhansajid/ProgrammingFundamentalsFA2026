@@ -29,38 +29,39 @@ Lab alignment: class exercises can support CLO-5 (implement programs using const
 
 | Week | Lecture | Topic | CDF unit | Theory CLO | Slides | Syllabus reading |
 |---|---|---|---|---|---|---|
-| 1 | 1 | [Computer programming](/Lecture Presentation PDFs/Lecture_01_Computer_programming./Lecture Presentation PDFs) | 1 | CLO-1 | 32 | Deitel Ch 1 |
-| 1 | 2 | [Source files and execution](/Lecture Presentation PDFs/Lecture_02_Source_files_and_execution./Lecture Presentation PDFs) | 1 | CLO-1 | 32 | Deitel Ch 1 |
-| 2 | 3 | [Java syntax and program style](/Lecture Presentation PDFs/Lecture_03_Java_syntax_and_program_style./Lecture Presentation PDFs) | 2 | CLO-1 | 32 | Liang Ch 2 |
-| 2 | 4 | [Variables and console input](/Lecture Presentation PDFs/Lecture_04_Variables_and_console_input./Lecture Presentation PDFs) | 2 | CLO-1 | 32 | Liang Ch 2 |
-| 3 | 5 | [Types and arithmetic expressions](/Lecture Presentation PDFs/Lecture_05_Types_and_arithmetic_expressions./Lecture Presentation PDFs) | 2 | CLO-1 | 32 | Liang Ch 2 |
-| 3 | 6 | [Updates and formatted output](/Lecture Presentation PDFs/Lecture_06_Updates_and_formatted_output./Lecture Presentation PDFs) | 2 | CLO-1 | 32 | Liang Ch 2 |
-| 4 | 7 | [Boolean expressions](/Lecture Presentation PDFs/Lecture_07_Boolean_expressions./Lecture Presentation PDFs) | 3 | CLO-2 | 32 | Deitel Ch 7 (as listed) |
-| 4 | 8 | [Selection with if and else](/Lecture Presentation PDFs/Lecture_08_Selection_with_if_and_else./Lecture Presentation PDFs) | 3 | CLO-2 | 32 | Deitel Ch 7 (as listed) |
-| 5 | 9 | [Short-circuiting and switch](/Lecture Presentation PDFs/Lecture_09_Short_circuiting_and_switch./Lecture Presentation PDFs) | 3 | CLO-2 | 33 | Deitel Ch 7 (as listed) |
-| 5 | 10 | [While loops](/Lecture Presentation PDFs/Lecture_10_While_loops./Lecture Presentation PDFs) | 3 | CLO-2 | 34 | Deitel Ch 8 (as listed) |
-| 6 | 11 | [For and do-while loops](/Lecture Presentation PDFs/Lecture_11_For_and_do_while_loops./Lecture Presentation PDFs) | 3 | CLO-2 | 32 | Deitel Ch 8 (as listed) |
-| 6 | 12 | [References and string input](/Lecture Presentation PDFs/Lecture_12_References_and_string_input./Lecture Presentation PDFs) | 5 | CLO-2 | 32 | Deitel Ch 3 |
-| 7 | 13 | [String processing](/Lecture Presentation PDFs/Lecture_13_String_processing./Lecture Presentation PDFs) | 5 | CLO-2 | 32 | Deitel Ch 16 |
-| 7 | 14 | [Built-in and instance methods](/Lecture Presentation PDFs/Lecture_14_Built_in_and_instance_methods./Lecture Presentation PDFs) | 4 | CLO-2 | 32 | Deitel Ch 6 |
-| 8 | 15 | [User-defined methods](/Lecture Presentation PDFs/Lecture_15_User_defined_methods./Lecture Presentation PDFs) | 4 | CLO-2 | 33 | Deitel Ch 6 |
-| 8 | 16 | [Parameters, stack and scope](/Lecture Presentation PDFs/Lecture_16_Parameters_stack_and_scope./Lecture Presentation PDFs) | 4 | CLO-2 | 33 | Deitel Ch 6 |
-| 9 | 17 | [Midterm concept review](/Lecture Presentation PDFs/Lecture_17_Midterm_concept_review./Lecture Presentation PDFs) | Midterm | CLO-1 and CLO-2 | 32 | Lectures 1–16 |
-| 9 | 18 | [Midterm practice workshop](/Lecture Presentation PDFs/Lecture_18_Midterm_practice_workshop./Lecture Presentation PDFs) | Midterm | CLO-1 and CLO-2 | 33 | Lectures 1–16 |
-| 10 | 19 | [Recursion and backtracking](/Lecture Presentation PDFs/Lecture_19_Recursion_and_backtracking./Lecture Presentation PDFs) | 4 | CLO-2 | 33 | Deitel Ch 18 |
-| 10 | 20 | [One-dimensional arrays](/Lecture Presentation PDFs/Lecture_20_One_dimensional_arrays./Lecture Presentation PDFs) | 5 | CLO-2 | 33 | Deitel Ch 7 |
-| 11 | 21 | [Arrays and method arguments](/Lecture Presentation PDFs/Lecture_21_Arrays_and_method_arguments./Lecture Presentation PDFs) | 5 | CLO-2 | 34 | Deitel Ch 7 |
-| 11 | 22 | [Two-dimensional arrays](/Lecture Presentation PDFs/Lecture_22_Two_dimensional_arrays./Lecture Presentation PDFs) | 5 | CLO-2 | 34 | Deitel Ch 7 |
-| 12 | 23 | [Ragged and multidimensional arrays](/Lecture Presentation PDFs/Lecture_23_Ragged_and_multidimensional_arrays./Lecture Presentation PDFs) | 5 | CLO-2 | 33 | Deitel Ch 7 |
-| 12 | 24 | [Exception handling](/Lecture Presentation PDFs/Lecture_24_Exception_handling./Lecture Presentation PDFs) | 6 | CLO-3 | 33 | Deitel Ch 11 |
-| 13 | 25 | [Cleanup and exception propagation](/Lecture Presentation PDFs/Lecture_25_Cleanup_and_exception_propagation./Lecture Presentation PDFs) | 6 | CLO-3 | 35 | Deitel Ch 11 |
-| 13 | 26 | [Programming environments and debugging](/Lecture Presentation PDFs/Lecture_26_Programming_environments_and_debugging./Lecture Presentation PDFs) | 6 | CLO-3 | 33 | Reference material |
-| 14 | 27 | [Library components and APIs](/Lecture Presentation PDFs/Lecture_27_Library_components_and_APIs./Lecture Presentation PDFs) | 6 | CLO-3 | 32 | Reference material |
-| 14 | 28 | [Files and streams](/Lecture Presentation PDFs/Lecture_28_Files_and_streams./Lecture Presentation PDFs) | 6 | CLO-3 | 32 | Liang Ch 12 |
-| 15 | 29 | [Reading and writing text files](/Lecture Presentation PDFs/Lecture_29_Reading_and_writing_text_files./Lecture Presentation PDFs) | 6 | CLO-3 | 35 | Liang Ch 12 |
-| 15 | 30 | [Test harnesses](/Lecture Presentation PDFs/Lecture_30_Test_harnesses./Lecture Presentation PDFs) | 7 | CLO-4 | 35 | Reference material |
-| 16 | 31 | [Unit testing with JUnit](/Lecture Presentation PDFs/Lecture_31_Unit_testing_with_JUnit./Lecture Presentation PDFs) | 7 | CLO-4 | 35 | Reference material: JUnit Jupiter |
-| 16 | 32 | [Testing practice and course synthesis](/Lecture Presentation PDFs/Lecture_32_Testing_practice_and_course_synthesis./Lecture Presentation PDFs) | 7 | CLO-4 | 36 | Reference material: JUnit Jupiter |
+| 1 | 1 | [Computer programming](PDF/Lecture_01_Computer_programming.pdf) | 1 | CLO-1 | 32 | Deitel Ch 1 |
+| 1 | 2 | [Source files and execution](PDF/Lecture_02_Source_files_and_execution.pdf) | 1 | CLO-1 | 32 | Deitel Ch 1 |
+| 2 | 3 | [Java syntax and program style](PDF/Lecture_03_Java_syntax_and_program_style.pdf) | 2 | CLO-1 | 32 | Liang Ch 2 |
+| 2 | 4 | [Variables and console input](PDF/Lecture_04_Variables_and_console_input.pdf) | 2 | CLO-1 | 32 | Liang Ch 2 |
+| 3 | 5 | [Types and arithmetic expressions](PDF/Lecture_05_Types_and_arithmetic_expressions.pdf) | 2 | CLO-1 | 32 | Liang Ch 2 |
+| 3 | 6 | [Updates and formatted output](PDF/Lecture_06_Updates_and_formatted_output.pdf) | 2 | CLO-1 | 32 | Liang Ch 2 |
+| 4 | 7 | [Boolean expressions](PDF/Lecture_07_Boolean_expressions.pdf) | 3 | CLO-2 | 32 | Deitel Ch 7 (as listed) |
+| 4 | 8 | [Selection with if and else](PDF/Lecture_08_Selection_with_if_and_else.pdf) | 3 | CLO-2 | 32 | Deitel Ch 7 (as listed) |
+| 5 | 9 | [Short-circuiting and switch](PDF/Lecture_09_Short_circuiting_and_switch.pdf) | 3 | CLO-2 | 33 | Deitel Ch 7 (as listed) |
+| 5 | 10 | [While loops](PDF/Lecture_10_While_loops.pdf) | 3 | CLO-2 | 34 | Deitel Ch 8 (as listed) |
+| 6 | 11 | [For and do-while loops](PDF/Lecture_11_For_and_do_while_loops.pdf) | 3 | CLO-2 | 32 | Deitel Ch 8 (as listed) |
+| 6 | 12 | [References and string input](PDF/Lecture_12_References_and_string_input.pdf) | 5 | CLO-2 | 32 | Deitel Ch 3 |
+| 7 | 13 | [String processing](PDF/Lecture_13_String_processing.pdf) | 5 | CLO-2 | 32 | Deitel Ch 16 |
+| 7 | 14 | [Built-in and instance methods](PDF/Lecture_14_Built_in_and_instance_methods.pdf) | 4 | CLO-2 | 32 | Deitel Ch 6 |
+| 8 | 15 | [User-defined methods](PDF/Lecture_15_User_defined_methods.pdf) | 4 | CLO-2 | 33 | Deitel Ch 6 |
+| 8 | 16 | [Parameters, stack and scope](PDF/Lecture_16_Parameters_stack_and_scope.pdf) | 4 | CLO-2 | 33 | Deitel Ch 6 |
+| 9 | 17 | [Midterm concept review](PDF/Lecture_17_Midterm_concept_review.pdf) | Midterm | CLO-1 and CLO-2 | 32 | Lectures 1–16 |
+| 9 | 18 | [Midterm practice workshop](PDF/Lecture_18_Midterm_practice_workshop.pdf) | Midterm | CLO-1 and CLO-2 | 33 | Lectures 1–16 |
+| 10 | 19 | [Recursion and backtracking](PDF/Lecture_19_Recursion_and_backtracking.pdf) | 4 | CLO-2 | 33 | Deitel Ch 18 |
+| 10 | 20 | [One-dimensional arrays](PDF/Lecture_20_One_dimensional_arrays.pdf) | 5 | CLO-2 | 33 | Deitel Ch 7 |
+| 11 | 21 | [Arrays and method arguments](PDF/Lecture_21_Arrays_and_method_arguments.pdf) | 5 | CLO-2 | 34 | Deitel Ch 7 |
+| 11 | 22 | [Two-dimensional arrays](PDF/Lecture_22_Two_dimensional_arrays.pdf) | 5 | CLO-2 | 34 | Deitel Ch 7 |
+| 12 | 23 | [Ragged and multidimensional arrays](PDF/Lecture_23_Ragged_and_multidimensional_arrays.pdf) | 5 | CLO-2 | 33 | Deitel Ch 7 |
+| 12 | 24 | [Exception handling](PDF/Lecture_24_Exception_handling.pdf) | 6 | CLO-3 | 33 | Deitel Ch 11 |
+| 13 | 25 | [Cleanup and exception propagation](PDF/Lecture_25_Cleanup_and_exception_propagation.pdf) | 6 | CLO-3 | 35 | Deitel Ch 11 |
+| 13 | 26 | [Programming environments and debugging](PDF/Lecture_26_Programming_environments_and_debugging.pdf) | 6 | CLO-3 | 33 | Reference material |
+| 14 | 27 | [Library components and APIs](PDF/Lecture_27_Library_components_and_APIs.pdf) | 6 | CLO-3 | 32 | Reference material |
+| 14 | 28 | [Files and streams](PDF/Lecture_28_Files_and_streams.pdf) | 6 | CLO-3 | 32 | Liang Ch 12 |
+| 15 | 29 | [Reading and writing text files](PDF/Lecture_29_Reading_and_writing_text_files.pdf) | 6 | CLO-3 | 35 | Liang Ch 12 |
+| 15 | 30 | [Test harnesses](PDF/Lecture_30_Test_harnesses.pdf) | 7 | CLO-4 | 35 | Reference material |
+| 16 | 31 | [Unit testing with JUnit](PDF/Lecture_31_Unit_testing_with_JUnit.pdf) | 7 | CLO-4 | 35 | Reference material: JUnit Jupiter |
+| 16 | 32 | [Testing practice and course synthesis](PDF/Lecture_32_Testing_practice_and_course_synthesis.pdf) | 7 | CLO-4 | 36 | Reference material: JUnit Jupiter |
+
 
 
 ## Suggested 90-minute teaching pattern
