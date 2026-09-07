@@ -1,9 +1,14 @@
 # CSC103 Programming Fundamentals
 
-Dr. Muhammad Farhan  
-Associate Professor of Computer Science  
-Department of Computer Science  
-COMSATS University Islamabad, Sahiwal Campus
+This course emphasis the basic concepts used in programming. The topics include: Computer Programming; Basic Syntax & Semantics of a Higher-Level Language; Conditional & Iterative Control Structures; Functions & Parameter Passing; Recursion; Arrays; String Processing; Exception Handling; and File I/O.
+
+# Course Objectives
+
+- To introduce various programming language paradigms;
+- To develop the skills to analyze, design, test and translate problems into computer programs;
+- To present the fundamental programming concepts, including basic type system;
+- To demonstrate basic coding, testing and debugging techniques;
+- To provide an implementation of the concepts.
 
 ## Present and edit
 
@@ -23,3 +28,8 @@ Use JDK 17 or later. From Java_Examples/:
 javac --release 17 Lecture01.java
 java Lecture01
 ```
+## Prepared by
+Dr. Muhammad Farhan  
+Associate Professor of Computer Science  
+Department of Computer Science  
+COMSATS University Islamabad, Sahiwal Campus
